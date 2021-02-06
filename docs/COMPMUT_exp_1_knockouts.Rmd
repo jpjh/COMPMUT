@@ -6,8 +6,7 @@ output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      fig.width = 4, fig.height=3)
+knitr::opts_chunk$set(echo = TRUE)
 rm(list=ls())
 
 library(tidyverse)
@@ -297,7 +296,7 @@ mod1_4 <- lm(W_gm_boxcox ~ host * plasmid, data = df1A)
 
 Generate plots for validation.
 
-```{r, fig.width = 7, fig.height = 5}
+```{r}
 par(mfrow=c(2,2))
 
 plot(mod1_4)
@@ -321,7 +320,7 @@ mod1_5 <- lm(W_gm_boxcox ~ host * plasmid, data = df1B)
 
 Examine validation plots.
 
-```{r, fig.width = 7, fig.height = 5}
+```{r}
 par(mfrow=c(2,2))
 plot(mod1_5)
 ```
