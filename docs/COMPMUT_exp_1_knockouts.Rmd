@@ -6,7 +6,8 @@ output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width = 4, fig.height=3)
 rm(list=ls())
 
 library(tidyverse)
@@ -94,11 +95,11 @@ df1_summ <- df1 %>%
                    aes(x=host, y=W_gm)) +
   geom_hline(yintercept=1, size=0.2, linetype=111) +
   geom_hline(yintercept=0, size=0.2) +
-  geom_point(position=pd, alpha=0.5, size=1, shape=16, aes(colour=experiment, group=experiment)) +
+  geom_point(position=pd, alpha=0.5, size=1.5, shape=16, aes(colour=experiment, group=experiment)) +
   geom_point(data=df1_summ, 
              position=pd,
              shape=1, size=2) +
-  geom_errorbar(data=df1_summ, width=0, size=0.4, 
+  geom_errorbar(data=df1_summ, width=0, size=0.5, 
                 aes(ymax=W_gm+se, ymin=W_gm-se), colour="black") +
   scale_colour_manual(values=c("black","grey50")) +
   scale_x_discrete(breaks=c("wild-type","delta_gacS","delta_PFLU4242"),
@@ -108,7 +109,7 @@ df1_summ <- df1 %>%
                    name="chromosomal genotype") +
   scale_y_continuous(name="relative fitness (W)", breaks=seq(0,2,0.25)) +
   facet_grid(.~plasmid, scales="free") +
-  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)))
+  theme(axis.text.x=element_text(angle=45, hjust=1)))
 
 svglite::svglite(height=3, width=3.5, file = "../plots/Fig1.svg")
 plot_fig1
@@ -296,7 +297,7 @@ mod1_4 <- lm(W_gm_boxcox ~ host * plasmid, data = df1A)
 
 Generate plots for validation.
 
-```{r}
+```{r, fig.width = 7, fig.height = 5}
 par(mfrow=c(2,2))
 
 plot(mod1_4)
@@ -320,7 +321,7 @@ mod1_5 <- lm(W_gm_boxcox ~ host * plasmid, data = df1B)
 
 Examine validation plots.
 
-```{r}
+```{r, fig.width = 7, fig.height = 5}
 par(mfrow=c(2,2))
 plot(mod1_5)
 ```
