@@ -1,8 +1,10 @@
 ---
 title: 'COMPMUT Experiments 1: Presentation and analysis of knockout fitness'
 author: "jpjh"
-date: "30/12/2020"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "formatted_docs") })
 ---
 
 ```{r setup, include=FALSE}
@@ -13,9 +15,11 @@ library(tidyverse)
 library(ggplot2)
 library(knitr)
 
-source("theme_pub.r")
+source("./functions/theme_pub.r")
 theme_set(theme_pub())
 ```
+
+[Back to index.](COMPMUT_index.html)
 
 ## Competition experiments with plasmid-carrying knockout strains
 
@@ -69,7 +73,7 @@ Looks ok, some skew but nothing really off.
 Calculate fitness. Load up `calulate_fitness()`.
 
 ```{r}
-source("calculate_fitness.R")
+source("./functions/calculate_fitness.R")
 
 id_cols <- c("experiment","replicate","host","plasmid")
 df1 <- calculate_fitness(d1, id_cols)  
@@ -214,7 +218,7 @@ These all look good, no obvious patterns in the residuals. There is possibly som
 shapiro.test(df1$mod1_2_resid)
 ```
 
-However, I will proceed with this modelling approach as though the Shapiro-Wilk test is significant, the effect is not large (p ~ 0.01), and nonparametric alternatives are not available.
+However, I will proceed with this modelling approach as, though the Shapiro-Wilk test is significant, the significance is not large (p ~ 0.01), and nonparametric alternatives are not available.
 
 Assess significance of terms.
 
@@ -270,15 +274,15 @@ Significant effect of the interaction by any measure.
 What about post-hoc tests? How do these differ between the random-effects (LMM) and no random-effects (LM) models?
 
 ```{r}
-posthoc_gls <- lsmeans(mod1_1, pairwise ~ host * plasmid, adjust="mvt")
+posthoc_gls <- lsmeans(mod1_1, pairwise ~ host * plasmid, adjust="mvt", data=df1)
 
-data.frame(posthoc_gls$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""))  %>% 
-  left_join(contr, suffix = c(".lm", ".lmm"), by="contrast") %>% 
-  filter(sign.lmm == "*" | sign.lm == "*") %>% 
+data.frame(posthoc_gls$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""))  %>%
+  left_join(contr, suffix = c(".lm", ".lmm"), by="contrast") %>%
+  filter(sign.lmm == "*" | sign.lm == "*") %>%
   select(contrast, contains("p.value"), contains("sign")) %>% kable()
 ```
 
-Overall, very similar. Neglecting correlation between replicates means that a significant effect of gacS is detected with pQBR57, but otherwise there is no big effect of accounting for correlation between replicates.
+Overall, very similar. Neglecting correlation between replicates means that a significant effect of gacS is detected with pQBR57, but otherwise there is no big qualitative difference from accounting for correlation between replicates.
 
 ### Testing each experiment separately
 
@@ -319,7 +323,7 @@ mod1_5 <- lm(W_gm_boxcox ~ host * plasmid, data = df1B)
 Examine validation plots.
 
 ```{r}
-part(mfrow=c(2,2))
+par(mfrow=c(2,2))
 plot(mod1_5)
 ```
 
@@ -358,3 +362,9 @@ Confidence interval: `r df1_summ %>% filter(host=="wild-type" & plasmid=="pQBR57
 Fitness cost: `r df1_summ %>% filter(host=="wild-type" & plasmid=="pQBR103") %>% pull(W_gm_corr)`
 
 Confidence interval: `r df1_summ %>% filter(host=="wild-type" & plasmid=="pQBR103") %>% pull(ci)`
+
+---
+
+**[On to COMPMUT experiments 2: Presentation and analysis of plasmid mutant fitness.](COMPMUT_exp_2_plasmids.html)**
+
+**[Back to index.](COMPMUT_index.html)**
