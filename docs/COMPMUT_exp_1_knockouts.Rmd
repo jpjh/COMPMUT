@@ -2,9 +2,7 @@
 title: 'COMPMUT Experiments 1: Presentation and analysis of knockout fitness'
 author: "jpjh"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "formatted_docs") })
+output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -15,11 +13,11 @@ library(tidyverse)
 library(ggplot2)
 library(knitr)
 
-source("./functions/theme_pub.r")
+source("../functions/theme_pub.r")
 theme_set(theme_pub())
 ```
 
-[Back to index.](COMPMUT_index.html)
+[Back to index.](COMPMUT_index.md)
 
 ## Competition experiments with plasmid-carrying knockout strains
 
@@ -40,7 +38,7 @@ The whole experiment was repeated twice.
 Load in data and plot.
 
 ```{r}
-d1 <- read.csv("./data/COMPMUT_exp_data_1.csv", header=TRUE)
+d1 <- read.csv("../data/COMPMUT_exp_data_1.csv", header=TRUE)
 
 kable(head(d1))
 ```
@@ -73,7 +71,7 @@ Looks ok, some skew but nothing really off.
 Calculate fitness. Load up `calulate_fitness()`.
 
 ```{r}
-source("./functions/calculate_fitness.R")
+source("../functions/calculate_fitness.R")
 
 id_cols <- c("experiment","replicate","host","plasmid")
 df1 <- calculate_fitness(d1, id_cols)  
@@ -112,7 +110,7 @@ df1_summ <- df1 %>%
   facet_grid(.~plasmid, scales="free") +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)))
 
-svglite::svglite(height=3, width=3.5, file = "./plots/Fig1.svg")
+svglite::svglite(height=3, width=3.5, file = "../plots/Fig1.svg")
 plot_fig1
 dev.off()
 ```
@@ -365,6 +363,6 @@ Confidence interval: `r df1_summ %>% filter(host=="wild-type" & plasmid=="pQBR10
 
 ---
 
-**[On to COMPMUT experiments 2: Presentation and analysis of plasmid mutant fitness.](COMPMUT_exp_2_plasmids.html)**
+**[On to COMPMUT experiments 2: Presentation and analysis of plasmid mutant fitness.](COMPMUT_exp_2_plasmids.md)**
 
-**[Back to index.](COMPMUT_index.html)**
+**[Back to index.](COMPMUT_index.md)**

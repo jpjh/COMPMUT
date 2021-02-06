@@ -1,0 +1,17 @@
+---
+title: "Index page"
+author: "jpjh"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Compensatory mutations
+
+### Experimental measurements of relative fitness, plasmid cost, etc
+
+1. **[Knockout fitness.](COMPMUT_exp_1_knockouts.html)**
+2. **[Plasmid mutant fitness.](COMPMUT_exp_2_plasmids.html)**
