@@ -81,7 +81,7 @@ d1 %>% filter(timepoint=="start") %>%
     theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1))
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+<img src="COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-3-1.png" style="zoom:200%;" /><!-- -->
 
 Looks ok, some skew but nothing really off.
 
@@ -129,14 +129,14 @@ df1_summ <- df1 %>%
                    name="chromosomal genotype") +
   scale_y_continuous(name="relative fitness (W)", breaks=seq(0,2,0.25)) +
   facet_grid(.~plasmid, scales="free") +
-  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)))
+  theme(axis.text.x=element_text(angle=45, hjust=1)))
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+<img src="COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-5-1.png" style="zoom:200%;" /><!-- -->
 
 ``` r
 svglite::svglite(height=3, width=3.5, file = "../plots/Fig1.svg")
-plot_fig1
+plot_fig1 + theme_pub()
 dev.off()
 ```
 
@@ -230,7 +230,7 @@ library(nlme)
 
     ## 
     ## Attaching package: 'nlme'
-
+    
     ## The following object is masked from 'package:dplyr':
     ## 
     ##     collapse
@@ -339,40 +339,40 @@ kable(contr)
 |:------------------------------------------------------------|-----------:|----------:|----:|------------:|----------:|:-----|
 | (wild-type plasmid-free) - (delta\_gacS plasmid-free)       | -0.0086637 | 0.0360467 |  18 |  -0.2403472 | 0.9999994 |      |
 | (wild-type plasmid-free) - (delta\_PFLU4242 plasmid-free)   |  0.0099640 | 0.0360467 |  18 |   0.2764180 | 0.9999982 |      |
-| (wild-type plasmid-free) - (wild-type pQBR57)               |  0.1548097 | 0.0321996 |  18 |   4.8078168 | 0.0032511 | \*   |
-| (wild-type plasmid-free) - delta\_gacS pQBR57               |  0.0674239 | 0.0321996 |  18 |   2.0939374 | 0.5026691 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 pQBR57           |  0.0281928 | 0.0321996 |  18 |   0.8755656 | 0.9915127 |      |
+| (wild-type plasmid-free) - (wild-type pQBR57)               |  0.1548097 | 0.0321996 |  18 |   4.8078168 | 0.0035094 | \*   |
+| (wild-type plasmid-free) - delta\_gacS pQBR57               |  0.0674239 | 0.0321996 |  18 |   2.0939374 | 0.5025428 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 pQBR57           |  0.0281928 | 0.0321996 |  18 |   0.8755656 | 0.9915166 |      |
 | (wild-type plasmid-free) - (wild-type pQBR103)              |  0.3304440 | 0.0321996 |  18 |  10.2623712 | 0.0000000 | \*   |
-| (wild-type plasmid-free) - delta\_gacS pQBR103              |  0.0594564 | 0.0321996 |  18 |   1.8464954 | 0.6514469 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 pQBR103          |  0.0383558 | 0.0321996 |  18 |   1.1911890 | 0.9475306 |      |
-| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0186277 | 0.0360467 |  18 |   0.5167652 | 0.9997867 |      |
-| (delta\_gacS plasmid-free) - (wild-type pQBR57)             |  0.1634734 | 0.0321996 |  18 |   5.0768804 | 0.0019958 | \*   |
-| (delta\_gacS plasmid-free) - delta\_gacS pQBR57             |  0.0760876 | 0.0321996 |  18 |   2.3630010 | 0.3546079 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR57         |  0.0368566 | 0.0321996 |  18 |   1.1446291 | 0.9577747 |      |
-| (delta\_gacS plasmid-free) - (wild-type pQBR103)            |  0.3391077 | 0.0321996 |  18 |  10.5314347 | 0.0000012 | \*   |
-| (delta\_gacS plasmid-free) - delta\_gacS pQBR103            |  0.0681201 | 0.0321996 |  18 |   2.1155590 | 0.4899899 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR103        |  0.0470195 | 0.0321996 |  18 |   1.4602526 | 0.8576186 |      |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)         |  0.1448457 | 0.0321996 |  18 |   4.4983728 | 0.0065151 | \*   |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR57         |  0.0574599 | 0.0321996 |  18 |   1.7844934 | 0.6881313 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR57     |  0.0182289 | 0.0321996 |  18 |   0.5661215 | 0.9995813 |      |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103)        |  0.3204800 | 0.0321996 |  18 |   9.9529271 | 0.0000001 | \*   |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR103        |  0.0494924 | 0.0321996 |  18 |   1.5370514 | 0.8224474 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR103    |  0.0283918 | 0.0321996 |  18 |   0.8817450 | 0.9911493 |      |
-| (wild-type pQBR57) - delta\_gacS pQBR57                     | -0.0873858 | 0.0278255 |  18 |  -3.1404934 | 0.0986742 |      |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR57                 | -0.1266168 | 0.0278255 |  18 |  -4.5503898 | 0.0057477 | \*   |
-| (wild-type pQBR57) - (wild-type pQBR103)                    |  0.1756343 | 0.0278255 |  18 |   6.3119946 | 0.0001675 | \*   |
-| (wild-type pQBR57) - delta\_gacS pQBR103                    | -0.0953533 | 0.0278255 |  18 |  -3.4268326 | 0.0574676 |      |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR103                | -0.1164539 | 0.0278255 |  18 |  -4.1851512 | 0.0123667 | \*   |
-| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR57                 | -0.0392311 | 0.0278255 |  18 |  -1.4098964 | 0.8784615 |      |
+| (wild-type plasmid-free) - delta\_gacS pQBR103              |  0.0594564 | 0.0321996 |  18 |   1.8464954 | 0.6514768 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 pQBR103          |  0.0383558 | 0.0321996 |  18 |   1.1911890 | 0.9475932 |      |
+| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0186277 | 0.0360467 |  18 |   0.5167652 | 0.9997875 |      |
+| (delta\_gacS plasmid-free) - (wild-type pQBR57)             |  0.1634734 | 0.0321996 |  18 |   5.0768804 | 0.0020057 | \*   |
+| (delta\_gacS plasmid-free) - delta\_gacS pQBR57             |  0.0760876 | 0.0321996 |  18 |   2.3630010 | 0.3553413 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR57         |  0.0368566 | 0.0321996 |  18 |   1.1446291 | 0.9578136 |      |
+| (delta\_gacS plasmid-free) - (wild-type pQBR103)            |  0.3391077 | 0.0321996 |  18 |  10.5314347 | 0.0000000 | \*   |
+| (delta\_gacS plasmid-free) - delta\_gacS pQBR103            |  0.0681201 | 0.0321996 |  18 |   2.1155590 | 0.4897888 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR103        |  0.0470195 | 0.0321996 |  18 |   1.4602526 | 0.8575848 |      |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)         |  0.1448457 | 0.0321996 |  18 |   4.4983728 | 0.0064815 | \*   |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR57         |  0.0574599 | 0.0321996 |  18 |   1.7844934 | 0.6881060 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR57     |  0.0182289 | 0.0321996 |  18 |   0.5661215 | 0.9995819 |      |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103)        |  0.3204800 | 0.0321996 |  18 |   9.9529271 | 0.0000000 | \*   |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR103        |  0.0494924 | 0.0321996 |  18 |   1.5370514 | 0.8224267 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR103    |  0.0283918 | 0.0321996 |  18 |   0.8817450 | 0.9911489 |      |
+| (wild-type pQBR57) - delta\_gacS pQBR57                     | -0.0873858 | 0.0278255 |  18 |  -3.1404934 | 0.0986749 |      |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR57                 | -0.1266168 | 0.0278255 |  18 |  -4.5503898 | 0.0060145 | \*   |
+| (wild-type pQBR57) - (wild-type pQBR103)                    |  0.1756343 | 0.0278255 |  18 |   6.3119946 | 0.0001848 | \*   |
+| (wild-type pQBR57) - delta\_gacS pQBR103                    | -0.0953533 | 0.0278255 |  18 |  -3.4268326 | 0.0571825 |      |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR103                | -0.1164539 | 0.0278255 |  18 |  -4.1851512 | 0.0124412 | \*   |
+| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR57                 | -0.0392311 | 0.0278255 |  18 |  -1.4098964 | 0.8784908 |      |
 | delta\_gacS pQBR57 - (wild-type pQBR103)                    |  0.2630201 | 0.0278255 |  18 |   9.4524880 | 0.0000002 | \*   |
-| delta\_gacS pQBR57 - delta\_gacS pQBR103                    | -0.0079675 | 0.0278255 |  18 |  -0.2863391 | 0.9999976 |      |
-| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR103                | -0.0290681 | 0.0278255 |  18 |  -1.0446578 | 0.9749652 |      |
+| delta\_gacS pQBR57 - delta\_gacS pQBR103                    | -0.0079675 | 0.0278255 |  18 |  -0.2863391 | 0.9999977 |      |
+| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR103                | -0.0290681 | 0.0278255 |  18 |  -1.0446578 | 0.9748568 |      |
 | delta\_PFLU4242 pQBR57 - (wild-type pQBR103)                |  0.3022511 | 0.0278255 |  18 |  10.8623844 | 0.0000000 | \*   |
-| delta\_PFLU4242 pQBR57 - delta\_gacS pQBR103                |  0.0312635 | 0.0278255 |  18 |   1.1235572 | 0.9619465 |      |
-| delta\_PFLU4242 pQBR57 - delta\_PFLU4242 pQBR103            |  0.0101629 | 0.0278255 |  18 |   0.3652386 | 0.9999846 |      |
-| (wild-type pQBR103) - delta\_gacS pQBR103                   | -0.2709876 | 0.0278255 |  18 |  -9.7388271 | 0.0000005 | \*   |
+| delta\_PFLU4242 pQBR57 - delta\_gacS pQBR103                |  0.0312635 | 0.0278255 |  18 |   1.1235572 | 0.9618806 |      |
+| delta\_PFLU4242 pQBR57 - delta\_PFLU4242 pQBR103            |  0.0101629 | 0.0278255 |  18 |   0.3652386 | 0.9999844 |      |
+| (wild-type pQBR103) - delta\_gacS pQBR103                   | -0.2709876 | 0.0278255 |  18 |  -9.7388271 | 0.0000001 | \*   |
 | (wild-type pQBR103) - delta\_PFLU4242 pQBR103               | -0.2920882 | 0.0278255 |  18 | -10.4971458 | 0.0000000 | \*   |
-| delta\_gacS pQBR103 - delta\_PFLU4242 pQBR103               | -0.0211006 | 0.0278255 |  18 |  -0.7583186 | 0.9967183 |      |
+| delta\_gacS pQBR103 - delta\_PFLU4242 pQBR103               | -0.0211006 | 0.0278255 |  18 |  -0.7583186 | 0.9967309 |      |
 
 Key lines in this table:
 
@@ -425,20 +425,20 @@ data.frame(posthoc_gls$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""
 
 | contrast                                             | p.value.lm | p.value.lmm | sign.lm | sign.lmm |
 |:-----------------------------------------------------|-----------:|------------:|:--------|:---------|
-| (wild-type plasmid-free) - (wild-type pQBR57)        |  0.0000029 |   0.0032511 | \*      | \*       |
+| (wild-type plasmid-free) - (wild-type pQBR57)        |  0.0000025 |   0.0035094 | \*      | \*       |
 | (wild-type plasmid-free) - (wild-type pQBR103)       |  0.0000000 |   0.0000000 | \*      | \*       |
-| (delta\_gacS plasmid-free) - (wild-type pQBR57)      |  0.0000009 |   0.0019958 | \*      | \*       |
-| (delta\_gacS plasmid-free) - (wild-type pQBR103)     |  0.0000000 |   0.0000012 | \*      | \*       |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)  |  0.0000256 |   0.0065151 | \*      | \*       |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103) |  0.0000000 |   0.0000001 | \*      | \*       |
-| (wild-type pQBR57) - delta\_gacS pQBR57              |  0.0280260 |   0.0986742 | \*      |          |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR57          |  0.0001904 |   0.0057477 | \*      | \*       |
-| (wild-type pQBR57) - (wild-type pQBR103)             |  0.0000001 |   0.0001675 | \*      | \*       |
-| (wild-type pQBR57) - delta\_gacS pQBR103             |  0.0109231 |   0.0574676 | \*      |          |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR103         |  0.0007325 |   0.0123667 | \*      | \*       |
+| (delta\_gacS plasmid-free) - (wild-type pQBR57)      |  0.0000003 |   0.0020057 | \*      | \*       |
+| (delta\_gacS plasmid-free) - (wild-type pQBR103)     |  0.0000000 |   0.0000000 | \*      | \*       |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)  |  0.0000114 |   0.0064815 | \*      | \*       |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103) |  0.0000000 |   0.0000000 | \*      | \*       |
+| (wild-type pQBR57) - delta\_gacS pQBR57              |  0.0274168 |   0.0986749 | \*      |          |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR57          |  0.0002018 |   0.0060145 | \*      | \*       |
+| (wild-type pQBR57) - (wild-type pQBR103)             |  0.0000001 |   0.0001848 | \*      | \*       |
+| (wild-type pQBR57) - delta\_gacS pQBR103             |  0.0109479 |   0.0571825 | \*      |          |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR103         |  0.0007548 |   0.0124412 | \*      | \*       |
 | delta\_gacS pQBR57 - (wild-type pQBR103)             |  0.0000000 |   0.0000002 | \*      | \*       |
 | delta\_PFLU4242 pQBR57 - (wild-type pQBR103)         |  0.0000000 |   0.0000000 | \*      | \*       |
-| (wild-type pQBR103) - delta\_gacS pQBR103            |  0.0000000 |   0.0000005 | \*      | \*       |
+| (wild-type pQBR103) - delta\_gacS pQBR103            |  0.0000000 |   0.0000001 | \*      | \*       |
 | (wild-type pQBR103) - delta\_PFLU4242 pQBR103        |  0.0000000 |   0.0000000 | \*      | \*       |
 
 Overall, very similar. Neglecting correlation between replicates means
