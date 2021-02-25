@@ -37,8 +37,8 @@ Files and comparisons to use outpu:
 3.  pQBR103 plasmid, sense transcripts.
     -   All comparisons against plasmid bearing (R05), output
         `./data/COMPMUT_RNAseq_4_de_table_pQ103.csv`.
-4.  RPKM for plasmid and chromosomal genes, output
-    `./data/COMPMUT_RNAseq_5_rpkm.csv`.
+4.  TPM for plasmid and chromosomal genes, output
+    `./data/COMPMUT_RNAseq_5_tpm.csv`.
 
 A preliminary analysis of antisense transcripts did not reveal anything
 particularly exciting, so that analysis is not included here.
@@ -265,12 +265,6 @@ head(z_rpkm_wt[with(z_rpkm_wt, order(-mean)),c("feature","mean","product")], n=2
 
 Most genes are associated with translation, largely as expected, which
 is reassuring.
-
-Save the table of rpkm data for later analysis.
-
-``` r
-write.table(z_rpkm, file="../rnaseq/rpkm_chr.csv", sep=",", quote=FALSE)
-```
 
 ##### 1.2. SBW25 chromosome: differential expression
 
@@ -547,7 +541,7 @@ Plot expression of the different genes.
   theme(legend.position=c(0.85,0.85), axis.text.x=element_text(angle=45, hjust=1)))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 PFLU\_4242 expression appears reduced in the gacS mutant, and also
 appears reduced in the presence of pQBR103. However PFLU\_4242 seems not
@@ -563,7 +557,7 @@ plot(mod_4242_expr, 1:3)
 par(mfrow=c(1,1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 Plot suggests that model assumptions are met.
 
@@ -689,7 +683,7 @@ Exploratory plot of the data.
 plotMDS(z_pQ57, main="pQBR57 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 The ∆gacS mutant seems to have a big effect here. There’s also some
 separation on the y-axis between the non-compensated (R03) and the
@@ -709,7 +703,7 @@ z_pQ57 <- estimateDisp(z_pQ57, robust=TRUE)
 plotBCV(z_pQ57, main="pQBR57 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 Extract normalization factors and compare with mapping against the
 chromosome.
@@ -754,7 +748,7 @@ ggplot(data=normfacs, aes(x=eff.lib.size.x, y=eff.lib.size.y, colour=group)) +
   coord_trans(xlim=c(0,4e7), ylim=c(0,10e5))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 The effective library sizes calculated for plasmid and chromosome
 independently are roughly proportional for all samples.
@@ -766,7 +760,7 @@ ggplot(data=normfacs, aes(x=lib.size.x, y=lib.size.y, colour=group)) +
   ggtitle("library size (unscaled) SBW25 chromosome vs. pQBR57 sense")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
 
 However, when plotting the non-scaled library sizes, we can see an
 effect whereby the gacS samples (R09) consistently fall
@@ -788,14 +782,14 @@ ggplot(data=normfacs, aes(x=group, y=unscaled_ratio)) +
   geom_point() + ggtitle("ratio of plasmid/chromosome reads mapped")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 ``` r
 ggplot(data=normfacs, aes(x=group, y=scaled_ratio)) + 
   geom_point() + ggtitle("ratio of plasmid/chromosome reads mapped (scaled for highly-expressed genes)")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-33-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-32-2.png)<!-- -->
 
 If the plasmid data are analysed using the plasmid-calculated
 normalization factors, this will identify plasmid genes that are
@@ -937,7 +931,7 @@ Exploratory plot of the data.
 plotMDS(z_pQ57_chr, main="SBW25 chromosome and pQBR57 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
 
 Calculate normalization factors and plot coefficients.
 
@@ -952,7 +946,7 @@ z_pQ57_chr <- estimateDisp(z_pQ57_chr, robust=TRUE)
 plotBCV(z_pQ57_chr, main="SBW25 chromosome and pQBR57 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
 
 Extract and plot normalization factors as before.
 
@@ -985,7 +979,7 @@ ggplot(data=normfac_pQ57_chr, aes(x=group, y=norm.factors)) +
   geom_hline(yintercept=1) + geom_point() + ggtitle("SBW25 chromosome and pQBR57 sense normalization factors")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
 
 Extract RPKM data.
 
@@ -1042,7 +1036,7 @@ ggplot(data=summ_pQ57_chr_tpm_long, aes(x=trt, y=log2(tpm), colour=pc)) +
   geom_point(aes(group=locus_tag), alpha=0.2, size=0.4, shape=16, position=pd)
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
 
 We will return to this data frame shortly.
 
@@ -1075,7 +1069,7 @@ Exploratory plot of the data
 plotMDS(z_pQ103, main="pQBR103 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
 
 There is a clear separation of the three treatments.
 
@@ -1093,7 +1087,7 @@ z_pQ103 <- estimateDisp(z_pQ103, robust=TRUE)
 plotBCV(z_pQ103, main="pQBR103 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
 
 Extract normalization factors and compare with mapping against the
 chromosome.
@@ -1134,7 +1128,7 @@ ggplot(data=normfacs_pQ103, aes(x=eff.lib.size.x, y=eff.lib.size.y, colour=group
   theme(legend.position="right")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
 
 The effective library sizes calculated for plasmid and chromosome
 independently are roughly proportional for all samples.
@@ -1146,7 +1140,7 @@ ggplot(data=normfacs_pQ103, aes(x=lib.size.x, y=lib.size.y, colour=group)) +
     theme(legend.position="right")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
 
 In contrast to pQBR57, there is no obvious global effect on the plasmid
 of the ∆gacS knockout. There may be increased transcription in the
@@ -1160,14 +1154,14 @@ ggplot(data=normfacs_pQ103, aes(x=group, y=unscaled_ratio)) +
   geom_point() + ggtitle("ratio of mean pQBR103/chromosome expression")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
 
 ``` r
 ggplot(data=normfacs_pQ103, aes(x=group, y=scaled_ratio)) + 
   geom_point() + ggtitle("ratio of mean pQBR103/chromosome expression (scaled for highly-expressed genes)")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-55-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-54-2.png)<!-- -->
 
 Inspection of this ratio plot suggests that there is a possible
 upregulation of pQBR103 genes in the ∆PFLU\_4242 knockout.
@@ -1275,7 +1269,7 @@ Exploratory plot of the data.
 plotMDS(z_pQ103_chr, main="SBW25 chromosome and pQBR103 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-61-1.png)<!-- -->
 
 Calculate normalization factors and plot coefficients.
 
@@ -1290,7 +1284,7 @@ z_pQ103_chr <- estimateDisp(z_pQ103_chr, robust=TRUE)
 plotBCV(z_pQ103_chr, main="SBW25 chromosome and pQBR103 sense transcripts")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-63-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
 
 Extract and plot normalization factors as before.
 
@@ -1322,7 +1316,7 @@ ggplot(data=normfac_pQ103_chr, aes(x=group, y=norm.factors)) +
   geom_hline(yintercept=1) + geom_point() + ggtitle("SBW25 chromosome and pQBR103 sense normalization factors")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-65-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-64-1.png)<!-- -->
 
 Extract RPKM data.
 
@@ -1367,7 +1361,7 @@ ggplot(data=summ_pQ103_chr_tpm_long, aes(x=trt, y=log2(tpm), colour=pc)) +
   geom_point(aes(group=locus_tag), alpha=0.2, size=0.4, shape=16, position=pd)
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-67-1.png)<!-- -->
 
 ##### Both plasmids together
 
@@ -1384,7 +1378,7 @@ ggplot(data=both_tpm_long, aes(x=amelioration, y=log2(tpm), colour=pc)) +
   facet_grid(.~plasmid, scales="free_x")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
 
 Make this a nice plot for outputting. Reorder variables.
 
@@ -1429,7 +1423,7 @@ pd2 <- position_dodge(width=0.5)
         legend.position="bottom"))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
 
 Output as svg.
 
@@ -1443,7 +1437,7 @@ dev.off()
     ##                 2
 
 ``` r
-write.table(both_tpm_long, file="../data/COMPMUT_RNAseq_5_tpm.csv", row.names=FALSE)
+write.csv(both_tpm_long, file="../data/COMPMUT_RNAseq_5_tpm.csv", row.names=FALSE)
 ```
 
 Test whether plasmids are expressed at higher level than chromosome
@@ -1491,7 +1485,7 @@ ggplot(data=pQ57_tpm_plot,
   geom_step(size=0.2) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-74-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-73-1.png)<!-- -->
 
 ``` r
 ggplot(data=pQ57_tpm_plot,
@@ -1499,7 +1493,7 @@ ggplot(data=pQ57_tpm_plot,
   geom_tile(height=0.9) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-74-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-73-2.png)<!-- -->
 
 Note that white bars here indicate genes removed for low expression.
 
@@ -1572,7 +1566,7 @@ ggplot(data=pQ57_tpm_plot, aes(x=fct_reorder(locus_tag, tpm),
   geom_point()
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-76-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-75-1.png)<!-- -->
 
 Clearly shows the negative effect that gacS knockout has on gene
 expression from pQBR57.
@@ -1588,7 +1582,7 @@ ggplot(data=pQ103_tpm_plot,
   geom_step(size=0.2) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-77-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-76-1.png)<!-- -->
 
 ``` r
 ggplot(data=pQ103_tpm_plot,
@@ -1596,7 +1590,7 @@ ggplot(data=pQ103_tpm_plot,
   geom_tile(height=0.9) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-77-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-76-2.png)<!-- -->
 
 And the alternative plot
 
@@ -1606,7 +1600,7 @@ ggplot(data=pQ103_tpm_plot, aes(x=fct_reorder(locus_tag, tpm),
   geom_point()
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-78-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-77-1.png)<!-- -->
 
 Top expressed genes:
 
@@ -1762,7 +1756,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-1.png)<!-- -->
 
 ``` r
 (plot_pQBR103_heatmap <- ggplot(data=pQ103_tpm_plot,
@@ -1783,7 +1777,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-2.png)<!-- -->
 
 ``` r
 (plot_pQBR57_log_heatmap <- ggplot(data=pQ57_tpm_plot,
@@ -1805,7 +1799,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-3.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-3.png)<!-- -->
 
 ``` r
 (plot_pQBR103_log_heatmap <- ggplot(data=pQ103_tpm_plot,
@@ -1826,7 +1820,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-4.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-4.png)<!-- -->
 
 Output.
 

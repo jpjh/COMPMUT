@@ -39,7 +39,7 @@ Files and comparisons to use outpu:
    - All comparisons against plasmid bearing (R03), output `./data/COMPMUT_RNAseq_3_de_table_pQ57.csv`.
 3. pQBR103 plasmid, sense transcripts.
    - All comparisons against plasmid bearing (R05), output `./data/COMPMUT_RNAseq_4_de_table_pQ103.csv`.
-4. RPKM for plasmid and chromosomal genes, output `./data/COMPMUT_RNAseq_5_rpkm.csv`.
+4. TPM for plasmid and chromosomal genes, output `./data/COMPMUT_RNAseq_5_tpm.csv`.
    
 A preliminary analysis of antisense transcripts did not reveal anything particularly exciting, so that analysis is not included here. 
 
@@ -173,12 +173,6 @@ head(z_rpkm_wt[with(z_rpkm_wt, order(-mean)),c("feature","mean","product")], n=2
 ```
 
 Most genes are associated with translation, largely as expected, which is reassuring.
-
-Save the table of rpkm data for later analysis.
-
-```{r, eval=FALSE}
-write.table(z_rpkm, file="../rnaseq/rpkm_chr.csv", sep=",", quote=FALSE)
-```
 
 ##### 1.2. SBW25 chromosome: differential expression
 
@@ -881,7 +875,7 @@ svglite::svglite(height=3, width=3.5, file = "../plots/Fig10.svg")
 plot_fig10 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
 dev.off()
 
-write.table(both_tpm_long, file="../data/COMPMUT_RNAseq_5_tpm.csv", row.names=FALSE)
+write.csv(both_tpm_long, file="../data/COMPMUT_RNAseq_5_tpm.csv", row.names=FALSE)
 ```
 
 Test whether plasmids are expressed at higher level than chromosome using a Kolmogorov-Smirnov test (following San Millan et al., ISME, 2018)
