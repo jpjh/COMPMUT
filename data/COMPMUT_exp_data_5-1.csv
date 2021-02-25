@@ -1,0 +1,61 @@
+tc_rep,plasmid_pucp,plasmid_pq,timepoint,dilution,spread,count_white,count_blue
+a,no pUCP18,none,start,6,60,55,59
+a,no pUCP18,pQBR103,start,6,60,101,45
+a,no insert,none,start,6,60,36,60
+a,no insert,pQBR103,start,6,60,48,49
+a,par,none,start,6,60,37,47
+a,par,pQBR103,start,6,60,54,62
+b,no pUCP18,none,start,6,60,36,50
+b,no pUCP18,pQBR103,start,6,60,94,45
+b,no insert,none,start,6,60,38,60
+b,no insert,pQBR103,start,6,60,106,46
+b,par,none,start,6,60,29,51
+b,par,pQBR103,start,6,60,35,56
+c,no pUCP18,none,start,6,60,55,47
+c,no pUCP18,pQBR103,start,6,60,74,40
+c,no insert,none,start,6,60,49,37
+c,no insert,pQBR103,start,6,60,33,46
+c,par,none,start,6,60,47,53
+c,par,pQBR103,start,6,60,50,50
+d,no pUCP18,none,start,6,60,52,58
+d,no pUCP18,pQBR103,start,6,60,42,55
+d,no insert,none,start,6,60,48,60
+d,no insert,pQBR103,start,6,60,48,66
+d,par,none,start,6,60,27,55
+d,par,pQBR103,start,6,60,36,59
+e,no pUCP18,none,start,6,60,58,52
+e,no pUCP18,pQBR103,start,6,60,23,75
+e,no insert,none,start,6,60,38,53
+e,no insert,pQBR103,start,6,60,31,57
+e,par,none,start,6,60,60,63
+e,par,pQBR103,start,6,60,35,62
+a,no pUCP18,none,end,6,40,111,94
+a,no pUCP18,pQBR103,end,6,40,10,149
+a,no insert,none,end,6,40,90,74
+a,no insert,pQBR103,end,6,40,5,164
+a,par,none,end,6,40,74,78
+a,par,pQBR103,end,6,40,2,145
+b,no pUCP18,none,end,6,40,68,113
+b,no pUCP18,pQBR103,end,6,40,14,187
+b,no insert,none,end,6,40,74,124
+b,no insert,pQBR103,end,6,40,8,132
+b,par,none,end,6,40,60,134
+b,par,pQBR103,end,6,40,4,132
+c,no pUCP18,none,end,6,40,125,129
+c,no pUCP18,pQBR103,end,6,40,8,191
+c,no insert,none,end,6,40,128,135
+c,no insert,pQBR103,end,6,40,12,191
+c,par,none,end,6,40,92,145
+c,par,pQBR103,end,6,40,3,212
+d,no pUCP18,none,end,6,40,139,132
+d,no pUCP18,pQBR103,end,6,40,8,192
+d,no insert,none,end,6,40,113,153
+d,no insert,pQBR103,end,6,40,8,195
+d,par,none,end,6,40,94,186
+d,par,pQBR103,end,6,40,3,182
+e,no pUCP18,none,end,6,40,129,97
+e,no pUCP18,pQBR103,end,6,40,10,198
+e,no insert,none,end,6,40,81,150
+e,no insert,pQBR103,end,6,40,5,217
+e,par,none,end,6,40,69,127
+e,par,pQBR103,end,6,40,1,216

@@ -1,0 +1,1117 @@
+---
+title: "COMPMUT RNAseq Analysis 4: Analysing differential expression using edgeR"
+author: "jpjh"
+date: "compiled Feb 2021"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+library(forcats)
+
+source("../functions/theme_pub.r")
+theme_github <- function(x){
+  theme_pub(base_size=12)
+}
+
+theme_set(theme_github())
+```
+
+## edgeR analysis
+
+The analysis will look at the SBW25 chromosome, pQBR103, and pQBR57 separately. 
+
+All comparisons will be made with the base, i.e. with wild-type chromosome for chromosomal comparisons, and with uncompensated hosts for the plasmids. For the chromosome, it is also worth comparing plasmid-bearing compensated with plasmid-bearing uncompensated (to look for significant changes compared with the non-compensated state). 
+
+Note that as I am using Benjamini-Hochberg FDR adjustments doing these separate analyses will not require additional correction for multiple testing (FDR, as a rate, should scale). 
+
+Files and comparisons to use outpu:
+
+1. SBW25 chromosome, sense transcripts from (putative) protein-coding genes. Remove PFLU_4242 and PFLU_3777 (gacS) genes since these are artificially missing from some treatments due to knockouts, and remove the small RNAs to analyse separately as some of these are expressed at very high levels (>15% of total mappings) and thus may affect the analysis.
+   - Comparisons against plasmid-free (R01), output `./data/COMPMUT_RNAseq_1_de_table_chr_vanc.csv`.
+   - Comparisons against plasmid-bearers, e.g. against R03 (pQBR57) and R05 (pQBR103), output `./data/COMPMUT_RNAseq_2_de_table_chr_comp.csv`.
+2. pQBR57 plasmid, sense transcripts.
+   - All comparisons against plasmid bearing (R03), output `./data/COMPMUT_RNAseq_3_de_table_pQ57.csv`.
+3. pQBR103 plasmid, sense transcripts.
+   - All comparisons against plasmid bearing (R05), output `./data/COMPMUT_RNAseq_4_de_table_pQ103.csv`.
+4. RPKM for plasmid and chromosomal genes, output `./data/COMPMUT_RNAseq_5_rpkm.csv`.
+   
+A preliminary analysis of antisense transcripts did not reveal anything particularly exciting, so that analysis is not included here. 
+
+All analyses follow Example 3.3 in the [edgeR User's Guide](https://www.bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf).
+
+### 1. SBW25 sense transcripts
+
+Get the data from the file and reorganise the column names for easy reference.
+
+```{r, eval=FALSE, echo=FALSE}
+## Note: need to install Bioconductor: https://bioconductor.org/install/
+## install edgeR as follows
+
+BiocManager::install("edgeR")
+```
+
+```{r}
+library(edgeR)
+
+data <- read.table(file="../rnaseq/rsubread/CountsMatrix.csv", sep=",")
+samples <- colnames(data)
+field_to_take <- which(unlist(strsplit(samples[1], ".", fixed=TRUE))=="AR01")
+samples <- sapply(strsplit(samples, ".", fixed=TRUE), `[`, field_to_take)
+colnames(data) <- samples
+dat <- data[,sort(samples)]
+```
+
+Apply treatment information to each sample. Load up the .csv table detailing treatments and create a treatment translation table.
+
+```{r}
+trt_tab <- read.table("../rnaseq/TreatmentTable.csv",
+                      sep=",", header=TRUE)
+trans_tab <- data.frame(name=samples,
+                        rep=substr(samples,1,1),
+                        trt=substr(samples,2,4))
+trt_trans <- trans_tab %>% left_join(trt_tab, by="trt")
+trt_trans <- trt_trans %>% arrange(name) %>% 
+  select(name, amelioration, plasmid, trt) %>%
+  mutate(group = factor(paste(plasmid, amelioration, sep=".")))
+```
+
+#### 1. SBW25 chromosome
+
+First analyse SBW25 putative protein-coding genes. Take only genes with the "PFLU_" prefix that aren't amongst the small RNAs (i.e. have a numeric PFLU identifier).
+
+Create a DGEList object, and filter out genes with low counts (i.e. keep genes with >1 cpm in ≥3 samples).
+
+```{r}
+protein_coding <- grep("^PFLU_[0-9]", rownames(dat))
+
+dat_chr <- dat[protein_coding,]
+
+y_chr <- DGEList(counts=dat_chr,
+              genes=rownames(dat_chr),
+              group=trt_trans$trt)
+
+keep_chr <- rowSums(cpm(y_chr)>1) >= 3
+sum(keep_chr)
+```
+
+5891 out of 6009 chromosomal genes meet criteria.
+
+PFLU_4242 and gacS are present only in a subset of samples, so these should be analysed separately.
+
+```{r}
+keep_chr[c("PFLU_4242","PFLU_3777")] <- FALSE
+sum(keep_chr)
+z_chr <- y_chr[keep_chr, , keep.lib.sizes=FALSE]
+```
+
+Exploratory plot of the data.
+
+```{r}
+plotMDS(z_chr, main="SBW25 chromosome sense transcripts")
+```
+
+Shows a clear separation of the ∆gacS mutants, pQBR103-carriers on the other end of dim 1, and a possible outlier in CR03, but in general everything looks good.
+
+Interesting to note that pQBR103 acqusition has a broadly opposite effect to ∆gacS according to the multi-dimensional scaling. 
+
+Calculate normalization factors and estimate (and plot) dispersion.
+
+```{r}
+z_chr <- calcNormFactors(z_chr)
+z_chr <- estimateDisp(z_chr, robust=TRUE)
+
+plotBCV(z_chr, main="SBW25 chromosome sense transcripts")
+```
+
+On the whole, the BCV follows the model, with an asymptotic value of approximately 0.2. [This is within the range expected](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4934518/), and the fact that variation does not apparently scale with CPM suggests that dispersion can be modelled with a single estimate.
+
+Extract normalization factors for application to coverage plots. The normalization factors ["normalize for RNA composition by finding a set of scaling factors for the library sizes that minimize the log-fold changes between the samples for most genes."](https://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf) A value below 1 indicates that a few highly-expressed genes are monopolizing the sequencing, making other genes appear abnormally low. The product of the norm.factor and the lib.size is the 'effective library size' which is used in downstream applications.
+
+```{r}
+normfac <- z_chr$samples %>%
+  rownames_to_column(var = "sample") %>%
+  mutate(eff.lib.size = norm.factors * lib.size)
+write.table(normfac, "../rnaseq/edgeR_NormalizationFactors.csv", quote=FALSE, sep=",", row.names=FALSE)
+
+print(normfac)
+```
+
+Plot these normalization factors to look for structure.
+
+```{r}
+library(ggplot2)
+ggplot(data=normfac, aes(x=group, y=norm.factors)) + 
+  geom_hline(yintercept=1) + geom_point() + ggtitle("SBW25 sense normalization factors")
+```
+
+No obvious patterns or trends in the normalisation factors.
+
+##### 1.1. SBW25 chromosome: baseline expression
+
+Investigate baseline expression.
+
+Identify the most highly expressed genes in the wild-type host.
+
+`AM181176_gene_info.tsv`, and similar files for the plasmids, were made using [`COMPMUT_RNAseq_5_gene_info.Rmd`](COMPMUT_RNAseq_5_gene_info.md).
+
+```{r}
+gene_info_chr <- read.csv("../rnaseq/ref/AM181176_gene_info.tsv", header=TRUE, sep="\t",
+                           row.names="locus_tag")
+chr_genelengths <- gene_info_chr[rownames(z_chr),"length_na"]
+z_rpkm <- data.frame(rpkm(z_chr, gene.length = chr_genelengths))
+z_rpkm_wt <- z_rpkm[,grep("R01",colnames(z_rpkm))]
+z_rpkm_wt$mean <- rowMeans(z_rpkm_wt)
+z_rpkm_wt$feature <- rownames(z_rpkm_wt)
+z_rpkm_wt$product <- gene_info_chr[z_rpkm_wt$feature,"product"]
+head(z_rpkm_wt[with(z_rpkm_wt, order(-mean)),c("feature","mean","product")], n=20)
+```
+
+Most genes are associated with translation, largely as expected, which is reassuring.
+
+Save the table of rpkm data for later analysis.
+
+```{r, eval=FALSE}
+write.table(z_rpkm, file="../rnaseq/rpkm_chr.csv", sep=",", quote=FALSE)
+```
+
+##### 1.2. SBW25 chromosome: differential expression
+
+Fit the model. Specify a model matrix where each treatment is investigated separately.
+
+```{r}
+trt_trans$trt <- factor(trt_trans$trt, levels=c(paste(rep("R0",9,),1:9, sep=""),"R10"))
+design <- model.matrix(~0+trt, data=trt_trans)
+colnames(design) <- levels(trt_trans$trt)
+fit_chr <- glmQLFit(z_chr, design)
+```
+
+##### 1a. Comparisons with the ancestor
+
+First compare all samples with the wild-type plasmid free (R01), to identify what genes are differentially-expressed compared with this baseline.
+
+Contrast names are specified by "plasmid_type":"amelioration". To avoid confusion, "amelioration" will be set as "wt" when there is no amelioration.
+
+```{r}
+contr <- makeContrasts(none.dPFLU4242          = R02-R01,
+                       pQBR57.wt               = R03-R01,
+                       pQBR57.dPFLU4242        = R04-R01,
+                       pQBR103.wt              = R05-R01,
+                       pQBR103.dPFLU4242       = R06-R01,
+                       pQBR57.PQBR57_0059_V100A= R07-R01,
+                       none.dgacS              = R08-R01,
+                       pQBR57.dgacS            = R09-R01,
+                       pQBR103.dgacS           = R10-R01,
+                       levels=design)
+```
+
+Specify a function to extract differentially-expressed genes for each combination of treatments, following the general specification in the edgeR User's Guide. This test applies a quasi-likelihood negative binomial log-linear model to the specified contrast, and outputs the results in a table. 
+
+```{r}
+getCoefficients <- function(x,f,cont,n=Inf,p=1) {
+  qlf <- glmQLFTest(f,contrast=cont[,x])
+  ttags <- topTags(qlf, n=n, p=p, sort.by="none")
+  ttagstab <- ttags$table
+  cols <- paste(x, colnames(ttags))
+  colnames(ttagstab) <- cols
+  ttagstab[,c(2:6)]
+}
+
+contrast_names <- colnames(contr)
+
+full_table_chr <- plyr::llply(contrast_names,
+                     function(x) getCoefficients(x=x, f=fit_chr, cont=contr))
+full_table_chr <- data.frame(full_table_chr)
+
+head(full_table_chr)
+```
+
+Output this table for analysis. Filename describes that it is just looking at chromosomal genes, and comparing with the ancestor. Note that the CPM given in this table is the [log2 counts per million per gene](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEGLM-class).
+
+```{r, eval=FALSE}
+write.table(full_table_chr, "../data/COMPMUT_RNAseq_1_de_table_chr_vanc.csv", sep=",", quote=FALSE)
+```
+
+##### 1b. Effects of compensatory mutations (comparisons with plasmid-bearing wild-type)
+
+Compare compensated lines with the plasmid-bearing wild-type to identify genes that are differentially-expressed by compensation.
+
+Exploratory analyses suggested that these are likley to be the same genes that are upregulated by plasmid acquisition.
+
+```{r}
+contr_comp <- makeContrasts(pQBR57.dPFLU4242.c        = R04-R03,
+                            pQBR57.PQBR57_0059_V100A.c= R07-R03,
+                            pQBR57.dgacS.c            = R09-R03,
+                            pQBR103.dPFLU4242.c       = R06-R05,
+                            pQBR103.dgacS.c           = R10-R05,
+                            levels=design)
+
+contrast_names_comp <- colnames(contr_comp)
+
+full_table_chr_comp <- plyr::llply(contrast_names_comp,
+                     function(x) getCoefficients(x=x, f=fit_chr, cont=contr_comp))
+full_table_chr_comp <- data.frame(full_table_chr_comp)
+
+kable(head(full_table_chr_comp))
+```
+
+Output table.
+
+```{r, eval=FALSE}
+write.table(full_table_chr_comp, "../data/COMPMUT_RNAseq_2_de_table_chr_comp.csv", sep=",", quote=FALSE)
+```
+
+##### 1c. Analysis of PFLU_4242 and gacS transcription under different conditions
+
+Get the lines from `y` and copy across the normalization factors that were calculated for `z` so that counts can be normalized.
+
+```{r}
+y_ko <- y_chr[c("PFLU_4242","PFLU_3777"),]
+counts_ko <- data.frame(name = rownames(y_ko$samples),
+                        trt = y_ko$samples$group,
+                        lib.size = y_ko$samples$lib.size,
+                        norm.factors = z_chr$samples$norm.factors,
+                        PFLU_4242 = y_ko$counts["PFLU_4242",],
+                        gacS = y_ko$counts["PFLU_3777",])
+counts_ko$scale.factor <- with(counts_ko, (lib.size * norm.factors)/1e6)
+counts_ko$PFLU_4242_scaled <- with(counts_ko, PFLU_4242 / scale.factor)
+counts_ko$gacS_scaled <- with(counts_ko, gacS / scale.factor)
+
+summary(counts_ko[,c("PFLU_4242_scaled","gacS_scaled")])
+```
+
+Summarize transcription for PFLU_4242 and gacS under different treatments.
+
+```{r}
+counts_ko <- merge(trt_trans, counts_ko, by=c("name","trt"))
+
+counts_ko$amelioration <- factor(counts_ko$amelioration,
+                                 levels=c("wt","dgacS","dPFLU4242","PQBR57_0059_V100A"))
+```
+
+Plot expression of the different genes.
+
+```{r}
+(plot_fig8 <- counts_ko %>% 
+  select(1:5, PFLU_4242_scaled, gacS_scaled) %>%
+  pivot_longer(cols = c(PFLU_4242_scaled, gacS_scaled),
+               names_to = "gene", values_to = "cpm") %>%
+  mutate(gene = factor(gene, levels=c("gacS_scaled", "PFLU_4242_scaled"),
+                       labels=c("gacS", "PFLU4242"))) %>%
+  ggplot(aes(x=amelioration, y=cpm, colour=plasmid)) +
+  geom_hline(yintercept=0, size=0.1) +
+  geom_point(position=position_dodge(width=0.2), alpha=0.8, shape=16) +
+  scale_x_discrete(breaks=c("wt","dPFLU4242","PQBR57_0059_V100A","dgacS"),
+                   labels=c("wt","∆PFLU_4242","PQBR57_0059 V100A","∆gacS"),
+                   name="") +
+  labs(y="counts per million", x="amelioration", name="expression (cpm)") +
+  facet_grid(gene~., scales = "free_y") + 
+  scale_colour_manual(values=c("grey","#4BA6F9","chartreuse"),
+                      name="plasmid") +
+  theme(legend.position=c(0.85,0.85), axis.text.x=element_text(angle=45, hjust=1)))
+```
+
+PFLU_4242 expression appears reduced in the gacS mutant, and also appears reduced in the presence of pQBR103. However PFLU_4242 seems not to have an effect on gacS (which is expected). 
+
+Test for these effects using a simple linear model.
+
+```{r}
+mod_4242_expr <- lm(PFLU_4242_scaled ~ plasmid * amelioration,
+                    data=subset(counts_ko, amelioration!="dPFLU4242"))
+par(mfrow=c(2,2))
+plot(mod_4242_expr, 1:3)
+par(mfrow=c(1,1))
+```
+
+Plot suggests that model assumptions are met.
+
+```{r}
+kable(anova(mod_4242_expr))
+```
+
+Significant interaction between chromosomal mutation and plasmid.
+
+```{r}
+summary(mod_4242_expr)
+```
+
+This is driven by the interaction of pQBR103 and gacS: PFLU_4242 expression is significantly greater in the gacS mutant with pQBR103 than would be expected given expression in the chromosomal wild-type background (which is exceptionally low).
+
+```{r}
+library("emmeans")
+
+comparisons <- lsmeans(mod_4242_expr, pairwise ~ amelioration | plasmid)
+
+kable(comparisons$contrasts)
+```
+
+Output these figures.
+
+```{r}
+svglite::svglite(height=3.2, width=2.2, file = "../plots/Fig8.svg")
+plot_fig8 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="right")
+dev.off()
+```
+
+#### 2. Analysis of transcripts from the plasmid (pQBR57)
+
+Pull out the lines corresponding to pQBR57 from the big table of counts data and analyse these.
+
+```{r}
+pQBR57_trts <- trt_trans[grep("[A-C]R0[3479]", trt_trans$name),]
+
+dat_pQBR57 <- dat[grep("^PQBR57_", rownames(dat)),
+                  pQBR57_trts$name]
+
+y_pQ57 <- DGEList(counts=dat_pQBR57,
+             genes=rownames(dat_pQBR57),
+             group=pQBR57_trts$trt)
+keep_pQ57 <- rowSums(cpm(y_pQ57)>1) >= 3
+sum(keep_pQ57)
+```
+
+All genes have expression of at least 3, so all are analysed.
+
+```{r}
+z_pQ57 <- y_pQ57
+```
+
+Exploratory plot of the data.
+
+```{r}
+plotMDS(z_pQ57, main="pQBR57 sense transcripts")
+```
+
+The ∆gacS mutant seems to have a big effect here. There's also some separation on the y-axis between the non-compensated (R03) and the ameliorations. 
+
+Calculate plasmid normalization factors and library sizes and compare these with the chromosome.
+
+```{r}
+z_pQ57 <- calcNormFactors(z_pQ57)
+z_pQ57 <- estimateDisp(z_pQ57, robust=TRUE)
+
+plotBCV(z_pQ57, main="pQBR57 sense transcripts")
+```
+
+Extract normalization factors and compare with mapping against the chromosome.
+
+```{r}
+normfac_pQ57 <- z_pQ57$sample
+normfac_pQ57$sample <- rownames(normfac_pQ57)
+normfac_pQ57$eff.lib.size <-with(normfac_pQ57, norm.factors * lib.size)
+
+# get the corresponding normalization factors from the chromosome mapping
+normfac_pQ57_chr <- normfac[normfac$group %in% pQBR57_trts$trt,]
+
+normfacs <- merge(normfac_pQ57_chr,
+                  normfac_pQ57, by=c("sample", "group"))
+
+head(normfacs)
+```
+
+This gives the library size as estimated for the chromosome ("x") and for the plasmid ("y"). Plotting one against the other gives some idea of global effects.
+
+```{r}
+ggplot(data=normfacs, aes(x=eff.lib.size.x, y=eff.lib.size.y, colour=group)) +
+  geom_point() + ggtitle("library size (scaled) SBW25 chromosome vs. pQBR57 sense") +
+  labs(x="chromosome", y="plasmid") +
+  coord_trans(xlim=c(0,4e7), ylim=c(0,10e5))
+```
+
+The effective library sizes calculated for plasmid and chromosome independently are roughly proportional for all samples.
+
+```{r}
+ggplot(data=normfacs, aes(x=lib.size.x, y=lib.size.y, colour=group)) +
+  geom_point() + 
+  labs(x="chromosome", y="plasmid") +
+  ggtitle("library size (unscaled) SBW25 chromosome vs. pQBR57 sense")
+```
+
+However, when plotting the non-scaled library sizes, we can see an effect whereby the gacS samples (R09) consistently fall 'below-the-line', i.e. they have reduced transcription from the plasmid given transcription from the chromosome. The normalization factors for the plasmid for R09 are consistently high (>1.25) and the others are often relatively low, suggesting that transcription from the other treatments is skewed by a small number of highly-expressed genes, whereas from the ∆gacS mutant expression is more equitable.
+
+Calculate ratios of plasmid library size vs. chromosomal library size, before and after scaling for highly-expressed genes.
+
+```{r}
+normfacs$unscaled_ratio <- normfacs$lib.size.y / normfacs$lib.size.x
+normfacs$scaled_ratio <- normfacs$eff.lib.size.y / normfacs$eff.lib.size.x
+
+ggplot(data=normfacs, aes(x=group, y=unscaled_ratio)) + 
+  geom_point() + ggtitle("ratio of plasmid/chromosome reads mapped")
+
+ggplot(data=normfacs, aes(x=group, y=scaled_ratio)) + 
+  geom_point() + ggtitle("ratio of plasmid/chromosome reads mapped (scaled for highly-expressed genes)")
+```
+
+If the plasmid data are analysed using the plasmid-calculated normalization factors, this will identify plasmid genes that are differentially expressed once the general effect of gacS has been accounted for. I think that this is the correct method, though it would also be useful to estimate the overall effect of ∆gacS on the plasmid.
+
+Fit the model as before.
+
+```{r}
+design_pQ57 <- model.matrix(~0+trt, data=droplevels(pQBR57_trts))
+colnames(design_pQ57) <- sub("trt","", colnames(design_pQ57))
+fit_pQ57 <- glmQLFit(z_pQ57, design_pQ57)
+```
+
+Specify contrasts to make. In this analysis, all samples are compared with the plasmid in the wild-type host (i.e. R03).
+
+```{r}
+contr_pQ57 <- makeContrasts(pQBR57.dPFLU4242         = R04-R03,
+                            pQBR57.PQBR57_0059_V100A = R07-R03,
+                            pQBR57.dgacS             = R09-R03,
+                            levels=design_pQ57)
+```
+
+Extract coefficients as before.
+
+```{r}
+contrast_names_pQ57 <- colnames(contr_pQ57)
+full_table_pQ57 <- plyr::llply(contrast_names_pQ57,
+                     function(x) getCoefficients(x=x, f=fit_pQ57, cont=contr_pQ57))
+full_table_pQ57 <- data.frame(full_table_pQ57)
+head(full_table_pQ57)
+```
+
+Output this table for analysis.
+
+```{r, eval=FALSE}
+write.table(full_table_pQ57, "../data/COMPMUT_RNAseq_3_de_table_pQ57.csv", sep=",", quote=FALSE)
+```
+
+##### Highly expressed genes from pQBR57
+
+To investigate gene expression levels between plasmid and chromosome, load up table of gene lengths so RPKM values can be extracted. Also load up the pQBR103 gene lengths at this point.
+
+It is not possible to compare RPKM values from the chromosome and the plasmid analysis extracted separately, since each is normalized using a different denominator. Therefore extract both together.
+
+```{r}
+gene_info_pQ57 <- read.csv("../rnaseq/ref/LN713926_gene_info.tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
+gene_info_pQ57$length_na <- with(gene_info_pQ57, (end-start)+1)
+rownames(gene_info_pQ57) <- gene_info_pQ57$locus_tag
+
+gene_info_pQ103 <- read.csv("../rnaseq/ref/AM235768_gene_info.tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
+gene_info_pQ103$length_na <- with(gene_info_pQ103, (end-start)+1)
+rownames(gene_info_pQ103) <- gene_info_pQ103$locus_tag
+```
+
+Extract corresponding lines from the pQBR57 treatments.
+
+```{r}
+dat_pQBR57_chr <- dat[grep("(^PQBR57_)|(^PFLU_[0-9])", rownames(dat)),
+                  pQBR57_trts$name]
+
+y_pQ57_chr <- DGEList(counts=dat_pQBR57_chr,
+             genes=rownames(dat_pQBR57_chr),
+             group=pQBR57_trts$trt)
+
+keep_pQ57_chr <- rowSums(cpm(y_pQ57_chr)>1) >= 3
+
+sum(keep_pQ57_chr)
+```
+
+This is comparable to `r sum(keep_chr)` + `r sum(keep_pQ57)` = `r sum(keep_chr) + sum(keep_pQ57)`, though less because the filtering will remove fewer genes when more treatments are considered.
+
+```{r}
+keep_pQ57_chr[c("PFLU_4242","PFLU_3777")] <- FALSE
+sum(keep_pQ57_chr)
+z_pQ57_chr <- y_pQ57_chr[keep_pQ57_chr, , keep.lib.sizes=FALSE]
+```
+
+Exploratory plot of the data.
+
+```{r}
+plotMDS(z_pQ57_chr, main="SBW25 chromosome and pQBR57 sense transcripts")
+```
+
+Calculate normalization factors and plot coefficients.
+
+```{r}
+z_pQ57_chr <- calcNormFactors(z_pQ57_chr)
+z_pQ57_chr <- estimateDisp(z_pQ57_chr, robust=TRUE)
+
+plotBCV(z_pQ57_chr, main="SBW25 chromosome and pQBR57 sense transcripts")
+```
+
+Extract and plot normalization factors as before.
+
+```{r}
+normfac_pQ57_chr <- z_pQ57_chr$samples
+normfac_pQ57_chr$sample <- rownames(normfac_pQ57_chr)
+normfac_pQ57_chr$eff.lib.size <-with(normfac_pQ57_chr, norm.factors * lib.size)
+
+print(normfac_pQ57_chr)
+```
+
+Plot to check for any patterns in normalization.
+
+```{r}
+ggplot(data=normfac_pQ57_chr, aes(x=group, y=norm.factors)) + 
+  geom_hline(yintercept=1) + geom_point() + ggtitle("SBW25 chromosome and pQBR57 sense normalization factors")
+```
+
+Extract RPKM data.
+
+```{r}
+genelengths <- data.frame(row.names = c(rownames(gene_info_chr), gene_info_pQ57$locus_tag, gene_info_pQ103$locus_tag),
+                          length_na = c(gene_info_chr$length_na, gene_info_pQ57$length_na, gene_info_pQ103$length_na))
+
+pQ57_chr_genelengths <- genelengths[rownames(z_pQ57_chr),"length_na"]
+pQ57_chr_rpkm <- data.frame(rpkm(z_pQ57_chr, gene.length = pQ57_chr_genelengths))
+```
+
+Convert to Transcripts Per Million, since [TPM is considered a more acceptable metric](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/), and is also the measure used by [San Millan et al. 2018](https://www.nature.com/articles/s41396-018-0224-8). 
+
+```{r}
+fpkmToTpm <- function(fpkm)
+{
+    exp(log(fpkm) - log(sum(fpkm)) + log(1e6))
+}
+
+pQ57_chr_tpm <- data.frame(apply(pQ57_chr_rpkm, 2, fpkmToTpm))
+```
+
+Make data long and plot.
+
+```{r}
+pQ57_chr_tpm_long <- pQ57_chr_tpm %>% 
+  rownames_to_column(var="locus_tag") %>%
+  pivot_longer(cols = -(locus_tag),
+               names_to = "name",
+               values_to = "tpm") %>%
+  mutate(pc = ifelse(startsWith(locus_tag, "PFLU_"),
+                     "chr", "pla")) %>%
+  left_join(trt_trans, by = "name")
+
+summ_pQ57_chr_tpm_long <- pQ57_chr_tpm_long %>%
+  group_by(pc, amelioration, plasmid, trt, locus_tag, group) %>%
+  summarise(mean = mean(tpm), 
+            n = n(), 
+            se = sd(tpm)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(tpm = mean)
+
+pd <- position_dodge(width=0.2)
+ggplot(data=summ_pQ57_chr_tpm_long, aes(x=trt, y=log2(tpm), colour=pc)) +
+  geom_violin(position=pd) +
+  geom_point(aes(group=locus_tag), alpha=0.2, size=0.4, shape=16, position=pd)
+```
+
+We will return to this data frame shortly.
+
+#### 3. Analysis of transcripts from the plasmid (pQBR103)
+
+```{r}
+pQBR103_trts <- trt_trans[grep("[A-C]R[10][560]", trt_trans$name),]
+
+dat_pQBR103 <- dat[grep("^pQBR0", rownames(dat)),
+                  pQBR103_trts$name]
+
+y_pQ103 <- DGEList(counts=dat_pQBR103,
+             genes=rownames(dat_pQBR103),
+             group=pQBR103_trts$trt)
+keep_pQ103 <- rowSums(cpm(y_pQ103)>1) >= 3
+sum(keep_pQ103)
+```
+
+Again, all genes have expression of at least 3, so all are analysed.
+
+```{r}
+z_pQ103 <- y_pQ103
+```
+
+Exploratory plot of the data
+
+```{r}
+plotMDS(z_pQ103, main="pQBR103 sense transcripts")
+```
+
+There is a clear separation of the three treatments.
+
+Again, calculate plasmid normalization factors and library sizes and compare these with the chromosome.
+
+```{r}
+z_pQ103 <- calcNormFactors(z_pQ103)
+z_pQ103 <- estimateDisp(z_pQ103, robust=TRUE)
+
+plotBCV(z_pQ103, main="pQBR103 sense transcripts")
+```
+
+Extract normalization factors and compare with mapping against the chromosome.
+
+```{r}
+normfac_pQ103 <- z_pQ103$sample
+normfac_pQ103$sample <- rownames(normfac_pQ103)
+normfac_pQ103$eff.lib.size <-with(normfac_pQ103, norm.factors * lib.size)
+
+# get the corresponding normalization factors from the chromosome mapping
+normfac_pQ103_chr <- normfac[normfac$group %in% pQBR103_trts$trt,]
+
+normfacs_pQ103 <- left_join(normfac_pQ103_chr,
+                        normfac_pQ103, by=c("sample", "group"))
+
+kable(normfacs_pQ103)
+```
+
+This gives the library size as estimated for the chromosome ("x") and for the plasmid ("y"). Plot one against another again. 
+
+```{r}
+ggplot(data=normfacs_pQ103, aes(x=eff.lib.size.x, y=eff.lib.size.y, colour=group)) +
+  labs(x="chromosome", y="plasmid") +
+  geom_point() + ggtitle("library size (scaled) SBW25 chromosome vs. pQBR103 sense") +
+  theme(legend.position="right")
+```
+
+The effective library sizes calculated for plasmid and chromosome independently are roughly proportional for all samples.
+
+```{r}
+ggplot(data=normfacs_pQ103, aes(x=lib.size.x, y=lib.size.y, colour=group)) +
+  labs(x="chromosome", y="plasmid") +
+  geom_point() + ggtitle("library size (unscaled) SBW25 chromosome vs. pQBR103 sense") +
+    theme(legend.position="right")
+```
+
+In contrast to pQBR57, there is no obvious global effect on the plasmid of the ∆gacS knockout. There may be increased transcription in the ∆PFLU4242 background.
+
+```{r}
+normfacs_pQ103$unscaled_ratio <- normfacs_pQ103$lib.size.y / normfacs_pQ103$lib.size.x
+normfacs_pQ103$scaled_ratio <- normfacs_pQ103$eff.lib.size.y / normfacs_pQ103$eff.lib.size.x
+
+ggplot(data=normfacs_pQ103, aes(x=group, y=unscaled_ratio)) + 
+  geom_point() + ggtitle("ratio of mean pQBR103/chromosome expression")
+
+ggplot(data=normfacs_pQ103, aes(x=group, y=scaled_ratio)) + 
+  geom_point() + ggtitle("ratio of mean pQBR103/chromosome expression (scaled for highly-expressed genes)")
+```
+
+Inspection of this ratio plot suggests that there is a possible upregulation of pQBR103 genes in the ∆PFLU_4242 knockout.
+
+Fit the model as before.
+
+```{r}
+design_pQ103 <- model.matrix(~0+trt, data=droplevels(pQBR103_trts))
+colnames(design_pQ103) <- sub("trt","", colnames(design_pQ103))
+fit_pQ103 <- glmQLFit(z_pQ103, design_pQ103)
+```
+
+Specify contrasts to make. In the first analysis, all samples are compared with the wild-type plasmid-bearer (R05), to identify what genes are differentially-expressed compared with this baseline.
+
+```{r}
+contr_pQ103 <- makeContrasts(pQBR103.dPFLU4242     = R06-R05,
+                             pQBR103.dgacS         = R10-R05,
+                            levels=design_pQ103)
+```
+
+Extract coefficients as before.
+
+```{r}
+contrast_names_pQ103 <- colnames(contr_pQ103)
+full_table_pQ103 <- plyr::llply(contrast_names_pQ103,
+                     function(x) getCoefficients(x=x, f=fit_pQ103, cont=contr_pQ103))
+full_table_pQ103 <- data.frame(full_table_pQ103)
+head(full_table_pQ103)
+```
+
+Output this table for analysis.
+
+```{r, eval=FALSE}
+write.table(full_table_pQ103, "../data/COMPMUT_RNAseq_4_de_table_pQ103.csv", sep=",", quote=FALSE)
+```
+
+##### Highly expressed genes from pQBR103
+
+Extend analysis to pQBR103.
+
+Extract corresponding lines from the pQBR103 treatments.
+
+```{r}
+dat_pQBR103_chr <- dat[grep("(^pQBR0[0-9])|(^PFLU_[0-9])", rownames(dat)),
+                       pQBR103_trts$name]
+
+y_pQ103_chr <- DGEList(counts=dat_pQBR103_chr,
+             genes=rownames(dat_pQBR103_chr),
+             group=pQBR103_trts$trt)
+
+keep_pQ103_chr <- rowSums(cpm(y_pQ103_chr)>1) >= 3
+
+sum(keep_pQ103_chr)
+```
+
+This is again similar to `r sum(keep_chr)` + `r sum(keep_pQ103)` = `r sum(keep_chr) + sum(keep_pQ103)`.
+
+```{r}
+keep_pQ103_chr[c("PFLU_4242","PFLU_3777")] <- FALSE
+sum(keep_pQ103_chr)
+z_pQ103_chr <- y_pQ103_chr[keep_pQ103_chr, , keep.lib.sizes=FALSE]
+```
+
+Exploratory plot of the data.
+
+```{r}
+plotMDS(z_pQ103_chr, main="SBW25 chromosome and pQBR103 sense transcripts")
+```
+
+Calculate normalization factors and plot coefficients.
+
+```{r}
+z_pQ103_chr <- calcNormFactors(z_pQ103_chr)
+z_pQ103_chr <- estimateDisp(z_pQ103_chr, robust=TRUE)
+
+plotBCV(z_pQ103_chr, main="SBW25 chromosome and pQBR103 sense transcripts")
+```
+
+Extract and plot normalization factors as before.
+
+```{r}
+normfac_pQ103_chr <- z_pQ103_chr$samples
+normfac_pQ103_chr$sample <- rownames(normfac_pQ103_chr)
+normfac_pQ103_chr$eff.lib.size <-with(normfac_pQ103_chr, norm.factors * lib.size)
+
+kable(normfac_pQ103_chr)
+```
+
+Plot to check for any patterns in normalization.
+
+```{r}
+library(ggplot2)
+ggplot(data=normfac_pQ103_chr, aes(x=group, y=norm.factors)) + 
+  geom_hline(yintercept=1) + geom_point() + ggtitle("SBW25 chromosome and pQBR103 sense normalization factors")
+```
+
+Extract RPKM data.
+
+```{r}
+pQ103_chr_genelengths <- genelengths[rownames(z_pQ103_chr),"length_na"]
+pQ103_chr_rpkm <- data.frame(rpkm(z_pQ103_chr, gene.length = pQ103_chr_genelengths))
+```
+
+Convert to TPM as above.
+
+```{r}
+pQ103_chr_tpm <- data.frame(apply(pQ103_chr_rpkm, 2, fpkmToTpm))
+```
+
+Make data long and plot.
+
+```{r}
+pQ103_chr_tpm_long <- pQ103_chr_tpm %>% 
+  rownames_to_column(var="locus_tag") %>%
+  pivot_longer(cols = -(locus_tag),
+               names_to = "name",
+               values_to = "tpm") %>%
+  mutate(pc = ifelse(startsWith(locus_tag, "PFLU_"),
+                     "chr", "pla")) %>%
+  left_join(trt_trans, by = "name")
+
+summ_pQ103_chr_tpm_long <- pQ103_chr_tpm_long %>%
+  group_by(pc, amelioration, plasmid, trt, locus_tag, group) %>%
+  summarise(mean = mean(tpm), 
+            n = n(), 
+            se = sd(tpm)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(tpm = mean)
+
+pd <- position_dodge(width=0.2)
+ggplot(data=summ_pQ103_chr_tpm_long, aes(x=trt, y=log2(tpm), colour=pc)) +
+  geom_violin(position=pd) +
+  geom_point(aes(group=locus_tag), alpha=0.2, size=0.4, shape=16, position=pd)
+```
+
+##### Both plasmids together
+
+Plot both plasmids together. Highlight PFLU_1169 as a check.
+
+```{r}
+both_tpm_long <- bind_rows(summ_pQ57_chr_tpm_long, summ_pQ103_chr_tpm_long)
+
+ggplot(data=both_tpm_long, aes(x=amelioration, y=log2(tpm), colour=pc)) +
+  geom_violin(position=pd) +
+  geom_point(aes(group=locus_tag), alpha=0.2, size=0.4, shape=16, position=pd) +
+  geom_point(data=subset(both_tpm_long, locus_tag=="PFLU_1169"), colour="black", shape=1, size=1) +
+  scale_x_discrete(breaks=c("wt","dgacS","dPFLU4242","PQBR57_0059_V100A")) +
+  facet_grid(.~plasmid, scales="free_x")
+```
+
+Make this a nice plot for outputting. Reorder variables.
+
+```{r}
+both_tpm_long <- both_tpm_long %>%
+  mutate(amelioration = factor(amelioration, 
+                               levels=c("wt","dPFLU4242","PQBR57_0059_V100A","dgacS")),
+         plasmid = factor(plasmid, levels=c("pQBR57","pQBR103")))
+```
+
+Plot.
+
+```{r}
+both_tpm_long$log2tpm <- with(both_tpm_long, log2(tpm))
+
+both_tpm_long_summ <- both_tpm_long %>%
+  group_by(amelioration, plasmid, group, pc) %>%
+    summarise(mean = mean(log2tpm), 
+            n = n(), 
+            se = sd(log2tpm)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(log2tpm=mean)
+
+pd2 <- position_dodge(width=0.5)
+(plot_fig10 <- ggplot(data=both_tpm_long, aes(x=amelioration, y=log2tpm, fill=pc)) +
+  geom_violin(position=pd2, alpha=0.5, size=0.2) +
+  geom_point(data=both_tpm_long_summ, shape=16, colour="black", position=pd2) +
+  scale_x_discrete(breaks=c("wt","dgacS","dPFLU4242","PQBR57_0059_V100A"),
+                   labels=c("wild-type",expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242"))),
+                            "PQBR57_0059_V100A")) +
+  facet_grid(.~plasmid, scales="free_x", space="free_x") +
+  labs(x="", y=expression(paste("Expression (log"[2], " TPM)"))) +
+  scale_fill_brewer(type="qual", name="", breaks=c("chr","pla"),
+                    labels=c("chromosome","plasmid"), palette=2) +
+  theme_pub() + 
+  theme(axis.text.x=element_text(angle=45, hjust=1),
+        legend.position="bottom"))
+```
+
+Output as svg.
+
+```{r}
+svglite::svglite(height=3, width=3.5, file = "../plots/Fig10.svg")
+plot_fig10 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
+dev.off()
+
+write.table(both_tpm_long, file="../data/COMPMUT_RNAseq_5_tpm.csv", row.names=FALSE)
+```
+
+Test whether plasmids are expressed at higher level than chromosome using a Kolmogorov-Smirnov test (following San Millan et al., ISME, 2018)
+
+```{r}
+pc_kstest <- function(x, t){
+  c <- pull(with(x, x[trt==t & pc=="chr","log2tpm"]))
+  p <- pull(with(x, x[trt==t & pc=="pla","log2tpm"]))
+  test <- ks.test(c,p)
+  data.frame(test$statistic, test$p.value)
+}
+
+ks_tests <- data.frame(trts=trt_tab[trt_tab$plasmid!="none","trt"])
+
+kable(cbind(ks_tests, plyr::ldply(ks_tests$trts, function(trt) pc_kstest(both_tpm_long, t=trt))))
+```
+
+Note that in this plot, TPM was calculated from each replicate separately, and the mean taken from across 3 replicates. TPM was calculated from the total transcripts mapping to protein-coding genes on plasmid and on chromosome (so noncoding RNAs were not considered).
+
+
+#### Plot TPM across each plasmid
+
+##### pQBR57
+
+```{r}
+pQ57_tpm_plot <- filter(both_tpm_long, pc=="pla" & plasmid=="pQBR57")
+pQ57_tpm_plot$locus_number <- as.numeric(as.character(substr(pQ57_tpm_plot$locus_tag,8,11)))
+ggplot(data=pQ57_tpm_plot,
+       aes(x=locus_number, y=log2tpm, colour=amelioration)) +
+  scale_colour_brewer(type="qual", palette=4) + 
+  geom_step(size=0.2) + theme_pub() + theme(legend.position="bottom")
+
+ggplot(data=pQ57_tpm_plot,
+       aes(x=locus_number, fill=tpm, y=amelioration)) +
+  geom_tile(height=0.9) + theme_pub() + theme(legend.position="bottom")
+```
+
+Note that white bars here indicate genes removed for low expression.
+
+Most highly expressed genes:
+
+```{r}
+pQ57_tpm_wt <- subset(pQ57_tpm_plot, amelioration=="wt")
+
+pQ57_top20 <- tail(pQ57_tpm_wt %>% arrange(log2tpm), n=20) %>% select(locus_tag) %>% pull() %>% rev()
+
+gene_info_pQ57[as.character(pQ57_top20),
+               c("locus_tag","protein_name","go")]
+```
+
+The top 16 are all uncharacterised proteins. A repeated GO term amongst the top hits is GO:0016021 (membrane component).
+
+An alternative plot.
+
+```{r}
+ggplot(data=pQ57_tpm_plot, aes(x=fct_reorder(locus_tag, tpm),
+                               y=log2(tpm), colour=trt)) +
+  geom_point()
+```
+
+Clearly shows the negative effect that gacS knockout has on gene expression from pQBR57.
+
+##### pQBR103
+
+```{r}
+pQ103_tpm_plot <- filter(both_tpm_long, pc=="pla" & plasmid=="pQBR103")
+pQ103_tpm_plot$locus_number <- as.numeric(as.character(substr(pQ103_tpm_plot$locus_tag,5,8)))
+ggplot(data=pQ103_tpm_plot,
+       aes(x=locus_number, y=log2tpm, colour=amelioration)) +
+  scale_colour_brewer(type="qual", palette=4) + 
+  geom_step(size=0.2) + theme_pub() + theme(legend.position="bottom")
+
+ggplot(data=pQ103_tpm_plot,
+       aes(x=locus_number, fill=tpm, y=amelioration)) +
+  geom_tile(height=0.9) + theme_pub() + theme(legend.position="bottom")
+```
+
+And the alternative plot
+
+```{r}
+ggplot(data=pQ103_tpm_plot, aes(x=fct_reorder(locus_tag, tpm),
+                               y=log2(tpm), colour=trt)) +
+  geom_point()
+```
+
+Top expressed genes:
+
+```{r}
+pQ103_tpm_wt <- subset(pQ103_tpm_plot, amelioration=="wt")
+
+pQ103_top20 <- tail(pQ103_tpm_wt %>% arrange(log2tpm), n=20) %>% select(locus_tag) %>% pull() %>% rev()
+
+gene_info_pQ103[as.character(pQ103_top20),
+               c("locus_tag","protein_name","go")]
+```
+
+Check what the minimum expression levels are from each plasmid in the wild-type background.
+
+```{r}
+both_tpm_long <- both_tpm_long[with(both_tpm_long, order(tpm)), ]
+
+head(both_tpm_long[both_tpm_long$pc=="pla" & both_tpm_long$amelioration=="wt",], n=10)
+```
+
+And maximum expression:
+
+```{r}
+tail(both_tpm_long[both_tpm_long$pc=="pla" & both_tpm_long$amelioration=="wt",], n=10)
+```
+
+Get the range for each plasmid in the wild-type condition.
+
+pQBR57:
+
+```{r}
+summary(both_tpm_long[both_tpm_long$pc=="pla" & both_tpm_long$group=="pQBR57.wt","tpm"])
+```
+
+pQBR103:
+
+```{r}
+summary(both_tpm_long[both_tpm_long$pc=="pla" & both_tpm_long$group=="pQBR103.wt","tpm"])
+```
+
+Get details summarising the different regions for annotation. These were taken from [Hall et al. 2015](dx.doi.org/10.1111/1462-2920.12901). 
+
+```{r}
+regions <- read.csv("../ext/pQBR_regions.csv", header=TRUE, sep=",") %>%
+  filter(region!="")
+
+regions_cols <- data.frame(
+  region = c("tra",       "par",        "che",        "sam",    
+             "pil",   "Tn5042", "uvr",        "rep"),
+  colour = c("steelblue1","darkorange1","chartreuse2","yellow3",
+             "purple","red3",   "hotpink","grey")
+)
+
+regions <- regions %>% left_join(regions_cols, by="region")
+```
+
+Make the heatmaps look good, add in regions, prepare with both untransformed and log-transformed tpm data.
+
+```{r}
+(plot_pQBR57_heatmap <- ggplot(data=pQ57_tpm_plot,
+       aes(x=locus_number, y=reorder(amelioration, c(desc(amelioration))))) +
+  scale_fill_gradient(low="white", high= "darkred", breaks=c(1,2,3),
+                      limits=c(0,4),
+                      name="TPM/1000") +
+  labs(x="pQBR57 locus") +
+   scale_y_discrete(breaks=c("wt","dgacS","dPFLU4242","PQBR57_0059_V100A"),
+                   labels=c("wild-type",expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242"))),
+                            "PQBR57_0059_V100A"),
+                   name="") +
+  geom_tile(height=0.9, aes(fill=tpm/1000)) +
+  theme_pub() + theme(legend.position="bottom") +
+  geom_segment(data=filter(regions, plasmid=="pQBR57"), 
+               y=4.5, yend=4.55, aes(xend=locus_number),
+             colour=filter(regions, plasmid=="pQBR57")$colour,
+             size=1))
+
+(plot_pQBR103_heatmap <- ggplot(data=pQ103_tpm_plot,
+       aes(x=locus_number, y=reorder(amelioration, c(desc(amelioration))))) +
+  scale_fill_gradient(low="white", high= "darkred", breaks=c(1,2,3),
+                      limits=c(0,4),
+                      name="TPM/1000") +
+  labs(x="pQBR103 locus") +
+   scale_y_discrete(breaks=c("wt","dgacS","dPFLU4242"),
+                   labels=c("wild-type",expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242")))),
+                   name="") +
+  geom_tile(height=0.9, aes(fill=tpm/1000)) +
+  theme_pub() + theme(legend.position="bottom") +
+  geom_segment(data=filter(regions, plasmid=="pQBR103"), 
+               y=3.5, yend=3.55, aes(xend=locus_number),
+             colour=filter(regions, plasmid=="pQBR103")$colour,
+             size=1))
+
+(plot_pQBR57_log_heatmap <- ggplot(data=pQ57_tpm_plot,
+       aes(x=locus_number, y=reorder(amelioration, c(desc(amelioration))))) +
+  scale_fill_gradient(low="white", high= "darkred", breaks=c(3,6,9),
+                      limits=c(-0.5,12),
+                      name=expression(paste("log"[2], " TPM"))) +
+  labs(x="pQBR57 locus") +
+   scale_y_discrete(breaks=c("wt","dgacS","dPFLU4242","PQBR57_0059_V100A"),
+                   labels=c("wild-type",expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242"))),
+                            "PQBR57_0059_V100A"),
+                   name="") +
+  geom_tile(height=0.9, aes(fill=log2tpm)) +
+  theme_pub() + theme(legend.position="bottom") +
+  geom_segment(data=filter(regions, plasmid=="pQBR57"), 
+               y=4.5, yend=4.55, aes(xend=locus_number),
+             colour=filter(regions, plasmid=="pQBR57")$colour,
+             size=1))
+
+(plot_pQBR103_log_heatmap <- ggplot(data=pQ103_tpm_plot,
+       aes(x=locus_number, y=reorder(amelioration, c(desc(amelioration))))) +
+  scale_fill_gradient(low="white", high= "darkred", breaks=c(3,6,9),
+                      limits=c(-0.5,12),
+                      name=expression(paste("log"[2], " TPM"))) +
+  labs(x="pQBR103 locus") +
+   scale_y_discrete(breaks=c("wt","dgacS","dPFLU4242","PQBR103_0059_V100A"),
+                   labels=c("wild-type",expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242")))),
+                   name="") +
+  geom_tile(height=0.9, aes(fill=log2tpm)) +
+  theme_pub() + theme(legend.position="bottom") +
+  geom_segment(data=filter(regions, plasmid=="pQBR103"), 
+               y=3.5, yend=3.55, aes(xend=locus_number),
+             colour=filter(regions, plasmid=="pQBR103")$colour,
+             size=1))
+```
+
+Output.
+
+```{r}
+library(patchwork)
+
+svglite::svglite(height=4, width=7.2, file = "../plots/Fig11.svg")
+(plot_pQBR57_heatmap + theme(legend.position="none")) / (plot_pQBR103_heatmap) +
+  plot_layout(heights=c(2.3,1.7))
+dev.off()
+
+svglite::svglite(height=4, width=7.2, file = "../plots/Fig11_alt.svg")
+(plot_pQBR57_log_heatmap + theme(legend.position="none")) / (plot_pQBR103_log_heatmap) +
+  plot_layout(heights=c(2.3,1.7))
+dev.off()
+```
+
+---
+
+**[Back to index.](COMPMUT_index.md)**

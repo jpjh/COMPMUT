@@ -1,0 +1,1633 @@
+---
+title: "COMPMUT RNAseq Analysis 6a: Chromosomal genes — plots, figures, and analysis"
+author: "jpjh"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+
+source("../functions/theme_pub.r")
+theme_github <- function(x){
+  theme_pub(base_size=12)
+}
+
+theme_set(theme_github())
+```
+
+## Analysis of edgeR tables outline
+
+This data was collected in [`COMPMUT_RNAseq_4_edgeR.Rmd`](COMPMUT_RNAseq_4_edgeR.md).
+
+This analysis will pull out differentially expressed genes under the different treatments.
+
+1. Chromosomal genes differentially expressed relative to the ancestor.
+  - Effect of plasmid acquisition
+  - Effect of ameliorations without plasmid
+  - Effect of ameliorations on effect of plasmid
+2. Chromosomal genes differentially expressed relative to the unameliorated plasmid.
+  - Are the genes which are upregulated by the plasmid and then not significantly different from the ancestor significantly downregulated relative to the plasmid-carrying strain?
+3. Plasmid genes differentially expressed relative to the unameliorated plasmid.
+  - Comparisons of gene expression from plasmid and from chromosome.
+
+This document covers points 1 and 2. For points 3, see [`COMPMUT_RNAseq_6b_analysis`](COMPMUT_RNAseq_6b_analysis.md) for pQBR57 genes, and [`COMPMUT_RNAseq_6c_analysis`](COMPMUT_RNAseq_6c_analysis.md) for pQBR103 genes.
+
+### 1. Chromosomal differential expression relative to plasmid-free
+
+Load up the data for chromosomal differential expression. Note that this is in wide format.
+
+```{r}
+full_table_chr <- read.csv("../data/COMPMUT_RNAseq_1_de_table_chr_vanc.csv", sep=",")
+dim(full_table_chr)
+full_table_chr$gene <- rownames(full_table_chr)
+```
+
+Generate volcano plots for each treatment. Reshape data into long format for plotting. 
+
+Wide format is indicated by `tab` or `table`, in contrast to long format. 
+
+```{r}
+source("../functions/makeLong.R")
+
+chr <- makeLong(full_table_chr)
+head(chr)
+```
+
+Generate plots. Plots that I might want to output are indicated by `p`.
+
+```{r}
+(p_chr <- ggplot(data=chr, aes(x=logFC, y=(-log10(FDR)))) +
+  ggtitle("chromosomal transcripts") +
+  geom_vline(xintercept=0, size=0.1) +
+  geom_vline(xintercept=c(-1,1), size=0.1, linetype="dashed") +
+  geom_hline(yintercept=0, size=0.1) + 
+  geom_hline(yintercept=-log10(0.05), size=0.1, linetype="dashed") + 
+  geom_point(alpha=0.5, shape=16, size=0.4) +
+  facet_grid(plasmid~amelioration))
+```
+
+Plot abundance against logFC for each condition (MA plots).
+
+```{r}
+(p_ma_chr <- ggplot(data=chr, aes(y=logFC, x=logCPM, colour=ifelse(FDR<0.05,"sig","nonsig"))) +
+  ggtitle("chromosomal transcripts MA plot") +
+  geom_hline(yintercept=0, size=0.1) + 
+  geom_hline(yintercept=1, size=0.1, linetype="dashed") + 
+  geom_hline(yintercept=-1, size=0.1, linetype="dashed") +
+  scale_colour_manual(values=c("black","red")) +
+  geom_point(alpha=0.5, shape=16, size=0.4) +
+  facet_grid(plasmid~amelioration))
+```
+
+Investigate differentially expressed >2x change transcripts from the chromosome. 
+
+```{r}
+list_2xde_chr <- chr %>% filter(FDR<0.05 & abs(logFC)>1) %>% select(gene) %>% pull() %>% unique()
+length(list_2xde_chr)
+```
+
+570 >2x differentially-expressed sense transcripts across all treatments.
+
+Plot each of these as heat maps. Use the `fct_reorder` function from package `forcats` to order each axis by the mean logFC.
+
+```{r}
+chr_2xde <- chr %>% filter(gene %in% list_2xde_chr)
+
+ggplot(data=chr_2xde, 
+       aes(x=fct_reorder(contrast, logFC), y=forcats::fct_reorder(gene, logFC), fill=logFC)) + 
+  ggtitle("chromosomal transcripts >2x DE in ≥1 treatment relative to wild-type plasmid-free") +
+  geom_tile() +
+  scale_fill_gradient2() + 
+  theme(legend.position="right", 
+        axis.text.x=element_text(angle=45, hjust=1), axis.text.y = element_blank())
+```
+
+The main pattern here is the gacS mutants, which all show a broadly similar cohort of genes downregulated by mutation, as well as a subset which are upregulated. 
+
+#### 1.1. Investigating effects of plasmid acquistion
+
+How many genes are significantly (FDR<0.05) differentially regulated following acquisition by each plasmid?
+
+```{r}
+chr_pq_de_summ <- chr %>% group_by(plasmid, amelioration) %>%
+  filter(FDR<0.05) %>%
+  summarise(de_all = n(),
+            up_all = sum(logFC>0),
+            down_all = sum(logFC<0),
+            up_2x = sum(logFC>1),
+            down_2x = sum(logFC<(-1)))
+
+chr_pq_de_summ %>% filter(amelioration=="wt")
+```
+
+Both pQBR57 and pQBR103 downregulate genes as well as upregulate them. In fact, pQBR57 downregulates more genes than it upregulates. 
+
+For both plasmids there are many differentially-expressed genes but which aren't >2x DE. Plot the distribution of fold-changes.
+
+```{r}
+ggplot(data=subset(chr, amelioration=="wt" & plasmid %in% c("pQBR57","pQBR103") & FDR<0.05), 
+       aes(x=ifelse(logFC>0, "up", "down"), 
+                             y=abs(logFC))) +
+  geom_hline(yintercept=0, size=0.2) +
+  geom_hline(yintercept=1, size=0.2, linetype="dashed") +
+  geom_violin(size=0.4) + geom_point(position=position_jitter(), shape=16, alpha=0.6) + facet_wrap(.~plasmid) +
+  labs(x="", y="absolute log fold-change") +
+  ggtitle("chromosomal differential expression")
+```
+
+##### What genes are similarly regulated by the plasmids?
+
+Genes differentially-expressed by each plasmid. 
+
+```{r}
+chr_pq57_de <- chr %>% filter(amelioration=="wt" & plasmid=="pQBR57" & FDR<0.05)
+chr_pq103_de <- chr %>% filter(amelioration=="wt" & plasmid=="pQBR103" & FDR<0.05)
+```
+
+First investigate the common responses to plasmid acquisition. 
+
+What genes are upregulated by both plasmids?
+
+```{r}
+up_both <- full_table_chr %>% filter(pQBR57.wt.FDR<0.05 & pQBR103.wt.FDR<0.05 &
+                          pQBR57.wt.logFC>0 & pQBR103.wt.logFC>0)
+rownames(up_both)
+```
+
+`r nrow(up_both)` genes upregulated by both plasmids. 
+
+Many of these are sequential genes, indicating operons. Exploratory analyses already identified upregulation of prophage/tailocin loci. [Silby et al. (2009)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2718517/) identifies prophage loci in the SBW genome at the following locations (see Supplementary Table 3):
+
+- Prophage 1: 1304498..1317448 (12,951 bp), including genes PFLU_1169–PFLU_1187.
+- Prophage 2: 1738434..1754039, including PFLU_1587-PFLU_1600.
+- Prophage 3: 3107845..3166503, including PFLU_2817 to PFLU_2905. PFLU_2860 is a putative holin, according to PHASTER.
+- Prophage 4: 4565054..4584205, including PFLU_4122A to PFLU_4140.
+- Tn6921: 2060106..2082441, including PFLU_1885 to PFLU_1909.
+
+This leaves 16 genes. Notable amongst these is PFLU_1560 and PFLU_3605, which are lexA homologues, and PFLU_1559 (sul1 cell division inhibitor), a known part of SOS response. The activation of the SOS response would also explain the activation of the prophages.
+
+What other genes are in the SOS regulon in SBW25, and how many of these are also activated? This is investigated in [`COMPMUT_RNAseq_7_lexA.Rmd`](COMPMUT_RNAseq_7_lexA.md), giving the following list of 12 genes with a lexA-consensus site within 150 bp of the start codon:
+
+```{r}
+lexA <- read.csv("../rnaseq/ref/LexA_sites.csv", sep=",", header=FALSE, stringsAsFactors = FALSE)
+colnames(lexA) <- c("position","distance","locus_tag","strand")
+lexA <- with(lexA, lexA[order(position),])
+(lexA_downstream_genes <- lexA[lexA$distance<151,"locus_tag"])
+```
+
+This allows us to explain several of the remaining upregulated-by-both genes:
+
+- PFLU_0054: SOS-regulated
+- PFLU_0848: SOS-regulated
+- PFLU_1189: recA, SOS-regulated
+- PFLU_1190: recX, downstream of recA and likely part of the same operon
+- PFLU_1559: downstream of lexA and likely part of the same operon
+- PFLU_1560: lexA
+- PFLU_3605: lexA homologue
+- PFLU_5271: SOS-regulated
+
+The lexA homologues don't have lexA binding sites, so add these to `lexA_and_regulon`.
+
+```{r}
+lexA_and_regulon <- c(lexA_downstream_genes, "PFLU_1559","PFLU_3605")
+```
+
+Leaving the following 8 genes upregulated by both but not part of either a prophage/transposon or the immediate lexA regulon:
+
+- PFLU_1482: putative colicin-pore forming protein (bacteriocin?)
+- PFLU_3047: putative methyl-accepting chemotaxis protein
+- PFLU_3055: uncharacterised
+- PFLU_4162: uncharacterised
+- PFLU_4163: DNA-specific endonuclease I (EC 3.1.21.1)
+- PFLU_5096: Putative chemotaxis-related protein
+- PFLU_5498: UvrA (excinuclease)
+- PFLU_5959: Putative multidrug resistance transporter
+
+Also, seven putative SOS-regulated genes are not upregulated by both plasmids. 
+
+```{r}
+lexA_and_regulon[!(lexA_and_regulon %in% rownames(up_both))]
+```
+
+- PFLU_0902: conserved hypothetical
+- PFLU_1166: conserved hypothetical upstream of mutS
+- PFLU_1295: alcohol dehydrogenase, upstream of lysR regulatory protein on other strand
+- PFLU_1323: putative membrane protein, upstream of helicase on other strand
+- PFLU_1750: conserved hypothetical upstream of ribosomal subunit
+- PFLU_3139: conserved hypothetical
+- PFLU_4940: exodeoxyribonuclease I
+
+Get details on these from the table.
+
+```{r}
+full_table_chr[lexA_and_regulon[!(lexA_and_regulon %in% rownames(up_both))],
+                grep("pQBR...?\\.wt\\.",colnames(full_table_chr))]
+```
+
+Some of these are upregulated by pQBR103 (PFLU_1323, 1750, 3139), and one (PFLU_1166) is possibly downregulated by pQBR57.
+
+Add details of each region to the table enabling annotation in the plots. See [`COMPMUT_RNAseq_5_gene_info.Rmd`](COMPMUT_RNAseq_5_gene_info.md) for details of how I generated the table of gene info. 
+
+```{r}
+gene_info <- read.table("../rnaseq/ref/AM181176_gene_info.tsv", header=TRUE, sep="\t",
+                      stringsAsFactors = FALSE)
+```
+
+Annotate gene_info with information on the regions or regulons to which these genes belong. Genes are assigned to the mobile genetic elements (prophage/Tn6291) if either their start or their end is within the element. The llocations of the MGEs was from [Silby et al. (2009)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2718517/) or [Hall et al. (2017)](dx.doi.org/10.1038/s41559-017-0250-3).
+
+```{r}
+regions <- data.frame(region = c("Prophage 1","Prophage 2","Prophage 3","Prophage 4","Tn6291"),
+                      start  = c(1304498,     1738434,     3107845,     4565054,     2060106),
+                      end    = c(1317448,     1754039,     3166503,     4584205,     2082441),
+                      stringsAsFactors=FALSE)
+
+gene_info$region <- ""
+
+for (i in 1:nrow(gene_info)){
+  x <- gene_info[i,]
+  region <- with(regions, regions[(x$start>start & x$start<end) | 
+                                    (x$end>start & x$end<end),"region"])
+  if(length(region)>1){
+    print("Regions must be non-overlapping")
+    break
+  } else if(length(region)==0){
+    region <- "N/A"
+  }
+  gene_info[i,"region"] <- region
+}
+```
+
+Add the lexA regulon to `gene_info`.
+
+```{r}
+gene_info[gene_info$locus_tag %in% lexA_and_regulon,"region"] <- "lexA and regulon"
+```
+
+Apply these regions to `full_table_chr`.
+
+```{r}
+rownames(gene_info) <- gene_info$locus_tag
+full_table_chr$region <- gene_info[rownames(full_table_chr),"region"]
+
+full_table_chr$region <- factor(full_table_chr$region, 
+                                levels=c("lexA and regulon", regions$region, "N/A"))
+```
+
+**'Candidate cost' genes**
+
+The fact that both plasmids upregulate a similar set of genes suggests that these might be causally reponsible, at least in part, for plasmid cost. Get a shortlist of 'candidate cost' genes for further analysis. These are genes that are more than 2x upregulated by both plasmids, and are not upregulated in the compensated mutants. 
+
+```{r}
+up_both_2x <- full_table_chr %>% filter(gene %in% rownames(up_both) &
+                                        pQBR57.wt.logFC>1 & pQBR103.wt.logFC>1)
+```
+
+`r nrow(up_both_2x)` genes are >2x upregulated by both plasmids.
+
+```{r}
+candidate_cost <- up_both_2x %>% filter(pQBR57.dPFLU4242.FDR>0.05 & pQBR103.dPFLU4242.FDR>0.05)
+```
+
+`r nrow(candidate_cost)` genes are >2x upregulated by both plasmids and not significantly DE in the PFLU4242 mutant. 
+
+Collect this shortlist for examination. Read in the list of genes that were eventually selected for expression, and print together as a table.
+
+```{r}
+cols_to_take <- c("gene","region","pQBR103.wt.logCPM","pQBR103.wt.FDR","pQBR57.wt.FDR",
+                  "pQBR57.dPFLU4242.FDR","pQBR103.dPFLU4242.FDR")
+
+write.csv(candidate_cost[,cols_to_take], 
+          file="../rnaseq/CandidateCost.csv")
+
+expressed <- readLines("../rnaseq/expressed.txt")
+
+candidate_cost %>% mutate(expressed = ifelse(gene %in% expressed, "*", "")) %>%
+  select(all_of(cols_to_take), region, expressed) %>% kable()
+```
+
+This shortlist was examined and genes were selected for inducible expression.
+
+**Plots**
+
+Add these details to the volcano plots for the plasmids. In addition, use different size points to indicate whether a gene is significantly upregulated by both plasmids.
+
+```{r}
+chr$region <- factor(full_table_chr[chr$gene,"region"],
+                     levels=c("lexA and regulon", regions$region, "N/A"))
+
+cols <- c("chartreuse2","gold1","orange2","orangered1","darkred","cornflowerblue","grey20")
+
+(plot_fig12 <- ggplot(data=subset(chr, amelioration=="wt" & plasmid %in% c("pQBR103","pQBR57")),
+                 aes(x=logFC, y=(-log10(FDR)), colour=region, alpha=region, 
+                     size=ifelse(gene %in% rownames(up_both), "both", ""))) +
+    ggtitle("chromosomal sense transcripts") +
+    geom_vline(xintercept=0, size=0.1) +
+    geom_vline(xintercept=c(-1,1), size=0.1, linetype="dashed") +
+    geom_hline(yintercept=0, size=0.1) + 
+    geom_hline(yintercept=-log10(0.05), size=0.1, linetype="dashed") + 
+    geom_point(shape=16) +
+    scale_colour_manual(values=cols) +
+    scale_alpha_manual(values=c(rep(0.8,6),0.2)) +
+    scale_size_manual(values=c(0.5,0.8), guide=FALSE) +
+    labs(x=expression(paste("log"[2]," fold-change")), y=expression(paste("-log"[10]," FDR"))) +
+    geom_point(data=subset(chr, gene=="PFLU_1169" & amelioration=="wt" & plasmid %in% c("pQBR103","pQBR57")),
+               shape=1, size=1.5, colour="black", alpha=0.8) +
+    facet_grid(.~plasmid) +
+    theme(legend.position="right"))
+```
+
+The prophage loci (at least prophage 1) are tailocins, and are most likely upregulated as a consequence of the SOS response. Therefore, it seems that the common gene activation to acquisition of either plasmid can be explained by the SOS response.
+
+Output this image in colour.
+
+```{r}
+svglite::svglite(height=3.5, width=5.4, file = "../plots/Fig12.svg")
+plot_fig12 + theme_pub() + theme(legend.position="right")
+dev.off()
+```
+
+Similar figures can be plotted as MA plots.
+
+```{r}
+(p_chr_col_ma <- ggplot(data=subset(chr, amelioration=="wt" & plasmid %in% c("pQBR103","pQBR57")),
+                 aes(x=logCPM, y=logFC, colour=region, alpha=region, 
+                     size=ifelse(gene %in% rownames(up_both), "both", ""))) +
+    ggtitle("chromosomal sense transcripts") +
+    geom_vline(xintercept=0, size=0.1) +
+    geom_hline(yintercept=c(-1,1), size=0.1, linetype="dashed") +
+    geom_hline(yintercept=0, size=0.1) + 
+    geom_point(shape=16) +
+    scale_colour_manual(values=cols) +
+    scale_alpha_manual(values=c(rep(0.8,6),0.2)) +
+    scale_size_manual(values=c(0.5,0.8), guide=FALSE) +
+       geom_point(data=subset(chr, gene=="PFLU_1169" & amelioration=="wt" & plasmid %in% c("pQBR103","pQBR57")),
+               shape=1, size=1.5, colour="black", alpha=0.8) +
+    labs(y=expression(paste("log"[2]," fold-change")), x=expression(paste("average log"[2]," CPM"))) +
+    facet_grid(.~plasmid) +
+    theme_pub() + theme(legend.position="right"))
+```
+
+Log fold-change for each plasmid can also be plotted directly against one another:
+
+```{r}
+lines <- data.frame(intercept= c(-1,0,1),
+                    linetype = c("2","1","2"))
+leg_title <- "FDR <0.05"
+
+tab_chr_pq_de <- full_table_chr[unique(union(chr_pq57_de$gene, chr_pq103_de$gene)),
+                                  c(grep("pQBR...?\\.wt\\.",colnames(full_table_chr), value=TRUE),"region")]
+
+sig <- with(tab_chr_pq_de, ifelse(pQBR57.wt.FDR<0.05 & pQBR103.wt.FDR<0.05, "both",
+                                  ifelse(pQBR57.wt.FDR<0.05, "pQBR57 only",
+                                  ifelse(pQBR103.wt.FDR<0.05, "pQBR103 only", "neither"))))
+
+(p_chr_pq_col <- ggplot(data=tab_chr_pq_de, aes(x=pQBR57.wt.logFC, y=pQBR103.wt.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(shape=sig, size=sig, colour=region), alpha=0.8) +
+    geom_point(data=tab_chr_pq_de["PFLU_1169",],
+               shape=1, size=1.5, colour="black", alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4)) +
+  scale_colour_manual(values=cols,
+                      breaks=) +
+  coord_fixed() + 
+  labs(x="pQBR57 log fold-change", y="pQBR103 log fold-change", 
+       alpha=leg_title, size=leg_title, shape=leg_title) +
+  theme_pub() + theme(legend.position="right"))
+```
+
+The genes in the top right quadrant are upregulated by both plasmids.
+
+However, it may be misleading to look for correlations between these axes as both have the same denominator.
+
+
+###### Downregulated by both
+
+The genes downregulated by both plasmids:
+
+```{r}
+down_both <- full_table_chr %>% filter(pQBR57.wt.FDR<0.05 & pQBR103.wt.FDR<0.05 &
+                            pQBR57.wt.logFC<0 & pQBR103.wt.logFC<0)
+```
+
+`r nrow(down_both)` genes.
+
+```{r}
+kable(gene_info[rownames(down_both),c("locus_tag","protein_name")])
+```
+
+Most of these are uncharacterised proteins. PFLU_1720 is a LysR transcriptional regulator, which are abundant in prokaryotes (see [Maddocks & Oyston, 2008](https://www.ncbi.nlm.nih.gov/pubmed/19047729)).
+
+###### Downregulated by pQBR57 but upregulated by pQBR103
+
+There is an interesting cluster of transcripts that are significantly downregulated by pQBR57 but significantly upregulated by pQBR103 (there are no genes that are the converse). 
+
+```{r}
+down57_up103 <- full_table_chr %>% filter(pQBR57.wt.FDR<0.05 & pQBR103.wt.FDR<0.05 &
+                       pQBR57.wt.logFC<0 & pQBR103.wt.logFC>0)
+```
+
+`r nrow(down57_up103)` genes. These seem to have a wide range of functions. Some of the genes are consecutive and may be part of the same operon.
+
+```{r, eval=FALSE}
+kable(gene_info[rownames(down57_up103),c("locus_tag","strand")])
+```
+
+- PFLU_0061, PFLU_0063 (+ strand)
+- PFLU_0146      +
+- PFLU_0645      -
+- PFLU_1321      +
+- PFLU_2039      -
+- PFLU_2071, PFLU_2076, PFLU_2078, PFLU_2079, PFLU_2081 (- strand)
+- PFLU_2410      +
+- PFLU_2696      -
+- PFLU_2762, PFLU_2763 (+ strand)
+- PFLU_3014      +
+- PFLU_3030      +
+- PFLU_3146      -
+- PFLU_3364, PFLU_3365, PFLU_3369 (+ strand)
+- PFLU_3389, PFLU_3391, PFLU_3392, PFLU_3393 (+ strand)
+- PFLU_3401      +
+- PFLU_3900, PFLU_3901, PFLU_3902 (- strand)
+- PFLU_4510      +
+- PFLU_4819      -
+- PFLU_5583, PFLU_5584 (+ strand)
+
+Are there any functions overrepresented amongst these genes?
+
+Use [goatools](https://github.com/tanghaibao/goatools) for analysis.
+
+```{bash, eval=FALSE}
+. ~/miniconda3/etc/profile.d/conda.sh
+
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+
+conda install goatools
+
+mkdir -p ../goatools/data
+```
+
+goatools requires three files, one describing the study genes, one describing the population genes, and one describing the association between these files.
+
+```{r}
+write.table(rownames(down57_up103), file="../goatools/data/down57_up103.txt",
+            sep="", quote=FALSE, row.names=FALSE, col.names = FALSE)
+write.table(gene_info[,"locus_tag"], file="../goatools/data/SBW25_genes.txt",
+            sep="", quote=FALSE, row.names=FALSE, col.names = FALSE)
+
+associations <- data.frame(locus_tag = gene_info$locus_tag,
+                           go_terms = gsub(" ","",gene_info$go))
+
+write.table(associations, file="../goatools/data/SBW25_genes_go.txt",
+            sep="\t", quote=FALSE, row.names=FALSE, col.names = FALSE)
+```
+
+Run goatools.
+
+```{bash, eval=FALSE}
+wget http://geneontology.org/ontology/go-basic.obo
+
+conda activate
+
+find_enrichment.py ../goatools/data/down57_up103.txt \
+                   ../goatools/data/SBW25_genes.txt \
+                   ../goatools/data/SBW25_genes_go.txt \
+                   --outfile ../goatools/down57_up103.tsv
+                   
+```
+
+Read data into R and investigate.
+
+```{r}
+down57_up103_go <- read.table("../goatools/down57_up103.tsv", sep="\t",
+                              header=FALSE)
+colnames(down57_up103_go) <- c("GO","NS","enrichment","name","ratio_in_study",
+                               "ratio_in_pop","p_uncorrected",
+                               "depth","study_count","p_bonferroni","p_sidak",
+                               "p_holm","p_fdr_bh","study_items")
+down57_up103_go[down57_up103_go$p_fdr_bh<0.1,
+                c("GO","name","ratio_in_study","p_fdr_bh")] %>% kable()
+
+```
+
+All of the enriched functions seem generally associated with metabolism, with the top scoring terms related to glycogen/carbohydrate. These are associated with 7/33 of the genes in this cluster. 
+
+###### Upregulated by pQBR57 and downregulated by pQBR103
+
+```{r}
+up57_down103 <- full_table_chr %>% filter(pQBR57.wt.FDR<0.05 & pQBR103.wt.FDR<0.05 &
+                       pQBR57.wt.logFC>0 & pQBR103.wt.logFC<0)
+nrow(up57_down103)
+```
+
+No genes are upregulated by pQBR57 and downregulated by pQBR103. 
+
+##### Transcriptional effects of each plasmid
+
+We have now characterised the genes that are differentially regulated by both plasmids. Now consider each plasmid separately. What are their overall effects on expression?
+
+Recall this table:
+
+```{r}
+kable(chr_pq_de_summ)
+```
+
+
+###### Differentially regulated by pQBR57
+
+Get the list of genes upregulated by pQBR57 and perform GO analysis as above. Analyse all genes (not only those exclusively DE by pQBR57) to get a global picture.
+
+Get files...
+
+```{r}
+chr_pq57_de <- chr %>% filter(plasmid=="pQBR57" & amelioration=="wt" & FDR<0.05)
+chr_pq57_up <- chr_pq57_de %>% filter(logFC>0)
+
+write.table(chr_pq57_up$gene, file="../goatools/data/up57.txt",
+            sep="", quote=FALSE, row.names=FALSE, col.names = FALSE)
+
+chr_pq57_down <- chr_pq57_de %>% filter(logFC<0)
+
+write.table(chr_pq57_down$gene, file="../goatools/data/down57.txt",
+            sep="", quote=FALSE, row.names=FALSE, col.names = FALSE)
+```
+
+Run goatools...
+
+```{bash, eval=FALSE}
+find_enrichment.py ../goatools/data/up57.txt \
+                   ../goatools/data/SBW25_genes.txt \
+                   ../goatools/data/SBW25_genes_go.txt \
+                   --outfile ../goatools/up57.tsv
+                   
+find_enrichment.py ../goatools/data/down57.txt \
+                   ../goatools/data/SBW25_genes.txt \
+                   ../goatools/data/SBW25_genes_go.txt \
+                   --outfile ../goatools/down57.tsv
+```
+
+Analyse: upregulated genes (focus on 'biological process', aka BP).
+
+```{r}
+go_colnames <- c("GO","NS","enrichment","name","ratio_in_study",
+                       "ratio_in_pop","p_uncorrected",
+                       "depth","study_count","p_bonferroni","p_sidak",
+                       "p_holm","p_fdr_bh","study_items")
+
+up57_go <- read.table("../goatools/up57.tsv", sep="\t",
+                      header=FALSE, col.names=go_colnames)
+
+up57_go %>% filter(p_fdr_bh<0.1 & NS=="BP") %>% arrange(p_fdr_bh) %>% 
+  select(GO, name, ratio_in_study, p_fdr_bh) %>%
+  kable()
+```
+
+Upregulated genes overrepresented in functions asssociated with SOS response, signal transduction, and cellular responses. However these function are only about 10% (17/153) of the upregulated genes. 
+
+```{r}
+down57_go <- read.table("../goatools/down57.tsv", sep="\t",
+                      header=FALSE, col.names=go_colnames)
+
+down57_go %>% filter(p_fdr_bh<0.1 & NS=="BP") %>% arrange(p_fdr_bh) %>% 
+  select(GO, name, ratio_in_study, p_fdr_bh) %>%
+  kable()
+```
+
+Seem largely involved in metabolism (26/245, ~10%). 
+
+So, in summary:
+
+**pQBR57 upregulates genes involved in SOS response and signal transduction, and downregulates genes involved in metabolism**
+
+
+###### Differentially regulated by pQBR103
+
+Repeat analysis for pQBR103.
+
+Get files...
+
+```{r}
+chr_pq103_de <- chr %>% filter(plasmid=="pQBR103" & amelioration=="wt" & FDR<0.05)
+chr_pq103_up <- chr_pq103_de %>% filter(logFC>0)
+
+write.table(chr_pq103_up$gene, file="../goatools/data/up103.txt",
+            sep="", quote=FALSE, row.names=FALSE, col.names = FALSE)
+
+chr_pq103_down <- chr_pq103_de %>% filter(logFC<0)
+
+write.table(chr_pq103_down$gene, file="../goatools/data/down103.txt",
+            sep="", quote=FALSE, row.names=FALSE, col.names = FALSE)
+```
+
+Run goatools...
+
+```{bash, eval=FALSE}
+find_enrichment.py ../goatools/data/up103.txt \
+                   ../goatools/data/SBW25_genes.txt \
+                   ../goatools/data/SBW25_genes_go.txt \
+                   --outfile ../goatools/up103.tsv
+                   
+find_enrichment.py ../goatools/data/down103.txt \
+                   ../goatools/data/SBW25_genes.txt \
+                   ../goatools/data/SBW25_genes_go.txt \
+                   --outfile ../goatools/down103.tsv
+```
+
+Analyse: upregulated genes.
+
+```{r}
+up103_go <- read.table("../goatools/up103.tsv", sep="\t",
+                      header=FALSE, col.names=go_colnames)
+
+up103_go %>% filter(p_fdr_bh<0.1 & NS=="BP") %>% arrange(p_fdr_bh) %>% 
+  select(GO, name, ratio_in_study, p_fdr_bh) %>%
+  kable()
+```
+
+Upregulated genes largely involved in SOS response, signal transduction. But unlike pQBR57, pQBR103 also seems to upregulate genes involved in metabolism. However again only a fraction of the genes upregulated by pQBR103 fall into these GO categories (6/186, 3%). 
+
+```{r}
+down103_go <- read.table("../goatools/down103.tsv", sep="\t",
+                      header=FALSE, col.names=go_colnames)
+
+down103_go %>% filter(p_fdr_bh<0.1 & NS=="BP") %>% arrange(p_fdr_bh) %>% 
+  select(GO, name, ratio_in_study, p_fdr_bh) %>%
+  kable()
+```
+
+No GO terms significantly downregulated by pQBR103. Looking at the list of genes downregulated by pQBR103 shows that these are mainly of unknown funciton.
+
+```{r}
+gene_info[chr_pq103_down$gene,c("locus_tag","product")] %>% kable()
+```
+
+In summary:
+
+**pQBR103 upregulates genes involved in SOS response and signal transduction, and unlike pQBR57, in metabolism. Unlike pQBR57, pQBR103 doesn't significantly downregulate any particular gene subsets as assessed by GO terms**
+
+### 1.2. Effects of amelioration without the plasmid
+
+The volcano plots above show that there are no genes differentially expressed in the ∆PFLU_4242 mutant relative to the wild-type.
+
+```{r}
+chr_dPFLU4242_de <- chr %>% filter(FDR<0.05 & 
+                             amelioration=="dPFLU4242" & 
+                             plasmid == "none")
+nrow(chr_dPFLU4242_de)
+```
+
+The ∆gacS mutant has a dramatic effect on gene expression, however.
+
+```{r}
+chr_dgacS_de <- chr %>% filter(FDR<0.05 & 
+                             amelioration=="dgacS" & 
+                             plasmid == "none")
+nrow(chr_dgacS_de)
+```
+
+Plot the distribution of gacS-regulated genes.
+
+```{r}
+ggplot(data=chr_dgacS_de, 
+       aes(x=ifelse(logFC>0, "up", "down"), 
+           y=abs(logFC))) +
+  geom_hline(yintercept=0, size=0.2) +
+  geom_hline(yintercept=1, size=0.2, linetype="dashed") +
+  geom_violin(size=0.4) + geom_point(position=position_jitter(), shape=16, alpha=0.6) +
+  labs(x="", y=expression(paste("absolute log"[2]," fold-change"))) +
+  ggtitle("∆gacS differential expression")
+```
+
+The majority of differentially-expressed genes are downregulated by the gacS knockout, however some are upregulated.
+
+```{r}
+chr_pq_de_summ[1,] %>% kable()
+```
+
+
+##### 1.3. Effects of plasmid amelioration on chromosome gene expression. 
+
+To identify the effect of amelioration mutations on the gene expression changes caused by the plasmid, we compare first whether there are any differentially-expressed genes in the ameliorated plasmid-bearers.
+
+```{r}
+chr_pq_de_summ %>% filter(amelioration!="wt" & plasmid!="none") %>% kable()
+```
+
+This summary table shows that for all ameliorations there are residual differentially-expressed genes. These are much reduced compared with the plasmid differential expression, except for the case of gacS, which (as shown above) has a significant downregulatory effect even without the plasmid.
+
+
+###### Effect of amelioration on pQBR57-bearers
+
+Focus first on PFLU4242 and PQBR57_0059 ameliorations. We already know that there are no genes DE by PFLU4242 without pQBR57, and due to the experimental design we cannot test for the effects of PQBR57_0059 without pQBR57. The assumption is that the ameliorations reduce differential expression, but this should be tested. Are there any genes which are differentially-expressed in the pQBR57 + ameliorated hosts that were not DE in the pQBR57 hosts?
+
+```{r}
+chr_pq57_dPFLU4242_de <- chr %>% filter(plasmid=="pQBR57" & amelioration=="dPFLU4242" & FDR<0.05)
+
+chr_pq57_dPFLU4242_de %>% filter(!(gene %in% chr_pq57_de$gene))
+```
+
+Six genes upregulated by the chromosome (PFLU4242) amelioration, though all have marginal FDR.
+
+```{r}
+chr_pq57_PQ5759_de <- chr %>% filter(plasmid=="pQBR57" & amelioration=="PQBR57_0059_V100A" & FDR<0.05)
+
+chr_pq57_PQ5759_de %>% filter(!(gene %in% chr_pq57_de$gene))
+```
+
+One gene upregulated by the plasmid amelioration, again with marginal FDR.
+
+All of these amelioration-specific differential expression have marginal FDR, except for PFLU_4769, an uncharacterised low-GC content protein. This gene is not differentially-expressed by pQBR57, or by the ameliorations without the pQBR57, but it is downregulated by each amelioration where the pQBR57 is present. 
+
+```{r}
+chr_am_de <- chr_pq57_dPFLU4242_de %>% filter(!(gene %in% chr_pq57_de$gene)) %>%
+  select(gene) 
+
+full_table_chr["PFLU_4769",grep("logFC|FDR",colnames(full_table_chr))]
+```
+
+However there seem to be few overall patterns in its expression across treatments. Interestingly, PFLU_4769 is downregulated by pQBR103, an effect that is ameliorated by dPFLU4242 but not by dgacS. 
+
+How many of the genes differentially-expressed by each plasmid are still DE in the ∆PFLU4242 mutant?
+
+```{r}
+# pQBR57
+sum(chr_pq57_de$gene %in% chr_pq57_dPFLU4242_de$gene)
+
+# pQBR103
+chr_pq103_dPFLU4242_de <- chr %>% filter(plasmid=="pQBR103-" & amelioration=="dPFLU4242" & FDR<0.05)
+
+sum(chr_pq103_de$gene %in% chr_pq103_dPFLU4242_de$gene)
+```
+
+Plot annotated volcano plots for these ameliorations.
+
+```{r}
+(p_chr_col_am <- ggplot(data=subset(chr, amelioration=="dPFLU4242" & plasmid %in% c("pQBR57","pQBR103")),
+                 aes(x=logFC, y=(-log10(FDR)), colour=region, alpha=region, group=gene,
+                     size=ifelse(gene %in% rownames(up_both), "both", ""))) +
+   ggtitle("effect of chromosome amelioration by ∆PFLU4242") +
+   geom_vline(xintercept=0, size=0.1) +
+   geom_vline(xintercept=c(-1,1), size=0.1, linetype="dashed") +
+   geom_hline(yintercept=0, size=0.1) + 
+   geom_hline(yintercept=-log10(0.05), size=0.1, linetype="dashed") + 
+   geom_point(shape=16) + 
+   scale_colour_manual(values=cols) +
+   scale_alpha_manual(values=c(rep(0.8,6),0.2)) +
+   scale_size_manual(values=c(0.5,0.8), guide=FALSE) +
+   labs(x=expression(paste("log"[2]," fold-change")), y=expression(paste("-log"[10]," FDR"))) +
+   facet_grid(.~plasmid) +
+   theme(legend.position="right"))
+```
+
+And the corresponding MA plots:
+
+```{r}
+(p_chr_col_am_MA <- ggplot(data=subset(chr, amelioration=="dPFLU4242" & plasmid %in% c("pQBR57","pQBR103")),
+                 aes(y=logFC, x=logCPM, colour=region, alpha=ifelse(FDR<0.05, "A", "B"),
+                     group=gene)) +
+   ggtitle("effect of chromosome amelioration by ∆PFLU4242") +
+    geom_vline(xintercept=0, size=0.1) +
+    geom_hline(yintercept=c(-1,1), size=0.1, linetype="dashed") +
+    geom_hline(yintercept=0, size=0.1) + 
+   geom_point(shape=16, size=0.8) +
+   scale_colour_manual(values=cols) +
+   scale_alpha_manual(values=c(0.8,0.1), guide=FALSE) +
+   labs(y=expression(paste("log"[2]," fold-change")), 
+        x=expression(paste("average log"[2]," CPM"))) +
+   facet_grid(.~plasmid) +
+   theme(legend.position="right"))
+```
+
+Plot 'before-and-after' volcano plots, with arrows connecting points before amelioration with after amelioration.
+
+```{r}
+chr_pq103_dPFLU4242_de <- subset(chr, plasmid=="pQBR103" & amelioration=="dPFLU4242" & FDR<0.05)
+
+chr_pq57_pq103_dPFLU4242_sig <- union(union(chr_pq57_de$gene, chr_pq103_de$gene), 
+                                      union(chr_pq57_dPFLU4242_de$gene, chr_pq103_dPFLU4242_de$gene))
+
+chr_plot <- subset(chr, amelioration %in% c("wt","dPFLU4242","PQBR57_0059_V100A") & plasmid %in% c("pQBR57","pQBR103"))
+
+chr_plot$sig_4242 <- ifelse(chr_plot$gene %in% chr_pq57_pq103_dPFLU4242_sig, "sig", "")
+
+chr_pq57_am_sig <- union(union(chr_pq57_de$gene, chr_pq57_dPFLU4242_de$gene), chr_pq57_PQ5759_de$gene)
+
+chr_plot$sig_PQ5759 <- ifelse(chr_plot$gene %in% chr_pq57_am_sig, "sig", "")
+
+(p_chr_col_am_ba <- ggplot(data=subset(chr_plot, amelioration!="PQBR57_0059_V100A"),
+                 aes(x=logFC, y=(-log10(FDR)), colour=region, group=gene,
+                     alpha=sig_4242)) +
+   ggtitle("effect of chromosome amelioration by ∆PFLU4242") +
+   geom_vline(xintercept=0, size=0.1) +
+   geom_vline(xintercept=c(-1,1), size=0.1, linetype="dashed") +
+   geom_hline(yintercept=0, size=0.1) + 
+   geom_hline(yintercept=-log10(0.05), size=0.1, linetype="dashed") + 
+   geom_path(size=0.2, arrow=arrow(length=unit(5, "points"),
+                                   angle=20, ends="first", type="closed")) + 
+   scale_colour_manual(values=cols) +
+   scale_alpha_manual(values=c(0.2,0.8), guide=FALSE) +
+   scale_size_manual(values=c(0.5,0.8), guide=FALSE) +
+   labs(x=expression(paste("log"[2]," fold-change")), y=expression(paste("-log"[10]," FDR"))) +
+   facet_grid(.~plasmid) +
+   theme(legend.position="right"))
+```
+
+Plot as an MA plot:
+
+```{r}
+(p_chr_col_am_ma_ba <- ggplot(data=subset(chr_plot, amelioration!="PQBR57_0059_V100A"),
+                 aes(y=logFC, x=logCPM, colour=region, alpha=sig_4242,
+                     group=gene)) +
+   ggtitle("effect of chromosome amelioration by ∆PFLU4242") +
+    geom_vline(xintercept=0, size=0.1) +
+    geom_hline(yintercept=c(-1,1), size=0.1, linetype="dashed") +
+    geom_hline(yintercept=0, size=0.1) + 
+   geom_path(size=0.2, arrow=arrow(length=unit(5, "points"),
+                                   angle=20, ends="first", type="closed")) + 
+   scale_colour_manual(values=cols) +
+   scale_alpha_manual(values=c(0.2,0.8), guide=FALSE) +
+   labs(y=expression(paste("log"[2]," fold-change")), x=expression(paste("average log"[2]," CPM"))) +
+   facet_grid(.~plasmid) +
+   theme_pub() + theme(legend.position="right"))
+```
+
+The overwhelming effect, seen in these plots, is that genes which were upregulated by plasmid acquisition, have come back towards the ancestral levels of expression. 
+
+What is the effect of PQBR57_0059 amelioration?
+
+```{r}
+ggplot(data=subset(chr_plot, 
+                   plasmid=="pQBR57" & amelioration %in% c("wt","PQBR57_0059_V100A")),
+                 aes(x=logFC, y=(-log10(FDR)), colour=region, 
+                     alpha=sig_PQ5759, group=gene)) +
+   ggtitle("effects of different pQBR57 ameliorations") +
+   geom_vline(xintercept=0, size=0.1) +
+   geom_vline(xintercept=c(-1,1), size=0.1, linetype="dashed") +
+   geom_hline(yintercept=0, size=0.1) + 
+   geom_hline(yintercept=-log10(0.05), size=0.1, linetype="dashed") + 
+   geom_path(size=0.2, arrow=arrow(length=unit(5, "points"), 
+                                   angle=20, ends="first", type="closed")) + 
+   geom_path(data=subset(chr_plot, 
+                   plasmid=="pQBR57" & amelioration %in% c("wt","dPFLU4242")),
+     size=0.2, arrow=arrow(length=unit(5, "points"), 
+                           angle=20, ends="first", type="closed"), linetype="11") + 
+   scale_colour_manual(values=cols) +
+   scale_alpha_manual(values=c(0.2,0.8), guide=FALSE) +
+   scale_size_manual(values=c(0.5,0.8), guide=FALSE) +
+   labs(x=expression(paste("log"[2]," fold-change")), y=expression(paste("-log"[10]," FDR"))) +
+   theme(legend.position="right")
+```
+
+Easier to visualise with the log fold change plotted against one another: 
+
+```{r}
+tab_chr_pq57_am <- full_table_chr %>% filter(gene %in% c(chr_pq57_de$gene, chr_am_de)) %>%
+  select(matches("pQBR57\\.(PQBR57_0059_V100A|dPFLU4242|wt)\\.")) 
+
+tab_chr_pq57_am <- tab_chr_pq57_am %>%
+  mutate(sig = factor(with(tab_chr_pq57_am, 
+                             ifelse(pQBR57.PQBR57_0059_V100A.FDR<0.05 & pQBR57.dPFLU4242.FDR<0.05,"both",
+                             ifelse(pQBR57.PQBR57_0059_V100A.FDR<0.05 & pQBR57.dPFLU4242.FDR>0.05,"PQBR57_0059_V100A only",
+                             ifelse(pQBR57.PQBR57_0059_V100A.FDR>0.05 & pQBR57.dPFLU4242.FDR<0.05,"dPFLU4242 only",
+                                                  "neither"))))),
+         pQBR57_effect = ifelse(pQBR57.wt.logFC>0, "up", "down"))
+         
+tab_chr_pq57_am[tab_chr_pq57_am$gene %in% chr_am_de$gene,"pQBR57_effect"] <- "none"
+tab_chr_pq57_am$pQBR57_effect <- factor(tab_chr_pq57_am$pQBR57_effect)
+
+(p_pq57_am <- ggplot(data=subset(tab_chr_pq57_am, !sig=="neither"), 
+       aes(x=pQBR57.PQBR57_0059_V100A.logFC, y=pQBR57.dPFLU4242.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(shape=sig, size=sig, colour=pQBR57_effect), alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4,16)) +
+  scale_colour_manual(values=c("tomato1","black","steelblue1")) +
+  coord_fixed() + 
+  labs(x="pQBR57 with PQBR57_0059_V100A mutation logFC cf. plasmid-free", 
+       y="pQBR57 with ∆PFLU4242 logFC cf. plasmid-free", 
+       alpha="FDR <0.05", size="FDR <0.05", shape="FDR <0.05") +
+  theme(legend.position="right"))
+```
+
+However this plot needs to be interpreted carefully due to the possiblity of spurious correlations (there is a common denominator for both axes). 
+
+This shows that both mechanisms of amelioration markedly reduce the number of DE genes in a broadly similar manner. However there are still genes, differentally-expressed by pQBR57, that remain similarly differentially-expressed.
+
+These are:
+
+```{r}
+tab_chr_pq57_am %>% filter(pQBR57.dPFLU4242.logFC>0 & 
+                              pQBR57.PQBR57_0059_V100A.logFC>0 & sig=="both") %>% rownames()
+```
+
+Genes associated with Tn6291, and one gene that is part of prophage 4. 
+
+What about genes that are downregulated in both ameliorations?
+
+```{r}
+(chr_pq57_am_down <- tab_chr_pq57_am %>% filter(pQBR57.dPFLU4242.logFC<0 & 
+                              pQBR57.PQBR57_0059_V100A.logFC<0 & sig=="both") %>% rownames())
+```
+
+```{r}
+sum(chr_pq57_am_down %in% chr_pq57_down$gene)
+```
+
+17/18 of these genes were genes downregulated by pQBR57; their GO terms include GO:0016021 (integral component of membrane), GO:0016539 (protein splicing), GO:0015031 (protein transport), GO:0008152 (metabolic process) and GO:0016787 (hydrolase activity). The one extra gene is PFLU_4769 mentioned above. 
+
+###### Effect of amelioration on pQBR103-bearers
+
+There are only 3 chromosomal genes that remain significantly differentially expressed in the ∆PFLU_4242 mutant with pQBR103.
+
+```{r}
+chr %>% filter(plasmid=="pQBR103" & amelioration=="dPFLU4242" & FDR<0.05)
+```
+
+These are all the genes associated with Tn6291. 
+
+**Summary: the PFLU4242 mutation does not have any effect on plasmid-free bacteria. However, it massively downregulates the gene-expression consequences of acqusition of pQBR57 and pQBR103. Yet in both cases, there remain upregulated (and in the case of pQBR57 downregulated) genes. These upregulated genes are all on mobile genetic elements, particularly Tn6291.**
+
+**Summary: the PQBR57_0059 mutation has a broadly similar effect to PFLU4242.**
+
+###### Plot a heatmap showing key ameliorations
+
+For this plot, investigate genes significantly and >2x differentially expressed.
+
+The first plot will just consider the ∆PFLU4242 and pQBR57_0059 ameliorations. Genes are clustered manually according to the conditions under which they are diffentially expressed.
+
+- DE by both plasmids (up/down)
+- DE by 57 not 103
+- DE by 103 not 57
+
+```{r}
+chr_2xde_list <- unique(with(chr_2xde, chr_2xde[amelioration!="dgacS" & abs(logFC)>1 & FDR<0.05,"gene"]))
+
+chr_2xde_plot <- chr_2xde %>% filter(gene %in% chr_2xde_list)
+
+groupGeneByExpression <- function(x){
+  y <- "9"
+  if(x %in% up_both$gene) {
+    y <- "1"
+  } else if(x %in% up57_down103$gene) {
+    y <- "4"
+  } else if(x %in% down57_up103$gene) {
+    y <- "5"
+  } else if(x %in% down_both$gene) {
+    y <- "8"
+  } else if(x %in% chr_pq57_up$gene) {
+    y <- "2"
+  } else if(x %in% chr_pq57_down$gene) {
+    y <- "6"
+  } else if(x %in% chr_pq103_up$gene) {
+    y <- "3"
+  } else if(x %in% chr_pq103_down$gene) {
+    y <- "7"
+  }
+  return(unlist(y))
+}
+
+chr_2xde_plot$group <- unlist(lapply(chr_2xde_plot$gene, groupGeneByExpression))
+
+chr_2xde_gene_names <- data.frame(gene = gene_info[chr_2xde_list,"locus_tag"],
+                                  plasmid="region",
+                                  amelioration=factor("region", levels=c("wt","dPFLU4242","PQBR57_0059_V100A",
+                                                                             "dgacS","region"),
+                                                      labels=c("wild-type","∆PFLU4242","PQBR57_0059_V100A",
+                                                               "∆gacS","region")),
+                                  region=factor(gene_info[chr_2xde_list,"region"],
+                                                levels=levels(chr$region))) %>%
+  mutate(locus_tag = factor(sub("PFLU_", "", gene)))
+
+chr_2xde_gene_names$group <- unlist(lapply(chr_2xde_gene_names$gene, groupGeneByExpression))
+
+ggplot(data=subset(chr_2xde_plot, amelioration!="dgacS"), 
+       aes(x=plasmid, y=gene)) +
+  geom_tile(colour="black", aes(fill=logFC, size=ifelse(FDR<0.05,"sig","ns"))) + 
+  scale_size_manual(values=c(0,0.1)) +
+  scale_fill_gradient2() +
+  geom_point(data=chr_2xde_gene_names, aes(colour=region, alpha=region)) +
+  scale_alpha_manual(values=c(rep(1,6),0)) +
+  scale_colour_manual(values=cols) +
+  facet_grid(group~amelioration, scales="free", space="free")
+```
+
+Good start -- now rotate and reorder plot.
+
+```{r}
+ggplot(data=subset(chr_2xde_plot, amelioration!="dgacS"), 
+       aes(y=plasmid, x=gene)) +
+  geom_tile(colour="black", aes(fill=logFC, size=ifelse(FDR<0.05,"sig","ns"))) + 
+  scale_size_manual(values=c(0,0.1)) +
+  scale_fill_gradient2() +
+  geom_point(data=chr_2xde_gene_names, aes(colour=region, alpha=region)) +
+  scale_alpha_manual(values=c(rep(1,6),0)) +
+  scale_colour_manual(values=cols) +
+  facet_grid(amelioration~group, scales="free", space="free") + 
+  theme(legend.position="bottom")
+```
+
+Make the above plot look nice, and output.
+
+```{r}
+chr_2xde_p <- chr_2xde_plot %>%
+  mutate(amelioration = factor(amelioration, levels=c("wt","dPFLU4242","PQBR57_0059_V100A",
+                                                       "dgacS","region"),
+                                labels=c("wild-type","∆PFLU4242","PQBR57_0059_V100A",
+                                         "∆gacS","region")),
+         locus_tag = factor(sub("PFLU_", "", gene)))
+
+(plot_fig13 <- 
+    ggplot(data=filter(chr_2xde_p, amelioration!="∆gacS"), 
+           aes(y=reorder(plasmid, desc(plasmid)), x=locus_tag)) +
+    geom_tile(colour="black", aes(fill=logFC, size=ifelse(FDR<0.05,"sig","ns"))) + 
+    scale_size_manual(values=c(0,0.2), guide=FALSE) +
+    scale_fill_gradient2(high="red",mid="grey90",low="blue") +
+    geom_point(data=chr_2xde_gene_names, size=0.3,
+               aes(colour=region, shape=region)) +
+    scale_alpha_manual(values=c(rep(1,6),0), guide=FALSE, name="") +
+    scale_colour_manual(values=cols, name="") +
+    scale_shape_manual(values=c(1,20,20,20,20,17,32), name="") +
+    facet_grid(amelioration~group, scales="free", space="free") + 
+    labs(x="", y="") +
+    # geom_point(data=subset(chr_2xde_gene_names, gene %in% expressed),
+    #          shape=1, size=0.5, colour="black") + 
+    theme(legend.position="bottom", strip.text.x=element_blank(), 
+          panel.border=element_blank(), axis.line=element_blank(),
+          axis.ticks.x=element_blank(), 
+          axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=4),
+          panel.spacing.x=unit(5, units="pt")))
+```
+
+Output figure for editing and cleaning up in Inkscape. 
+
+```{r}
+svglite::svglite(height=3, width=7.2, file = "../plots/Fig13.svg")
+plot_fig13 + theme_pub() + 
+    theme(legend.position="bottom", strip.text.x=element_blank(), 
+        panel.border=element_blank(), axis.line=element_blank(),
+        axis.ticks.x=element_blank(), 
+        axis.text.x = element_blank(),
+        # axis.text.x=element_text(angle=45, hjust=1, vjust=0.5, size=4),
+        panel.spacing.x=unit(5, units="pt"))
+dev.off()
+```
+
+So just to recap -- this plot includes all chromosomal genes that were differentially-expressed (FDR<0.05, |logFC|>1) in any treatment except for gacS. 
+
+Add a plot including gacS-regulated genes. Note that this plot shows the response of the genes above to gacS, it does not include new columns for the specifically-gacS affected genes. 
+
+```{r}
+svglite::svglite(height=4, width=7.2, file = "../plots/Fig13b.svg")
+(plot_fig13b <- 
+    ggplot(data=chr_2xde_p,
+           aes(y=reorder(plasmid, desc(plasmid)), x=locus_tag)) +
+    geom_tile(colour="black", aes(fill=logFC, size=ifelse(FDR<0.05,"sig","ns"))) + 
+    scale_size_manual(values=c(0,0.2), guide=FALSE) +
+    scale_fill_gradient2(high="red",mid="grey90",low="blue") +
+    geom_point(data=chr_2xde_gene_names, size=0.3,
+               aes(colour=region, shape=region)) +
+    scale_alpha_manual(values=c(rep(1,6),0), guide=FALSE, name="") +
+    scale_colour_manual(values=cols, name="") +
+    scale_shape_manual(values=c(1,20,20,20,20,17,32), name="") +
+    facet_grid(amelioration~group, scales="free", space="free") + 
+    labs(x="", y="") + theme_pub() +
+    theme(legend.position="bottom", strip.text.x=element_blank(), 
+          panel.border=element_blank(), axis.line=element_blank(),
+          axis.ticks.x=element_blank(), 
+          axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=4),
+          panel.spacing.x=unit(5, units="pt")))
+dev.off()
+```
+
+###### Plot all genes, not just those 2x DE
+
+Expand the plot above to show all genes where FDR<0.05, i.e. not just those 2x DE.
+
+```{r}
+list_de_chr <- chr %>% filter(FDR<0.05 & amelioration!="dgacS") %>% select(gene) %>% pull() %>% unique()
+length(list_de_chr)
+```
+
+Over twice as long as the 2x DE list.
+
+```{r}
+chr_de_plot <- chr %>% filter(gene %in% list_de_chr)
+
+chr_de_plot$group <- unlist(lapply(chr_de_plot$gene, groupGeneByExpression))
+
+chr_de_gene_names <- data.frame(gene = gene_info[list_de_chr,"locus_tag"],
+                                  plasmid="region",
+                                  amelioration=factor("region", levels=c("wt","dPFLU4242","PQBR57_0059_V100A",
+                                                                             "dgacS","region"),
+                                                      labels=c("wild-type","∆PFLU4242","PQBR57_0059_V100A",
+                                                               "∆gacS","region")),
+                                  region=factor(gene_info[list_de_chr,"region"],
+                                                levels=levels(chr$region))) %>%
+  mutate(locus_tag = factor(sub("PFLU_", "", gene)))
+
+chr_de_gene_names$group <- unlist(lapply(chr_de_gene_names$gene, groupGeneByExpression))
+
+chr_de_plot <- chr_de_plot %>%
+  mutate(amelioration = factor(amelioration, levels=c("wt","dPFLU4242","PQBR57_0059_V100A",
+                                                       "dgacS","region"),
+                                labels=c("wild-type","∆PFLU4242","PQBR57_0059_V100A",
+                                         "∆gacS","region")),
+         locus_tag = factor(sub("PFLU_", "", gene)))
+
+svglite::svglite(height=4, width=14.4, file = "../plots/Fig13c.svg")
+(plot_fig13c <- 
+    ggplot(data=chr_de_plot,
+           aes(y=reorder(plasmid, desc(plasmid)), x=locus_tag)) +
+    geom_tile(colour="black", aes(fill=logFC, size=ifelse(FDR<0.05,"sig","ns"))) + 
+    scale_size_manual(values=c(0,0.2), guide=FALSE) +
+    scale_fill_gradient2(high="red",mid="grey90",low="blue") +
+    geom_point(data=chr_2xde_gene_names, size=0.3,
+               aes(colour=region, shape=region)) +
+    scale_alpha_manual(values=c(rep(1,6),0), guide=FALSE, name="") +
+    scale_colour_manual(values=cols, name="") +
+    scale_shape_manual(values=c(1,20,20,20,20,17,32), name="") +
+    facet_grid(amelioration~group, scales="free", space="free") + 
+    labs(x="", y="") +
+    theme_pub() +
+    # geom_point(data=subset(chr_2xde_gene_names, gene %in% expressed),
+    #          shape=1, size=0.5, colour="black") + 
+    theme(legend.position="bottom", strip.text.x=element_blank(), 
+          panel.border=element_blank(), axis.line=element_blank(),
+          axis.ticks.x=element_blank(), 
+          axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=4),
+          panel.spacing.x=unit(5, units="pt")))
+dev.off()
+```
+
+###### Effect of gacS amelioration on plasmid differentially-expressed genes.
+
+There are `r length(chr_dgacS_de$gene)` (733) genes differentially expressed by gacS. gacS mutants with the plasmids also have a large number of significantly DE genes. 
+
+Are there any genes which are differentially-expressed in the plasmid + ∆gacS mutation (and not with either plasmid or knockout alone)?
+
+```{r}
+chr_pq57_dgacS_de <- filter(chr, plasmid=="pQBR57" & amelioration=="dgacS" & FDR<0.05)
+
+chr_pq57_dgacS_de_subset <-  chr_pq57_dgacS_de %>%
+  filter(!gene %in% union(chr_pq57_de$gene, chr_dgacS_de$gene))
+
+nrow(chr_pq57_dgacS_de_subset)
+```
+
+Yes — 354 of these.
+
+```{r}
+ggplot(data=chr_pq57_dgacS_de_subset,
+       aes(x=ifelse(logFC>0, "up", "down"), 
+           y=abs(logFC))) +
+  geom_hline(yintercept=0, size=0.2) +
+  geom_hline(yintercept=1, size=0.2, linetype="dashed") +
+  geom_violin(size=0.4) + geom_point(position=position_jitter(), shape=16, alpha=0.6) +
+  labs(x="", y=expression(paste("absolute log fold-change"))) +
+  ggtitle("genes only DE with pQBR57 and ∆gacS together") +
+  theme_pub()
+```
+
+Broadly similar distribution of up- and down-regulated genes in this interaction. The most upregulated gene is:
+
+```{r}
+chr_pq57_dgacS_de_subset %>% arrange(-logFC) %>% head(n=1)
+
+gene_info["PFLU_5359","protein_name"]
+```
+
+Are there similar effects for pQBR103?
+
+```{r}
+chr_pq103_dgacS_de <- filter(chr, plasmid=="pQBR103" & amelioration=="dgacS" & FDR<0.05)
+  
+chr_pq103_dgacS_de_subset <- chr_pq103_dgacS_de %>%
+  filter(!gene %in% union(chr_pq103_de$gene, chr_dgacS_de$gene))
+
+nrow(chr_pq103_dgacS_de_subset)
+```
+
+399 genes are differentially regulated by pQBR103 + ∆gacS relative to either pQBR103 or gacS. 
+
+```{r}
+ggplot(data=chr_pq103_dgacS_de_subset,
+       aes(x=ifelse(logFC>0, "up", "down"), 
+           y=abs(logFC))) +
+  geom_hline(yintercept=0, size=0.2) +
+  geom_hline(yintercept=1, size=0.2, linetype="dashed") +
+  geom_violin(size=0.4) + geom_point(position=position_jitter(), shape=16, alpha=0.6) +
+  labs(x="", y=expression(paste("absolute log fold-change"))) +
+  ggtitle("genes only DE with pQBR103 and ∆gacS together")
+```
+
+Here there's one outlying downregulated gene:
+
+```{r}
+chr_pq103_dgacS_de_subset %>% arrange(-logFC) %>% head(n=1)
+
+gene_info["PFLU_2688","protein_name"]
+```
+
+Also possibly involved in metal homeostasis.
+
+How much overlap is there between these two sets?
+
+```{r}
+length(intersect(chr_pq103_dgacS_de_subset$gene,
+                 chr_pq57_dgacS_de_subset$gene))
+```
+
+These unexpectedly-behaving genes can be investigated elsewhere.
+
+One hypothesis is that mutating gacS downregulates genes that are upregulated by the plasmid. Is there any evidence for this? Plot the effects of ∆gacS against the independent effects of each plasmid.
+
+```{r}
+tab_chr_pq57_dgacS_de <- full_table_chr[union(chr_pq57_de$gene, chr_dgacS_de$gene),
+                            c(grep("(pQBR57|none)\\.(wt|dgacS)\\.",colnames(full_table_chr), value=TRUE),
+                              "region")]
+tab_chr_pq57_dgacS_de$sig <- factor(with(tab_chr_pq57_dgacS_de, 
+                             ifelse(pQBR57.wt.FDR<0.05 & none.dgacS.FDR<0.05,"both",
+                                    ifelse(pQBR57.wt.FDR<0.05 & none.dgacS.FDR>0.05,"pQBR57 only",
+                                           ifelse(pQBR57.wt.FDR>0.05 & none.dgacS.FDR<0.05,"dgacS only",
+                                                  "neither")))))
+summary(tab_chr_pq57_dgacS_de$sig)
+```
+
+About 1/4 (113/(113+285)) of the genes regulated by pQBR57 acquisition are also independently regulated by gacS.
+
+```{r}
+(p_pq57_dgacS <- ggplot(data=tab_chr_pq57_dgacS_de,
+       aes(x=pQBR57.wt.logFC, y=none.dgacS.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(shape=sig, size=sig, colour=region), alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4)) +
+  scale_colour_manual(values=cols,
+                      breaks=) +
+  coord_fixed() + 
+  labs(x="pQBR57 log fold-change", y="∆gacS log fold-change", 
+       alpha="FDR <0.05", size="FDR <0.05", shape="FDR <0.05") +
+  theme(legend.position="right"))
+```
+
+Separate out plot.
+
+```{r}
+p_pq57_dgacS + facet_wrap(~sig)
+```
+
+There is no obvious correlation between genes upregulated by pQBR57 acqusition, and those downregulated by gacS. In fact, the majority of genes differentially regulated both by ∆gacS and pQBR57 (`r nrow(with(tab_chr_pq57_dgacS_de, tab_chr_pq57_dgacS_de[sig=="both" & pQBR57.wt.logFC<0 & none.dgacS.logFC<0,]))`/`r nrow(subset(tab_chr_pq57_dgacS_de, sig=="both"))`) are independently downregulated both by the gacS knockout and by pQBR57.
+
+This suggests that gacS doesn't ameliorate pQBR57 by independently regulating genes affected by pQBR57. Instead there must be some interaction with pQBR57 (consistent with the results above). 
+
+Plot plasmid effects vs. plasmid + ∆gacS effects.
+
+```{r}
+tab_chr_pq57_x_dgacS_de <- full_table_chr[union(chr_pq57_de$gene, chr_pq57_dgacS_de$gene),
+                            c(grep("(pQBR57|none)\\.(wt|dgacS)\\.",colnames(full_table_chr), value=TRUE),
+                              "region")]
+tab_chr_pq57_x_dgacS_de$sig <- factor(with(tab_chr_pq57_x_dgacS_de, 
+                             ifelse(pQBR57.wt.FDR<0.05 & pQBR57.dgacS.FDR<0.05,"both",
+                                    ifelse(pQBR57.wt.FDR<0.05 & pQBR57.dgacS.FDR>0.05,"pQBR57 only",
+                                           ifelse(pQBR57.wt.FDR>0.05 & pQBR57.dgacS.FDR<0.05,"pQBR57 with dgacS only",
+                                                  "neither")))))
+summary(tab_chr_pq57_x_dgacS_de$sig)
+```
+
+```{r}
+(p_chr_col_am_ba <- ggplot(data=subset(chr, amelioration %in% c("wt","dgacS") & plasmid %in% c("pQBR57","pQBR103")),
+                 aes(x=logFC, y=(-log10(FDR)), colour=region, alpha=region, group=gene,
+                     size=ifelse(gene %in% rownames(tab_chr_pq_bothde), "both", ""))) +
+   ggtitle("effect of chromosome amelioration by ∆gacS") +
+   geom_vline(xintercept=0, size=0.1) +
+   geom_vline(xintercept=c(-1,1), size=0.1, linetype="dashed") +
+   geom_hline(yintercept=0, size=0.1) + 
+   geom_hline(yintercept=-log10(0.05), size=0.1, linetype="dashed") + 
+   geom_path(size=0.2, arrow=arrow(length=unit(5, "points"), ends="first")) + 
+   scale_colour_manual(values=cols) +
+   scale_alpha_manual(values=c(rep(0.8,6),0.2)) +
+   scale_size_manual(values=c(0.5,0.8), guide=FALSE) +
+   labs(x=expression(paste("log"[2]," fold-change")), y=expression(paste("-log"[10]," FDR"))) +
+   facet_grid(.~plasmid) +
+   theme(legend.position="right"))
+```
+
+```{r}
+(p_pq57_x_dgacS <- ggplot(data=tab_chr_pq57_x_dgacS_de,
+                       aes(x=pQBR57.wt.logFC, y=pQBR57.dgacS.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(shape=sig, size=sig, colour=region), alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4)) +
+  scale_colour_manual(values=cols) +
+  coord_fixed() + 
+  labs(x="pQBR57 log fold-change", y="pQBR57 with ∆gacS log fold-change", 
+       alpha="FDR <0.05", size="FDR <0.05", shape="FDR <0.05") +
+  theme(legend.position="right"))
+```
+
+```{r}
+p_pq57_dgacS %+% facet_wrap(~sig)
+```
+
+No: it is clear that many of the genes upregulated by pQBR57 tend to remain upregulated in the ∆gacS mutant. 
+
+```{r}
+sum(chr_pq57_up$gene %in% chr_pq57_dgacS_de$gene)
+```
+
+Some of these genes are less extremely DE (and no longer significant), e.g. prophage 3 genes, and many of the lexA-regulated genes. But other are more extremely DE in the ∆gacS mutant, e.g. the cluster of metabolic genes that are downregulated by pQBR57 are even more downregulated in ∆gacS. 
+
+How does plasmid acquisition affect gene expression in the ∆gacS background?
+
+```{r}
+tab_gacS_x_pq57_de <- full_table_chr[union(chr_dgacS_de$gene, chr_pq57_dgacS_de$gene),
+                            c(grep("(pQBR57|none)\\.(wt|dgacS)\\.",colnames(full_table_chr), value=TRUE),
+                              "region")]
+
+tab_gacS_x_pq57_de$sig <- factor(with(tab_gacS_x_pq57_de, 
+                             ifelse(none.dgacS.FDR<0.05 & pQBR57.dgacS.FDR<0.05,"both",
+                                    ifelse(none.dgacS.FDR<0.05 & pQBR57.dgacS.FDR>0.05,"dgacS only",
+                                           ifelse(none.dgacS.FDR>0.05 & pQBR57.dgacS.FDR<0.05,"pQBR57 with dgacS only",
+                                                  "neither")))))
+summary(tab_gacS_x_pq57_de$sig)
+```
+```{r}
+(p_gacS_x_pq57 <- ggplot(data=tab_gacS_x_pq57_de, 
+       aes(x=none.dgacS.logFC, y=pQBR57.dgacS.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(colour=region, shape=sig, size=sig), alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4)) +
+  scale_colour_manual(values=cols) +
+  coord_fixed() + 
+  labs(x="∆gacS log fold-change", y="∆gacS with pQBR57 log fold-change", 
+       alpha=leg_title, size=leg_title, shape=leg_title) +
+  theme(legend.position="right"))
+```
+
+This shows a clear trend whereby genes are regulated similarly in the gacS mutation with and without pQBR57, but with a cluster of genes above the line which are specifically upregulated in gacS when pQBR57 is present.
+
+What about for pQBR103?
+
+```{r}
+tab_chr_pq103_dgacS_de <- full_table_chr[union(chr_pq103_de$gene, chr_dgacS_de$gene),
+                            c(grep("(pQBR103|none)\\.(wt|dgacS)\\.",colnames(full_table_chr), value=TRUE),
+                              "region")]
+tab_chr_pq103_dgacS_de$sig <- factor(with(tab_chr_pq103_dgacS_de, 
+                             ifelse(pQBR103.wt.FDR<0.05 & none.dgacS.FDR<0.05,"both",
+                                    ifelse(pQBR103.wt.FDR<0.05 & none.dgacS.FDR>0.05,"pQBR103 only",
+                                           ifelse(pQBR103.wt.FDR>0.05 & none.dgacS.FDR<0.05,"dgacS only",
+                                                  "neither")))))
+summary(tab_chr_pq103_dgacS_de$sig)
+```
+
+About 40% (104/(104+152) of the genes regulated by pQBR103 acquisition are also independently regulated by gacS.
+
+```{r}
+(p_pq103_dgacS <- ggplot(data=tab_chr_pq103_dgacS_de, 
+       aes(x=pQBR103.wt.logFC, y=none.dgacS.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(shape=sig, size=sig, colour=region), alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4)) +
+  scale_colour_manual(values=cols,
+                      breaks=) +
+  coord_fixed() + 
+  labs(x="pQBR103 log fold-change", y="∆gacS log fold-change", 
+       alpha=leg_title, size=leg_title, shape=leg_title) +
+  theme(legend.position="right"))
+```
+
+```{r}
+p_pq103_dgacS + facet_wrap(~sig)
+```
+
+In contrast to pQBR57, we find a large cluster of genes here that are upregulated by pQBR103 but downregulated by ∆gacS. `r nrow(with(tab_chr_pq103_dgacS_de, tab_chr_pq103_dgacS_de[sig=="both" & pQBR103.wt.logFC>0 & none.dgacS.logFC<0,]))`/`r nrow(subset(tab_chr_pq103_dgacS_de, sig=="both"))` of genes differentially-regulated by both pQBR103 and ∆gacS are upregulated by pQBR103 and downregulated by ∆gacS.
+
+This suggests that pQBR103 may be ameliorated by ∆gacS independently regulating a subset of costly genes. I suspect that these are the same set of metabolic genes upregulated by pQBR103 and downregulated by pQBR57.
+
+Plot plasmid effects vs. plasmid + ∆gacS effects.
+
+```{r}
+tab_chr_pq103_x_dgacS_de <- full_table_chr[union(chr_pq103_de$gene, chr_pq103_dgacS_de$gene),
+                            c(grep("(pQBR103|none)\\.(wt|dgacS)\\.",colnames(full_table_chr), value=TRUE),
+                              "region")]
+tab_chr_pq103_x_dgacS_de$sig <- factor(with(tab_chr_pq103_x_dgacS_de, 
+                             ifelse(pQBR103.wt.FDR<0.05 & pQBR103.dgacS.FDR<0.05,"both",
+                                    ifelse(pQBR103.wt.FDR<0.05 & pQBR103.dgacS.FDR>0.05,"pQBR103 only",
+                                           ifelse(pQBR103.wt.FDR>0.05 & pQBR103.dgacS.FDR<0.05,"pQBR103 with dgacS only",
+                                                  "neither")))))
+summary(tab_chr_pq103_x_dgacS_de$sig)
+```
+
+```{r}
+(p_pq103_x_dgacS <- ggplot(data=tab_chr_pq103_x_dgacS_de,
+                       aes(x=pQBR103.wt.logFC, y=pQBR103.dgacS.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(shape=sig, size=sig, colour=region), alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4)) +
+  scale_colour_manual(values=cols) +
+  coord_fixed() + 
+  labs(x="pQBR103 log fold-change", y="pQBR103 with ∆gacS log fold-change", 
+       alpha=leg_title, size=leg_title, shape=leg_title) +
+  theme_pub() + theme(legend.position="right"))
+```
+
+```{r}
+p_pq103_dgacS %+% facet_wrap(~sig)
+```
+
+This plot is similar to the situation with pQBR57 in that many of the genes that are differentially-regulated by pQBR103 are also differentially-regulated in the ∆gacS mutant. 
+
+How does plasmid acquisition affect gene expression in the ∆gacS background?
+
+```{r}
+tab_gacS_x_pq103_de <- full_table_chr[union(chr_dgacS_de$gene, chr_pq103_dgacS_de$gene),
+                            c(grep("(pQBR103|none)\\.(wt|dgacS)\\.",colnames(full_table_chr), value=TRUE),
+                              "region")]
+
+tab_gacS_x_pq103_de$sig <- factor(with(tab_gacS_x_pq103_de, 
+                             ifelse(none.dgacS.FDR<0.05 & pQBR103.dgacS.FDR<0.05,"both",
+                                    ifelse(none.dgacS.FDR<0.05 & pQBR103.dgacS.FDR>0.05,"dgacS only",
+                                           ifelse(none.dgacS.FDR>0.05 & pQBR103.dgacS.FDR<0.05,"pQBR103 with dgacS only",
+                                                  "neither")))))
+summary(tab_gacS_x_pq103_de$sig)
+```
+
+Plot.
+
+```{r}
+(p_dgacS_x_pq103 <- ggplot(data=tab_gacS_x_pq103_de, 
+       aes(x=none.dgacS.logFC, y=pQBR103.dgacS.logFC)) +
+  geom_vline(data=lines, aes(xintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_hline(data=lines, aes(yintercept=intercept, linetype=linetype), size=0.2, show.legend=FALSE) +
+  geom_point(aes(colour=region, shape=sig, size=sig), alpha=0.8) +
+  scale_size_manual(values=c(1.5,0.8,0.8)) + 
+  scale_shape_manual(values=c(16,0,4)) +
+  scale_colour_manual(values=cols) +
+  coord_fixed() + 
+  labs(x="∆gacS log fold-change", y="∆gacS with pQBR103 log fold-change", 
+       alpha=leg_title, size=leg_title, shape=leg_title) +
+  theme(legend.position="right"))
+```
+
+This shows a clear trend whereby genes are regulated similarly in the gacS mutation with and without pQBR103.
+
+**Co-upregulated genes by pQBR57 and pQBR103**
+
+Of the genes upregulated by pQBR57 and pQBR103, how are these affected independently by the ∆gacS mutant?
+
+```{r}
+up_both_gacS <- full_table_chr[rownames(up_both),grep("none.dgacS",colnames(full_table_chr))]
+
+up_both_gacS[up_both_gacS$none.dgacS.FDR<0.05,
+             c("none.dgacS.logFC","none.dgacS.FDR","none.dgacS.logCPM")]
+```
+
+
+**Summary: ∆gacS has a big effect on gene expression. It downregulates a group of genes which are also downregulated by pQBR57 but upregulated by pQBR103.**
+
+**Its effects on the genes upregulated by the plasmids are to bring expression of these genes down. It is more effective with pQBR103 than with pQBR57 -- in particular consider prophage 1 gene expression, which is still significantly upregulated in pQBR57, but not in pQBR103.**
+
+**For both plasmids, there are subsets of genes which are differentially-expressed when both plasmid and ∆gacS are present, that are not differentially-expressed when either plasmid or ∆gacS are present separately.**
+
+**As with PFLU4242, the Tn6291 genes remain upregulated.**
+
+
+### 2. Chromosomal genes differentially expressed relative to the unameliorated plasmid.
+
+Are the genes which are upregulated by the plasmid and then not significantly different from the ancestor following amelioration significantly *downregulated* relative to the plasmid-carrying strain?
+
+```{r}
+full_table_chr_comp <- read.csv("../data/COMPMUT_RNAseq_2_de_table_chr_comp.csv", sep=",")
+full_table_chr_comp$gene <- rownames(full_table_chr_comp)
+chr_comp <- makeLong(full_table_chr_comp)
+
+chr_pq57_dPFLU4242_am <- chr_pq57_de[!(chr_pq57_de$gene %in% chr_pq57_dPFLU4242_de$gene),]
+```
+
+`r nrow(chr_pq57_dPFLU4242_am)` genes are differentially expressed following pQBR57 acquisition, and not DE in the ∆PFLU4242 mutant.
+
+Are all of these genes significantly differentially expressed relative to plasmid-bearers?
+
+```{r}
+chr_pq57_dPFLU4242_comp_de <- filter(chr_comp, plasmid=="pQBR57" & amelioration=="dPFLU4242" & FDR<0.05)
+
+chr_pq57_dPFLU4242_genelist <- unique(chr_pq57_dPFLU4242_am$gene, chr_pq57_dPFLU4242_comp_de$gene)
+
+chr_pq57_dPFLU4242_comparisons <- data.frame(gene     = chr_pq57_dPFLU4242_genelist,
+                                             vanc.FDR = full_table_chr[chr_pq57_dPFLU4242_genelist,"pQBR57.wt.FDR"],
+                                             vanc.logFC = full_table_chr[chr_pq57_dPFLU4242_genelist,"pQBR57.wt.logFC"],
+                                             vpla.FDR = full_table_chr_comp[chr_pq57_dPFLU4242_genelist,"pQBR57.dPFLU4242.c.FDR"],
+                                             vpla.logFC = full_table_chr_comp[chr_pq57_dPFLU4242_genelist,"pQBR57.dPFLU4242.c.logFC"])
+
+chr_pq57_dPFLU4242_comparisons$shape <- with(chr_pq57_dPFLU4242_comparisons, 
+                                             ifelse(vanc.FDR<0.05 & vpla.FDR<0.05,
+                                                    "both",
+                                                    ifelse(vanc.FDR<0.05,"vanc only",
+                                                           ifelse(vpla<0.05,"vpla only",
+                                                                  "neither"))))
+
+ggplot(data=chr_pq57_dPFLU4242_comparisons, 
+       aes(x=vanc.logFC, y=vpla.logFC,shape=shape)) +
+  geom_point() + scale_shape_manual(values=c(16,1,4,2)) + theme(legend.position="right")
+```
+
+This plot shows the overall trend in genes being significantly downregulated following plasmid acquisition. However it also shows a considerable proportion of genes that *are* significantly DE relative to plasmid-free but are not significantly DE relative to plasmid bearers.
+
+```{r}
+chr_pq57_dPFLU4242_comparisons %>% summarise(both = sum(shape=="both"),
+                                             vanc_only = sum(shape=="vanc only"))
+```
+
+This suggests that there may be some residual differences in chromosomal gene expression between ameliorated and plasmid-free strains that we do not have power to detect with the replication in this experiment. 
+
+Is it similar for pQBR103?
+
+```{r}
+chr_pq103_dPFLU4242_am <- chr_pq103_de[!(chr_pq103_de$gene %in% chr_pq103_dPFLU4242_de$gene),]
+```
+
+`r nrow(chr_pq103_dPFLU4242_am)` genes are differentially expressed following pQBR103 acquisition, and not DE in the ∆PFLU4242 mutant.
+
+Are all of these genes significantly differentially expressed relative to plasmid-bearers?
+
+```{r}
+chr_pq103_dPFLU4242_comp_de <- filter(chr_comp, plasmid=="pQBR103" & amelioration=="dPFLU4242" & FDR<0.05)
+
+chr_pq103_dPFLU4242_genelist <- unique(chr_pq103_dPFLU4242_am$gene, chr_pq103_dPFLU4242_comp_de$gene)
+
+chr_pq103_dPFLU4242_comparisons <- data.frame(gene     = chr_pq103_dPFLU4242_genelist,
+                                             vanc.FDR = full_table_chr[chr_pq103_dPFLU4242_genelist,"pQBR103.wt.FDR"],
+                                             vanc.logFC = full_table_chr[chr_pq103_dPFLU4242_genelist,"pQBR103.wt.logFC"],
+                                             vpla.FDR = full_table_chr_comp[chr_pq103_dPFLU4242_genelist,"pQBR103.dPFLU4242.c.FDR"],
+                                             vpla.logFC = full_table_chr_comp[chr_pq103_dPFLU4242_genelist,"pQBR103.dPFLU4242.c.logFC"])
+
+chr_pq103_dPFLU4242_comparisons$shape <- with(chr_pq103_dPFLU4242_comparisons, 
+                                             ifelse(vanc.FDR<0.05 & vpla.FDR<0.05,
+                                                    "both",
+                                                    ifelse(vanc.FDR<0.05,"vanc only",
+                                                           ifelse(vpla<0.05,"vpla only",
+                                                                  "neither"))))
+
+ggplot(data=chr_pq103_dPFLU4242_comparisons, 
+       aes(x=vanc.logFC, y=vpla.logFC,shape=shape)) +
+  geom_point() + scale_shape_manual(values=c(16,1,4,2)) + theme(legend.position="right")
+```
+
+Similar overall to pQBR57, though the effect seems more complete for pQBR103. 
+
+```{r}
+chr_pq103_dPFLU4242_comparisons %>% summarise(both = sum(shape=="both"),
+                                             vanc_only = sum(shape=="vanc only"))
+```
+
+Again, suggests that there may be some residual differences in chromosomal gene expression between ameliorated and plasmid-free strains that we do not have power to detect with the replication in this experiment. 
+
+### Side-project: glutamine-related genes
+
+Extracted all genes from the AM181176.gff file matching 'glutamine'. This gave the following list:
+
+```{r}
+gln <- c("PFLU_0348",
+         "PFLU_1514",
+         "PFLU_2163",
+         "PFLU_2323",
+         "PFLU_2324",
+         "PFLU_2618",
+         "PFLU_3065",
+         "PFLU_3584",
+         "PFLU_4268",
+         "PFLU_5043",
+         "PFLU_5847",
+         "PFLU_5849")
+
+full_table_chr[gln,grep("pQBR[0-9]*\\.wt.(logFC|FDR)", colnames(full_table_chr))] %>% kable()
+```
+
+No significantly differentially-expressed genes here.
+
+---
+
+**[Back to index.](COMPMUT_index.md)**
+
+**[On to pQBR57 genes.]()(COMPMUT_RNAseq_6b_analysis.md)**
+
+**[On to pQBR103 genes.]()(COMPMUT_RNAseq_6c_analysis.md)**

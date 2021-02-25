@@ -1,0 +1,145 @@
+exp_rep,tc_rep,plasmid_pucp,plasmid_pq,timepoint,dilution,spread,count_white,count_blue
+a,A,no pUCP18,none,start,6,60,164,220
+a,A,no pUCP18,pQBR57,start,6,60,242,237
+a,A,no insert,none,start,6,60,175,250
+a,A,no insert,pQBR57,start,6,60,204,251
+a,A,par,none,start,6,60,111,236
+a,A,par,pQBR57,start,6,60,188,231
+a,B,no pUCP18,none,start,6,60,180,222
+a,B,no pUCP18,pQBR57,start,6,60,211,213
+a,B,no insert,none,start,6,60,161,247
+a,B,no insert,pQBR57,start,6,60,222,236
+a,B,par,none,start,6,60,163,273
+a,B,par,pQBR57,start,6,60,251,242
+a,C,no pUCP18,none,start,6,60,153,249
+a,C,no pUCP18,pQBR57,start,6,60,225,206
+a,C,no insert,none,start,6,60,134,209
+a,C,no insert,pQBR57,start,6,60,171,186
+a,C,par,none,start,6,60,149,217
+a,C,par,pQBR57,start,6,60,178,223
+b,A,no pUCP18,none,start,6,60,227,112
+b,A,no pUCP18,pQBR57,start,6,60,179,174
+b,A,no insert,none,start,6,60,155,152
+b,A,no insert,pQBR57,start,6,60,144,159
+b,A,par,none,start,6,60,181,139
+b,A,par,pQBR57,start,6,60,157,135
+b,B,no pUCP18,none,start,6,60,160,112
+b,B,no pUCP18,pQBR57,start,6,60,160,112
+b,B,no insert,none,start,6,60,130,95
+b,B,no insert,pQBR57,start,6,60,95,88
+b,B,par,none,start,6,60,85,164
+b,B,par,pQBR57,start,6,60,100,87
+b,C,no pUCP18,none,start,6,60,199,120
+b,C,no pUCP18,pQBR57,start,6,60,179,137
+b,C,no insert,none,start,6,60,138,112
+b,C,no insert,pQBR57,start,6,60,102,121
+b,C,par,none,start,6,60,163,131
+b,C,par,pQBR57,start,6,60,139,119
+c,A,no pUCP18,none,start,6,60,128,170
+c,A,no pUCP18,pQBR57,start,6,60,167,153
+c,A,no insert,none,start,6,60,87,156
+c,A,no insert,pQBR57,start,6,60,194,165
+c,A,par,none,start,6,60,87,198
+c,A,par,pQBR57,start,6,60,139,142
+c,B,no pUCP18,none,start,6,60,152,161
+c,B,no pUCP18,pQBR57,start,6,60,168,159
+c,B,no insert,none,start,6,60,83,130
+c,B,no insert,pQBR57,start,6,60,128,134
+c,B,par,none,start,6,60,84,142
+c,B,par,pQBR57,start,6,60,141,139
+c,C,no pUCP18,none,start,6,60,166,179
+c,C,no pUCP18,pQBR57,start,6,60,177,174
+c,C,no insert,none,start,6,60,142,193
+c,C,no insert,pQBR57,start,6,60,114,158
+c,C,par,none,start,6,60,135,204
+c,C,par,pQBR57,start,6,60,149,159
+d,A,no pUCP18,none,start,6,60,145,179
+d,A,no pUCP18,pQBR57,start,6,60,191,181
+d,A,no insert,none,start,6,60,140,189
+d,A,no insert,pQBR57,start,6,60,146,175
+d,A,par,none,start,6,60,131,166
+d,A,par,pQBR57,start,6,60,168,165
+d,B,no pUCP18,none,start,6,60,193,178
+d,B,no pUCP18,pQBR57,start,6,60,173,139
+d,B,no insert,none,start,6,60,87,155
+d,B,no insert,pQBR57,start,6,60,113,141
+d,B,par,none,start,6,60,92,158
+d,B,par,pQBR57,start,6,60,134,128
+d,C,no pUCP18,none,start,6,60,162,158
+d,C,no pUCP18,pQBR57,start,6,60,174,144
+d,C,no insert,none,start,6,60,95,179
+d,C,no insert,pQBR57,start,6,60,90,125
+d,C,par,none,start,6,60,98,164
+d,C,par,pQBR57,start,6,60,103,124
+a,A,no pUCP18,none,end,6,40,158,183
+a,A,no pUCP18,pQBR57,end,6,40,95,144
+a,A,no insert,none,end,6,40,130,197
+a,A,no insert,pQBR57,end,6,40,119,198
+a,A,par,none,end,6,40,80,213
+a,A,par,pQBR57,end,6,40,142,147
+a,B,no pUCP18,none,end,6,40,142,206
+a,B,no pUCP18,pQBR57,end,6,40,117,133
+a,B,no insert,none,end,6,40,125,224
+a,B,no insert,pQBR57,end,6,40,78,127
+a,B,par,none,end,6,40,96,244
+a,B,par,pQBR57,end,6,40,146,118
+a,C,no pUCP18,none,end,6,40,138,141
+a,C,no pUCP18,pQBR57,end,6,40,97,127
+a,C,no insert,none,end,6,40,88,123
+a,C,no insert,pQBR57,end,6,40,89,125
+a,C,par,none,end,6,40,82,125
+a,C,par,pQBR57,end,6,40,115,105
+b,A,no pUCP18,none,end,6,40,193,110
+b,A,no pUCP18,pQBR57,end,6,40,134,169
+b,A,no insert,none,end,6,40,127,102
+b,A,no insert,pQBR57,end,6,40,96,150
+b,A,par,none,end,6,40,111,170
+b,A,par,pQBR57,end,6,40,171,120
+b,B,no pUCP18,none,end,6,40,155,102
+b,B,no pUCP18,pQBR57,end,6,40,95,101
+b,B,no insert,none,end,6,40,132,135
+b,B,no insert,pQBR57,end,6,40,88,111
+b,B,par,none,end,6,40,95,113
+b,B,par,pQBR57,end,6,40,103,78
+b,C,no pUCP18,none,end,6,40,133,78
+b,C,no pUCP18,pQBR57,end,6,40,120,121
+b,C,no insert,none,end,6,40,128,79
+b,C,no insert,pQBR57,end,6,40,74,137
+b,C,par,none,end,6,40,116,100
+b,C,par,pQBR57,end,6,40,135,109
+c,A,no pUCP18,none,end,6,40,102,148
+c,A,no pUCP18,pQBR57,end,6,40,109,106
+c,A,no insert,none,end,6,40,128,224
+c,A,no insert,pQBR57,end,6,40,66,108
+c,A,par,none,end,6,40,97,175
+c,A,par,pQBR57,end,6,40,117,99
+c,B,no pUCP18,none,end,6,40,100,128
+c,B,no pUCP18,pQBR57,end,6,40,100,126
+c,B,no insert,none,end,6,40,121,139
+c,B,no insert,pQBR57,end,6,40,103,124
+c,B,par,none,end,6,40,115,204
+c,B,par,pQBR57,end,6,40,141,117
+c,C,no pUCP18,none,end,6,40,165,234
+c,C,no pUCP18,pQBR57,end,6,40,110,178
+c,C,no insert,none,end,6,40,138,182
+c,C,no insert,pQBR57,end,6,40,123,189
+c,C,par,none,end,6,40,137,258
+c,C,par,pQBR57,end,6,40,166,146
+d,A,no pUCP18,none,end,6,40,146,142
+d,A,no pUCP18,pQBR57,end,6,40,74,114
+d,A,no insert,none,end,6,40,109,136
+d,A,no insert,pQBR57,end,6,40,73,188
+d,A,par,none,end,6,40,110,153
+d,A,par,pQBR57,end,6,40,133,161
+d,B,no pUCP18,none,end,6,40,97,109
+d,B,no pUCP18,pQBR57,end,6,40,59,132
+d,B,no insert,none,end,6,40,83,137
+d,B,no insert,pQBR57,end,6,40,78,123
+d,B,par,none,end,6,40,77,133
+d,B,par,pQBR57,end,6,40,115,137
+d,C,no pUCP18,none,end,6,40,164,154
+d,C,no pUCP18,pQBR57,end,6,40,100,205
+d,C,no insert,none,end,6,40,142,170
+d,C,no insert,pQBR57,end,6,40,85,158
+d,C,par,none,end,6,40,107,178
+d,C,par,pQBR57,end,6,40,269,239

@@ -1,5 +1,16 @@
 # COMPMUT
 
-Megaplasmid compensatory mutations
+pQBR megaplasmid compensatory mutations manuscript: data and analysis.
 
-For formatted RMarkdown pages, click [here](./formatted_docs/COMPMUT_index.html)
+---
+
+- For an index of formatted RMarkdown pages containing data analysis and figure generation, click [here](./docs/COMPMUT_index.md).
+
+- For raw competition and culture data, and outputs from the RNAseq analyses, click [here](./data).
+
+- For short read sequences, click [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151570) (redirects to NCBI-GEO).
+
+---
+
+Questions, comments, suggestions, please [get in touch](mailto:j.p.j.hall@liverpool.ac.uk)!
+

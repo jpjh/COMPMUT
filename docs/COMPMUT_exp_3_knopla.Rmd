@@ -1,0 +1,588 @@
+---
+title: 'COMPMUT Experiments 3: Presentation and analysis of plasmid mutant and knockout fitness'
+author: "jpjh"
+date: "compiled Feb 2021"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+
+source("../functions/theme_pub.r")
+theme_github <- function(x){
+  theme_pub(base_size=12)
+}
+
+theme_set(theme_github())
+```
+
+## Competition experiments with knockout strains carrying different pQBR57 variants
+
+#### Experimental design:
+
+The naturally-occurring variants of pQBR57 (ancestral, V100A) were conjugated into the knockout strains (∆*gacS*, ∆*PFLU4242*) or into the unmodified gentamicin-resistant 'wild-type' strain. Conjugations were performed in quadruplicate to mitigate any effect of jackpot mutations resulting in a total of (three 'host' treatments by two plasmid treatments by four replicates = ) 24 strains, which were confirmed by PCR.
+
+Again, competition experiments were established for all of these 24 strains, alongside experiments for the plasmid-free wild-type, ∆*gacS*, and ∆*PFLU4242* strains, which were likewise performed in quadruplicate. There were therefore 36 'competitions'. 
+
+Competition experiments were conducted as described in [`COMPMUT_exp_1_knockouts.Rmd`](COMPMUT_exp_1_knockouts.md).
+
+#### Calculation of relative fitness and generation of figures
+
+Load in data and plot.
+
+```{r}
+d3 <- read.csv("../data/COMPMUT_exp_data_3.csv", header=TRUE)
+
+kable(head(d3))
+```
+
+Order variables.
+
+```{r}
+d3 <- d3 %>% 
+  mutate(host = factor(host, levels=c("wild-type","delta_gacS","delta_PFLU4242")),
+         plasmid = factor(plasmid, levels=c("plasmid-free","pQBR57_anc","pQBR57_V100A"),
+                          labels=c("plasmid-free","ancestral","V100A")))
+```
+
+Check starting ratios are approximately equal.
+
+```{r}
+pd <- position_dodge(width=0.3)
+
+d3 %>% filter(timepoint=="start") %>% 
+  mutate(ratio = count_white/(count_white + count_blue)) %>%
+  ggplot(aes(x=host, y=ratio)) + 
+    geom_hline(yintercept=0.5, linetype="dotted") +
+    facet_grid(.~plasmid) + 
+    geom_point(position=pd) + 
+    lims(y=c(0,1)) +
+    theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1))
+```
+
+Looks ok, some skew but nothing really off.
+
+Calculate fitness. Load up `calulate_fitness()`.
+
+```{r}
+source("../functions/calculate_fitness.R")
+
+id_cols <- c("replicate","host","plasmid")
+df3 <- calculate_fitness(d3, id_cols)  
+```
+
+Calculate summary statistics and make a nice plot.
+
+```{r}
+df3_summ <- df3 %>% 
+  group_by(host, plasmid) %>%
+  summarise(mean = mean(W_gm), 
+            n = n(), 
+            se = sd(W_gm)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(W_gm=mean)
+
+(plot_fig3 <- ggplot(data=df3,
+                   aes(x=host, y=W_gm)) +
+  geom_hline(yintercept=1, size=0.2, linetype=111) +
+  geom_point(position=pd, alpha=0.5, size=1, shape=16) +
+  geom_point(data=df3_summ, 
+             position=pd,
+             shape=1, size=2) +
+  geom_errorbar(data=df3_summ, width=0, size=0.4, 
+                aes(ymax=W_gm+se, ymin=W_gm-se), colour="black") +
+  scale_colour_manual(values=c("black","grey50")) +
+  scale_x_discrete(breaks=c("wild-type","delta_gacS","delta_PFLU4242"),
+                   labels=c("wild-type",
+                            expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242")))),
+                   name="chromosomal genotype") +
+  facet_grid(.~plasmid, scales="free") +
+  scale_y_continuous(name="relative fitness (W)", breaks=c(0.8,0.9,1)) +
+  theme(axis.text.x=element_text(angle=45, hjust=1)))
+```
+
+Output as `.svg`.
+
+```{r}
+svglite::svglite(height=2, width=3.5, file = "../plots/Fig3.svg")
+plot_fig3 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
+dev.off()
+```
+
+This plot can receive further annotation in Inkscape if necessary.
+
+Good. Proceed to analysis.
+
+#### Analysis of fitness data
+
+Analyse using standard linear model.
+
+```{r}
+mod3_1 <- lm(data=df3,
+             W_gm ~ host * plasmid)
+
+df3 <- df3 %>% mutate(mod3_1_resid = resid(mod3_1),
+              mod3_1_fitted = fitted(mod3_1))
+
+ggplot(data=df3, aes(x=mod3_1_fitted, y=mod3_1_resid)) + 
+  geom_point() + labs(x="fitted values", y="residuals")
+
+ggplot(data=df3, aes(x=host, y=mod3_1_resid)) + 
+  geom_point(position=position_jitter(width=0.1)) + 
+  labs(x="chromosomal genotype", y="residuals")
+
+ggplot(data=df3, aes(x=plasmid, y=mod3_1_resid)) + 
+  geom_point(position=position_jitter(width=0.1)) + 
+  labs(x="plasmid", y="residuals")
+
+ggplot(data=df3, aes(sample=mod3_1_resid)) + 
+    stat_qq() + stat_qq_line()
+```
+
+Model plots look good.
+
+```{r}
+fligner.test(W_gm ~ interaction(host, plasmid), data=df3)  
+bartlett.test(W_gm ~ interaction(host, plasmid), data=df3)  
+
+car::leveneTest(W_gm ~ interaction(host, plasmid), data=df3)  
+shapiro.test(resid(mod3_1))  
+```
+
+All looks fine.
+
+```{r}
+kable(anova(mod3_1))
+```
+
+Interaction effect is significant (F4,27 = 3.29, p = 0.025) -- chromosomal mutations affect the different `plasmid`s differently (i.e. different effect in plasmid-free). 
+
+Run post-hoc tests.
+
+```{r}
+library(emmeans)
+posthoc <- lsmeans(mod3_1, pairwise ~ host * plasmid, adjust="mvt")
+contr <- data.frame(posthoc$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""))
+kable(contr)
+```
+
+Shows a significant cost of pQBR57_anc, a significant effect of PFLU4242 amelioration, and a significant effect of pQBR57_V100A ameliorations.
+
+## Measurement of conjugation
+
+#### Experimental design
+
+Experiments were also performed to measure conjugation rate.
+
+For these experiments, the same strains were used as for the competition experiments above. 
+
+For each conjugation rate measurement, the strain to be tested was mixed with streptomycin-resistant recipient strains of *P. fluorescens* SBW25, or *P. putida* KT2440 to measure within-species and between-species conjugation rates. CFU/ml measurements were made for donor and recipient prior to mixing to enable calculation of starting population size. The mix was then subcultured 1:100 into fresh KB broth and incubated at 28°C shaking for 24 hours, before spreading samples on selective media to enumerate donors, recipients, and transconjugants. 
+
+### Calculation and analysis of conjugation rates
+
+Load up conjugation rate data and convert into a wide format for calculations.
+
+```{r}
+d7 <- read.csv(file="../data/COMPMUT_exp_data_3-1.csv", header=TRUE)
+
+kable(head(d7))
+```
+
+The Simonsen et al. (1990) formula for conjugation rate calculation is:
+
+`gamma = (log(N/N0)/t) * log(1+((TC/R)*(N/D))) * (1/(N-N0)))`
+
+For conjugation rate calculations, we therefore require:
+
+- N = total population at end point
+- N0 = total population at start point
+- TC = population of transconjugants at endpoint
+- R = population of recipients at endpoint
+- D = population of donors at endpoint
+
+We can also calculate fitness from these data to compare with the (better-controlled) data presented above. 
+
+#### Calculate conjugation rates
+
+Requires a bit of wrestling to get the cfu/ml information for this.
+
+Calculate cfu/ml for Pf and Pp separately.
+
+```{r}
+d7_start_D <- d7 %>% 
+  filter(timepoint == "start_donor") %>% select(!recipient & !timepoint) %>%
+  mutate(D0 = (10^dilution) * (1000/spread) * count_donor * 0.5 * 0.01)
+
+d7_start_R_pf <- d7 %>%
+  filter(timepoint == "start_pf_recipient") %>% select(!donor & !plasmid & !timepoint) %>%
+  mutate(R0 = (10^dilution) * (1000/spread) * count_recipient * 0.5 * 0.01)
+
+d7_start_R_pp <- d7 %>%
+  filter(timepoint == "start_pp_recipient") %>% select(!donor & !plasmid & !timepoint) %>%
+  mutate(R0 = (10^dilution) * (1000/spread) * count_recipient * 0.5 * 0.01)
+
+d7_start_pf <- full_join(d7_start_D, d7_start_R_pf, by=c("replicate"),
+                         suffix=c("donor","recipient")) %>%
+  select(replicate, donor, plasmid, recipient, D0, R0)
+                         
+d7_start_pp <- full_join(d7_start_D, d7_start_R_pp, by=c("replicate"),
+                         suffix=c("donor","recipient")) %>%
+    select(replicate, donor, plasmid, recipient, D0, R0)
+
+d7_start <- bind_rows(d7_start_pf, d7_start_pp)
+
+d7_end_DR <- d7 %>% filter(timepoint == "end_DR") %>%
+  mutate(D = (10^dilution) * (1000/spread) * count_donor,
+         R = (10^dilution) * (1000/spread) * count_recipient) %>%
+  select(replicate, donor, plasmid, recipient, D, R)
+
+d7_end_T <- d7 %>% filter(timepoint == "end_T") %>%
+  mutate(TC = (10^dilution) * (1000/spread) * count_recipient) %>%
+  select(replicate, donor, plasmid, recipient, TC)
+
+dc7 <- left_join(d7_start, d7_end_DR) %>%
+  left_join(d7_end_T) %>%
+  mutate(N0 = D0 + R0,
+         N = D + R,
+         gamma = (log(N/N0)/24) * log(1+((TC/R)*(N/D))) * (1/(N-N0)),
+         donor = factor(donor, levels=c("wild-type","delta_gacS","delta_PFLU4242")),
+         recipient = factor(recipient, levels=c("Pf","Pp"), 
+                            labels=c("P. fluorescens","P. putida")),
+         plasmid = factor(plasmid, levels=c("pQBR57_anc","pQBR57_V100A"),
+                          labels=c("ancestral","V100A")))
+```
+
+Generate a plot.
+
+```{r}
+dc7_summ <- dc7 %>% 
+  group_by(donor, recipient, plasmid) %>%
+  mutate(log10_gamma = log10(gamma)) %>%
+  summarise(mean = mean(log10_gamma), 
+            n = n(), 
+            se = sd(log10_gamma)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(log10_gamma=mean)
+
+pd <- position_dodge(width=0.4)
+
+
+(plot_fig7 <- ggplot(data=dc7, aes(x=donor, y=log10(gamma), colour=plasmid)) + 
+    geom_point(position=pd, alpha=0.5, size=1.5, shape=16) + 
+    facet_grid(.~recipient) +
+    labs(y=expression(paste("log"[10], "(\u03B3)"))) +
+    scale_colour_manual(values=c("chartreuse3","deeppink"), name = "pQBR57 variant") +
+    scale_x_discrete(breaks=c("wild-type","delta_gacS","delta_PFLU4242"),
+                     labels=c("wild-type",
+                              expression(paste(Delta,italic("gacS"))),
+                              expression(paste(Delta,italic("PFLU4242")))),
+                     name="donor genotype") +
+    geom_point(data=dc7_summ, aes(y=log10_gamma, group=interaction(donor, plasmid)), 
+               shape = 1, position=pd, size=2) +
+    geom_errorbar(data=dc7_summ,
+                  aes(ymax=log10_gamma+se, ymin=log10_gamma-se, y=log10_gamma, group=interaction(donor, plasmid)),
+                  width=0, size=0.4, position=pd) +
+   theme(axis.text.x=element_text(angle=45, hjust=1),
+        strip.text.x=element_text(face="italic"),
+        legend.position="right"))
+```
+
+Output.
+
+```{r}
+svglite::svglite(height=2, width=3.5, file = "../plots/Fig7.svg")
+plot_fig7 + theme_pub() + 
+  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="right", strip.text.x=element_text(face="italic"))
+dev.off()
+```
+
+Output alongside competition data.
+
+```{r}
+library(patchwork)
+
+plot_fig1 <- readRDS("../plots/Fig1.rds")
+plot_fig2 <- readRDS("../plots/Fig2.rds")
+
+f1 <- plot_fig1 + theme_pub() + ggtitle("A") +
+  theme(axis.text.x=element_text(angle=45, hjust=1),
+        plot.title=element_text(hjust=0))
+f2 <- plot_fig2 + theme_pub() + ggtitle("B") +
+  theme(axis.text.x=element_text(angle=45, hjust=1),
+        plot.title=element_text(hjust=0))
+f7 <- plot_fig7 + theme_pub() + ggtitle("C") +
+  theme(axis.text.x=element_text(angle=45, hjust=1), 
+        legend.position=c(0.75, 0.8), 
+        plot.title=element_text(hjust=0),
+        strip.text.x=element_text(face="italic"))
+
+svglite::svglite(height=3, width=7.2, file = "../plots/Fig1_2_7.svg")
+f1 + f2 + f7 + plot_layout(widths=c(3,1,2))
+dev.off()
+```
+
+
+#### Analysis
+
+```{r}
+mod7_1 <- lm(data=dc7,
+             log10(gamma) ~ recipient * donor * plasmid)
+
+par(mfrow=c(2,2))
+plot(mod7_1)
+```
+
+Data look ok for a linear model.
+
+```{r}
+fligner.test(log10(gamma) ~ interaction(recipient, donor, plasmid), data=dc7)  
+bartlett.test(log10(gamma) ~ interaction(recipient, donor, plasmid), data=dc7)  
+
+car::leveneTest(W_gm ~ interaction(host, plasmid), data=df3)  
+shapiro.test(resid(mod3_1))  
+```
+
+These are fine. Proceed with model reduction.
+
+```{r}
+kable(anova(mod7_1))
+```
+
+No significant 3-way interaction (p > 0.05)
+
+```{r}
+mod7_2 <- update(mod7_1, .~.-recipient:donor:plasmid)
+
+kable(anova(mod7_2))
+```
+
+Remove least significant interaction first.
+
+```{r}
+mod7_3 <- update(mod7_2, .~.-recipient:donor)
+
+kable(anova(mod7_3))
+```
+
+Other interaction is also not significant.
+
+```{r}
+mod7_4 <- update(mod7_3, .~.-donor:plasmid)
+
+kable(anova(mod7_4))
+```
+
+And the remaining interaction (recipient:plasmid) also has p > 0.05, though it is marginal (p < 0.06).
+
+```{r}
+mod7_5 <- update(mod7_4, .~.-recipient:plasmid)
+
+kable(anova(mod7_5))
+```
+
+This shows that recipient has an effect (lower conjugation rates into putida than into fluorescens), donor has an effect (lower conjugation rates with ∆gacS). There is also a small, but significant effect of plasmid (V100A has slightly higher conjugation rate). 
+
+Validate model by examining plots.
+
+```{r}
+plot(mod7_5)
+```
+
+Looks ok.
+
+The marginal interaction, recipient:plasmid, suggests that the plasmid has a stronger effect when conjugating into fluorescens than into putida.
+
+```{r}
+posthoc_c <- lsmeans(mod7_5, pairwise ~ plasmid + recipient + donor, adjust="mvt")
+contr_c <- data.frame(posthoc_c$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""))
+contr_c %>% kable()
+```
+
+
+Are these conclusions qualitatively different when we just consider the *P. fluorescens* data?
+
+```{r}
+mod7_10 <- lm(data=filter(dc7, recipient=="P. fluorescens"),
+             log10(gamma) ~ donor * plasmid)
+
+kable(anova(mod7_10))
+```
+
+No significant interaction.
+
+```{r}
+mod7_11 <- update(mod7_10, .~.-donor:plasmid)
+
+kable(anova(mod7_11))
+```
+
+Significant effect of plasmid and donor, as with the full analysis.
+
+What about with just *P. putida*?
+
+```{r}
+mod7_20 <- lm(data=filter(dc7, recipient=="P. putida"),
+             log10(gamma) ~ donor * plasmid)
+kable(anova(mod7_20))
+```
+
+No significant interaction.
+
+```{r}
+mod7_21 <- update(mod7_20, .~.-donor:plasmid)
+
+kable(anova(mod7_21))
+```
+
+No significant main effect of plasmid in *P. putida*, so indeed it seems like there is a possibly varying effect of the different pQBR57 variants depending on the recipient. But it is unclear, and strong conclusions should not be drawn either way.
+
+#### Validation plots
+
+It is possible that apparent differences in conjugation rates are driven by differences in recipients or donors, rather than changes in transconjugants. To test what populations in the conjugation mix are driving differences in conjugation rate, try plotting all populations against rate.
+
+```{r}
+ggplot(data=dc7, aes(x=log10(D0), y=log10(gamma), shape=plasmid, colour=donor)) + 
+  geom_point() + facet_grid(.~recipient, scale="free_x") + 
+  scale_shape_manual(values=c(17,1)) + 
+  theme(legend.position="right") + ggtitle("starting donors vs gamma")
+
+ggplot(data=dc7, aes(x=log10(R0), y=log10(gamma), shape=plasmid, colour=donor)) + 
+  geom_point() + facet_grid(.~recipient, scale="free_x") + 
+  scale_shape_manual(values=c(17,1)) + 
+  theme(legend.position="right") + ggtitle("starting recipients vs gamma")
+
+ggplot(data=dc7, aes(x=log10(D), y=log10(gamma), shape=plasmid, colour=donor)) + 
+  geom_point() + facet_grid(.~recipient, scale="free_x") + 
+  scale_shape_manual(values=c(17,1)) + 
+  theme(legend.position="right") + ggtitle("endpoint donors vs gamma")
+
+ggplot(data=dc7, aes(x=log10(R), y=log10(gamma), shape=plasmid, colour=donor)) + 
+  geom_point() + facet_grid(.~recipient, scale="free_x") + 
+  scale_shape_manual(values=c(17,1)) + 
+  theme(legend.position="right") + ggtitle("endpoint recipients vs gamma")
+
+ggplot(data=dc7, aes(x=log10(TC), y=log10(gamma), shape=plasmid, colour=donor)) + 
+  geom_point() + facet_grid(.~recipient, scale="free_x") + 
+  scale_shape_manual(values=c(17,1)) + 
+  theme(legend.position="right") + ggtitle("transconjugants vs gamma")
+```
+
+These plots clearly show tat the main driver of conjugation rate calculations is the transconjugants.
+
+### How much does conjugation affect measures of fitness?
+
+We are interested in the fitness of bacteria carrying plasmid relative to plasmid-free. It therefore makes sense for conjugation and segregation to be rolled into this measure — if high conjugation rate increases the relative fitness of plasmid bearers, due to infection of neighbours, then that should be included in the measure.
+
+Nevertheless, it is useful to estimate the effect that conjugation can have on fitness.
+
+Calculate ratios — what proportion of endpoint population are transconjugants?
+
+
+```{r}
+dc7 <- dc7 %>% mutate(tr_ratio = TC/R,
+                      td_ratio = TC/D,
+                      tp_ratio = TC/(D+TC),
+                      tn_ratio = TC/N)
+
+dc7 %>%
+  ggplot(aes(x=donor, y=tp_ratio, shape=plasmid)) + 
+  geom_point(position=pd) + 
+  facet_grid(recipient~., scales="free_y") +
+  labs(y="transconjugants as proportion of plasmid-bearers") +
+  scale_shape_manual(values=c(17,1), name = "pQBR57 variant") +
+  scale_x_discrete(breaks=c("wild-type","delta_gacS","delta_PFLU4242"),
+                   labels=c("wild-type",
+                            expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242")))),
+                   name="donor genotype") +
+   theme(axis.text.x=element_text(angle=45, hjust=1),
+        strip.text.x=element_text(face="italic"),
+        legend.position="right")
+
+dc7 %>%
+  ggplot(aes(x=donor, y=tr_ratio, shape=plasmid)) + 
+  geom_point(position=pd) + 
+  facet_grid(recipient~., scales="free_y") +
+  labs(y="T/R ratio") +
+  scale_shape_manual(values=c(17,1), name = "pQBR57 variant") +
+  scale_x_discrete(breaks=c("wild-type","delta_gacS","delta_PFLU4242"),
+                   labels=c("wild-type",
+                            expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242")))),
+                   name="donor genotype") +
+   theme(axis.text.x=element_text(angle=45, hjust=1),
+        strip.text.x=element_text(face="italic"),
+        legend.position="right")
+
+dc7 %>%
+  ggplot(aes(x=donor, y=tn_ratio, shape=plasmid)) + 
+  geom_point(position=pd) + 
+  facet_grid(recipient~., scales="free_y") +
+  labs(y="T/N ratio") +
+  scale_shape_manual(values=c(17,1), name = "pQBR57 variant") +
+  scale_x_discrete(breaks=c("wild-type","delta_gacS","delta_PFLU4242"),
+                   labels=c("wild-type",
+                            expression(paste(Delta,italic("gacS"))),
+                            expression(paste(Delta,italic("PFLU4242")))),
+                   name="donor genotype") +
+   theme(axis.text.x=element_text(angle=45, hjust=1),
+        strip.text.x=element_text(face="italic"),
+        legend.position="right")
+```
+
+Transconjugants end up being up to 12% of the total population in one replicate, but usually more like 2.5%.
+
+```{r}
+dc7 %>% group_by(plasmid, recipient, donor) %>%
+  summarise(mean = mean(tn_ratio), sd = sd(tn_ratio), max=max(tn_ratio), min=min(tn_ratio)) %>% kable()
+```
+
+Mean effect is 2.9% of total.
+
+How are fitness measurements changed if transconjugants count as donors?
+
+```{r}
+dc7 <- dc7 %>% mutate(m_D = log(D/D0),
+                      m_R = log(R/R0),
+                      m_Dadj = log((D+TC)/D0),
+                      m_Radj = log((R-TC)/R0),
+                      W = m_D/m_R,
+                      W_corr = m_Dadj/m_Radj)
+
+cols_to_take <- c("replicate", "recipient","plasmid", "donor")
+
+dc7l <- dc7 %>%
+  select(all_of(cols_to_take), W, W_corr) %>%
+  pivot_longer(cols = c("W", "W_corr"), names_to = "fitness_measure", values_to = "fitness")
+```
+
+Plot this:
+
+```{r}
+dc7l %>% filter(recipient != "P. putida") %>%
+  ggplot(aes(x=donor, y=fitness, shape=plasmid, colour=fitness_measure)) + 
+  geom_hline(yintercept=1, size=0.2) +
+  geom_point(position=pd) + 
+  facet_grid(.~recipient) +
+  theme(legend.position="right")
+```
+
+Looks very similar; no outstanding difference, except possibly for the double mutant which benefits from higher conjugation rates. What are the statistics?
+
+```{r}
+dc7 %>% mutate(ratio = W_corr/W) %>% 
+  group_by(recipient, donor, plasmid) %>%
+  summarise(mean = mean(ratio), sd = sd(ratio), max=max(ratio), min=min(ratio)) %>% kable()
+```
+
+When including transconjugants, fitness of the plasmid is up to 12% greater for the V100A variant in the PFLU4242 background (for one replicate). But fitness is on average increased by 4%, and is likely to have only a minor effect on outcomes.
+
+---
+
+**[Back to index.](COMPMUT_index.md)**

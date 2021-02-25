@@ -1,9 +1,7 @@
 COMPMUT Experiments 1: Presentation and analysis of knockout fitness
 ================
 jpjh
-06 February, 2021
-
-[Back to index.](COMPMUT_index.md)
+compiled Feb 2021
 
 ## Competition experiments with plasmid-carrying knockout strains
 
@@ -16,8 +14,8 @@ of second-site mutations. Megaplasmids pQBR57 or pQBR103 were introduced
 to each of these knockouts (∆*gacS*, ∆*PFLU4242*), as well as the
 unmodified gentamicin-resistant strain (‘wild-type’), by conjugation.
 Conjugations were performed in quadruplicate to mitigate any effect of
-jackpot mutations resulting in a total of (three ‘host’ treatments by
-two plasmid treatments by four replicates = ) 24 strains, which were
+jackpot mutations resulting in a total of (three `host` treatments by
+two `plasmid` treatments by four `replicate`s = ) 24 strains, which were
 confirmed by PCR.
 
 Competition experiments were established for all of these 24 strains,
@@ -37,7 +35,8 @@ Replica plating (patching) of ‘end’ culture onto mercury-containing
 media did not show substantial loss or conjugation of either plasmid
 sufficient to significantly impact calculation of relative fitness.
 
-The whole experiment was repeated twice.
+The whole experiment was repeated twice (giving two levels of
+`experiment`).
 
 #### Calculation of relative fitness and generation of figures
 
@@ -85,7 +84,9 @@ d1 %>% filter(timepoint=="start") %>%
 
 Looks ok, some skew but nothing really off.
 
-Calculate fitness. Load up `calulate_fitness()`.
+Calculate fitness as the [ratio of Mathusian
+parameters](https://doi.org/10.1086/285289). Load up
+`calulate_fitness()`.
 
 ``` r
 source("../functions/calculate_fitness.R")
@@ -108,7 +109,7 @@ df1_summ <- df1 %>%
   rename(W_gm=mean)
 ```
 
-    ## `summarise()` regrouping output by 'host' (override with `.groups` argument)
+    ## `summarise()` has grouped output by 'host'. You can override using the `.groups` argument.
 
 ``` r
 (plot_fig1 <- ggplot(data=df1,
@@ -134,14 +135,22 @@ df1_summ <- df1 %>%
 
 ![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
+This is Figure 1. Output as `.svg` file.
+
 ``` r
 svglite::svglite(height=3, width=3.5, file = "../plots/Fig1.svg")
-plot_fig1
+plot_fig1 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
 dev.off()
 ```
 
     ## quartz_off_screen 
     ##                 2
+
+Output as `.rds` for use in another document.
+
+``` r
+write_rds(plot_fig1, "../plots/Fig1.rds")
+```
 
 Make an alternative plot, where different plasmids are represented on
 the x-axis.
@@ -164,7 +173,7 @@ the x-axis.
   theme(axis.text.x=element_text(angle=45, hjust=1)))
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 Good.
 
@@ -184,7 +193,7 @@ ggplot(data=df1,
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 There is no obvious effect, but it should be accommodated anyway, by
 including a random effect of ‘replicate’ in the model.
@@ -211,7 +220,7 @@ MASS::boxcox(data=df1,
        W_gm ~ host * plasmid, lambda=seq(-5,5,0.2))
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 Set lambda at 2.5 and Box-Cox transform.
 
@@ -262,31 +271,53 @@ ggplot(data=df1, aes(x=mod1_2_fitted, y=mod1_2_resid)) +
   geom_point() + labs(x="fitted values", y="residuals")
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 ggplot(data=df1, aes(x=host, y=mod1_2_resid)) + 
   geom_boxplot() + labs(x="chromosomal genotype", y="residuals")
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
 
 ``` r
 ggplot(data=df1, aes(x=plasmid, y=mod1_2_resid)) + 
   geom_boxplot() + labs(x="plasmid", y="residuals")
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-12-3.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-14-3.png)<!-- -->
 
 ``` r
-ggplot(data=df1, aes(sample=mod1_2_resid)) + stat_qq() + stat_qq_line()
+ggplot(data=df1, aes(sample=mod1_2_resid)) + 
+    stat_qq() + stat_qq_line()
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-12-4.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-14-4.png)<!-- -->
 
 These all look good, no obvious patterns in the residuals. There is
 possibly some non-normality of residuals, driven by a handful of
 lower-fitness outliers.
+
+Examine these using [this
+tip](https://stackoverflow.com/questions/43217104/coloring-points-in-a-geom-qq-plot).
+
+``` r
+make_qq <- function(dd, x) {
+    dd<-dd[order(dd[[x]]), ]
+    dd$qq <- qnorm(ppoints(nrow(dd)))
+    dd
+}
+
+ggplot(make_qq(df1, "mod1_2_resid")) + 
+    geom_point(aes(x=qq, y=mod1_2_resid, 
+                   colour=host, shape=plasmid)) + 
+    labs(x="Theoretical",y="Observed") +
+  theme(legend.position="right")
+```
+
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+Test for significant deviation from normality.
 
 ``` r
 shapiro.test(df1$mod1_2_resid)
@@ -298,9 +329,34 @@ shapiro.test(df1$mod1_2_resid)
     ## data:  df1$mod1_2_resid
     ## W = 0.95185, p-value = 0.007844
 
-However, I will proceed with this modelling approach as, though the
-Shapiro-Wilk test is significant, the significance is not large (p \~
-0.01), and nonparametric alternatives are not available.
+Significant deviation from normality according to Shapiro-Wilk test.
+
+``` r
+ks.test(df1$mod1_2_resid, pnorm)
+```
+
+    ## 
+    ##  One-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  df1$mod1_2_resid
+    ## D = 0.12491, p-value = 0.1942
+    ## alternative hypothesis: two-sided
+
+However, not according to Kolmogorov-Smirnov test.
+
+``` r
+ggplot(data=df1, aes(x=mod1_2_resid)) + 
+  geom_histogram(aes(y=..density..), bins=20) + 
+  stat_function(fun=dnorm, 
+                args=list(mean=mean(df1$mod1_2_resid), 
+                          sd=sd(df1$mod1_2_resid)))
+```
+
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+Given that Shapiro-Wilk test significance is not large (p \~ 0.01),
+deviation is driven by outliers, and nonparametric alternatives are not
+available, proceed with parametric modelling approach.
 
 Assess significance of terms.
 
@@ -339,40 +395,40 @@ kable(contr)
 |:------------------------------------------------------------|-----------:|----------:|----:|------------:|----------:|:-----|
 | (wild-type plasmid-free) - (delta\_gacS plasmid-free)       | -0.0086637 | 0.0360467 |  18 |  -0.2403472 | 0.9999994 |      |
 | (wild-type plasmid-free) - (delta\_PFLU4242 plasmid-free)   |  0.0099640 | 0.0360467 |  18 |   0.2764180 | 0.9999982 |      |
-| (wild-type plasmid-free) - (wild-type pQBR57)               |  0.1548097 | 0.0321996 |  18 |   4.8078168 | 0.0033863 | \*   |
-| (wild-type plasmid-free) - delta\_gacS pQBR57               |  0.0674239 | 0.0321996 |  18 |   2.0939374 | 0.5022013 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 pQBR57           |  0.0281928 | 0.0321996 |  18 |   0.8755656 | 0.9915623 |      |
-| (wild-type plasmid-free) - (wild-type pQBR103)              |  0.3304440 | 0.0321996 |  18 |  10.2623712 | 0.0000000 | \*   |
-| (wild-type plasmid-free) - delta\_gacS pQBR103              |  0.0594564 | 0.0321996 |  18 |   1.8464954 | 0.6515235 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 pQBR103          |  0.0383558 | 0.0321996 |  18 |   1.1911890 | 0.9475615 |      |
-| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0186277 | 0.0360467 |  18 |   0.5167652 | 0.9997861 |      |
-| (delta\_gacS plasmid-free) - (wild-type pQBR57)             |  0.1634734 | 0.0321996 |  18 |   5.0768804 | 0.0018307 | \*   |
-| (delta\_gacS plasmid-free) - delta\_gacS pQBR57             |  0.0760876 | 0.0321996 |  18 |   2.3630010 | 0.3552489 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR57         |  0.0368566 | 0.0321996 |  18 |   1.1446291 | 0.9578973 |      |
+| (wild-type plasmid-free) - (wild-type pQBR57)               |  0.1548097 | 0.0321996 |  18 |   4.8078168 | 0.0034267 | \*   |
+| (wild-type plasmid-free) - delta\_gacS pQBR57               |  0.0674239 | 0.0321996 |  18 |   2.0939374 | 0.5024264 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 pQBR57           |  0.0281928 | 0.0321996 |  18 |   0.8755656 | 0.9914945 |      |
+| (wild-type plasmid-free) - (wild-type pQBR103)              |  0.3304440 | 0.0321996 |  18 |  10.2623712 | 0.0000004 | \*   |
+| (wild-type plasmid-free) - delta\_gacS pQBR103              |  0.0594564 | 0.0321996 |  18 |   1.8464954 | 0.6513590 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 pQBR103          |  0.0383558 | 0.0321996 |  18 |   1.1911890 | 0.9475791 |      |
+| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0186277 | 0.0360467 |  18 |   0.5167652 | 0.9997874 |      |
+| (delta\_gacS plasmid-free) - (wild-type pQBR57)             |  0.1634734 | 0.0321996 |  18 |   5.0768804 | 0.0019703 | \*   |
+| (delta\_gacS plasmid-free) - delta\_gacS pQBR57             |  0.0760876 | 0.0321996 |  18 |   2.3630010 | 0.3556049 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR57         |  0.0368566 | 0.0321996 |  18 |   1.1446291 | 0.9577908 |      |
 | (delta\_gacS plasmid-free) - (wild-type pQBR103)            |  0.3391077 | 0.0321996 |  18 |  10.5314347 | 0.0000000 | \*   |
-| (delta\_gacS plasmid-free) - delta\_gacS pQBR103            |  0.0681201 | 0.0321996 |  18 |   2.1155590 | 0.4900323 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR103        |  0.0470195 | 0.0321996 |  18 |   1.4602526 | 0.8575184 |      |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)         |  0.1448457 | 0.0321996 |  18 |   4.4983728 | 0.0065772 | \*   |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR57         |  0.0574599 | 0.0321996 |  18 |   1.7844934 | 0.6882084 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR57     |  0.0182289 | 0.0321996 |  18 |   0.5661215 | 0.9995836 |      |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103)        |  0.3204800 | 0.0321996 |  18 |   9.9529271 | 0.0000000 | \*   |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR103        |  0.0494924 | 0.0321996 |  18 |   1.5370514 | 0.8223769 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR103    |  0.0283918 | 0.0321996 |  18 |   0.8817450 | 0.9911495 |      |
-| (wild-type pQBR57) - delta\_gacS pQBR57                     | -0.0873858 | 0.0278255 |  18 |  -3.1404934 | 0.0985295 |      |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR57                 | -0.1266168 | 0.0278255 |  18 |  -4.5503898 | 0.0057833 | \*   |
-| (wild-type pQBR57) - (wild-type pQBR103)                    |  0.1756343 | 0.0278255 |  18 |   6.3119946 | 0.0001706 | \*   |
-| (wild-type pQBR57) - delta\_gacS pQBR103                    | -0.0953533 | 0.0278255 |  18 |  -3.4268326 | 0.0574547 |      |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR103                | -0.1164539 | 0.0278255 |  18 |  -4.1851512 | 0.0126224 | \*   |
-| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR57                 | -0.0392311 | 0.0278255 |  18 |  -1.4098964 | 0.8783091 |      |
+| (delta\_gacS plasmid-free) - delta\_gacS pQBR103            |  0.0681201 | 0.0321996 |  18 |   2.1155590 | 0.4906974 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 pQBR103        |  0.0470195 | 0.0321996 |  18 |   1.4602526 | 0.8574740 |      |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)         |  0.1448457 | 0.0321996 |  18 |   4.4983728 | 0.0064873 | \*   |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR57         |  0.0574599 | 0.0321996 |  18 |   1.7844934 | 0.6882729 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR57     |  0.0182289 | 0.0321996 |  18 |   0.5661215 | 0.9995847 |      |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103)        |  0.3204800 | 0.0321996 |  18 |   9.9529271 | 0.0000004 | \*   |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS pQBR103        |  0.0494924 | 0.0321996 |  18 |   1.5370514 | 0.8224919 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 pQBR103    |  0.0283918 | 0.0321996 |  18 |   0.8817450 | 0.9911412 |      |
+| (wild-type pQBR57) - delta\_gacS pQBR57                     | -0.0873858 | 0.0278255 |  18 |  -3.1404934 | 0.0989930 |      |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR57                 | -0.1266168 | 0.0278255 |  18 |  -4.5503898 | 0.0060730 | \*   |
+| (wild-type pQBR57) - (wild-type pQBR103)                    |  0.1756343 | 0.0278255 |  18 |   6.3119946 | 0.0001834 | \*   |
+| (wild-type pQBR57) - delta\_gacS pQBR103                    | -0.0953533 | 0.0278255 |  18 |  -3.4268326 | 0.0575530 |      |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR103                | -0.1164539 | 0.0278255 |  18 |  -4.1851512 | 0.0124022 | \*   |
+| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR57                 | -0.0392311 | 0.0278255 |  18 |  -1.4098964 | 0.8784514 |      |
 | delta\_gacS pQBR57 - (wild-type pQBR103)                    |  0.2630201 | 0.0278255 |  18 |   9.4524880 | 0.0000001 | \*   |
 | delta\_gacS pQBR57 - delta\_gacS pQBR103                    | -0.0079675 | 0.0278255 |  18 |  -0.2863391 | 0.9999976 |      |
-| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR103                | -0.0290681 | 0.0278255 |  18 |  -1.0446578 | 0.9749078 |      |
+| delta\_gacS pQBR57 - delta\_PFLU4242 pQBR103                | -0.0290681 | 0.0278255 |  18 |  -1.0446578 | 0.9749630 |      |
 | delta\_PFLU4242 pQBR57 - (wild-type pQBR103)                |  0.3022511 | 0.0278255 |  18 |  10.8623844 | 0.0000000 | \*   |
-| delta\_PFLU4242 pQBR57 - delta\_gacS pQBR103                |  0.0312635 | 0.0278255 |  18 |   1.1235572 | 0.9619885 |      |
+| delta\_PFLU4242 pQBR57 - delta\_gacS pQBR103                |  0.0312635 | 0.0278255 |  18 |   1.1235572 | 0.9619856 |      |
 | delta\_PFLU4242 pQBR57 - delta\_PFLU4242 pQBR103            |  0.0101629 | 0.0278255 |  18 |   0.3652386 | 0.9999845 |      |
 | (wild-type pQBR103) - delta\_gacS pQBR103                   | -0.2709876 | 0.0278255 |  18 |  -9.7388271 | 0.0000001 | \*   |
 | (wild-type pQBR103) - delta\_PFLU4242 pQBR103               | -0.2920882 | 0.0278255 |  18 | -10.4971458 | 0.0000000 | \*   |
-| delta\_gacS pQBR103 - delta\_PFLU4242 pQBR103               | -0.0211006 | 0.0278255 |  18 |  -0.7583186 | 0.9967169 |      |
+| delta\_gacS pQBR103 - delta\_PFLU4242 pQBR103               | -0.0211006 | 0.0278255 |  18 |  -0.7583186 | 0.9967198 |      |
 
 Key lines in this table:
 
@@ -425,17 +481,17 @@ data.frame(posthoc_gls$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""
 
 | contrast                                             | p.value.lm | p.value.lmm | sign.lm | sign.lmm |
 |:-----------------------------------------------------|-----------:|------------:|:--------|:---------|
-| (wild-type plasmid-free) - (wild-type pQBR57)        |  0.0000013 |   0.0033863 | \*      | \*       |
-| (wild-type plasmid-free) - (wild-type pQBR103)       |  0.0000000 |   0.0000000 | \*      | \*       |
-| (delta\_gacS plasmid-free) - (wild-type pQBR57)      |  0.0000003 |   0.0018307 | \*      | \*       |
+| (wild-type plasmid-free) - (wild-type pQBR57)        |  0.0000061 |   0.0034267 | \*      | \*       |
+| (wild-type plasmid-free) - (wild-type pQBR103)       |  0.0000000 |   0.0000004 | \*      | \*       |
+| (delta\_gacS plasmid-free) - (wild-type pQBR57)      |  0.0000006 |   0.0019703 | \*      | \*       |
 | (delta\_gacS plasmid-free) - (wild-type pQBR103)     |  0.0000000 |   0.0000000 | \*      | \*       |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)  |  0.0000244 |   0.0065772 | \*      | \*       |
-| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103) |  0.0000000 |   0.0000000 | \*      | \*       |
-| (wild-type pQBR57) - delta\_gacS pQBR57              |  0.0281754 |   0.0985295 | \*      |          |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR57          |  0.0001457 |   0.0057833 | \*      | \*       |
-| (wild-type pQBR57) - (wild-type pQBR103)             |  0.0000016 |   0.0001706 | \*      | \*       |
-| (wild-type pQBR57) - delta\_gacS pQBR103             |  0.0111056 |   0.0574547 | \*      |          |
-| (wild-type pQBR57) - delta\_PFLU4242 pQBR103         |  0.0007870 |   0.0126224 | \*      | \*       |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR57)  |  0.0000072 |   0.0064873 | \*      | \*       |
+| (delta\_PFLU4242 plasmid-free) - (wild-type pQBR103) |  0.0000000 |   0.0000004 | \*      | \*       |
+| (wild-type pQBR57) - delta\_gacS pQBR57              |  0.0274240 |   0.0989930 | \*      |          |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR57          |  0.0001381 |   0.0060730 | \*      | \*       |
+| (wild-type pQBR57) - (wild-type pQBR103)             |  0.0000000 |   0.0001834 | \*      | \*       |
+| (wild-type pQBR57) - delta\_gacS pQBR103             |  0.0112892 |   0.0575530 | \*      |          |
+| (wild-type pQBR57) - delta\_PFLU4242 pQBR103         |  0.0007224 |   0.0124022 | \*      | \*       |
 | delta\_gacS pQBR57 - (wild-type pQBR103)             |  0.0000000 |   0.0000001 | \*      | \*       |
 | delta\_PFLU4242 pQBR57 - (wild-type pQBR103)         |  0.0000000 |   0.0000000 | \*      | \*       |
 | (wild-type pQBR103) - delta\_gacS pQBR103            |  0.0000000 |   0.0000001 | \*      | \*       |
@@ -469,7 +525,7 @@ par(mfrow=c(2,2))
 plot(mod1_4)
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 Looks fine.
 
@@ -501,7 +557,7 @@ par(mfrow=c(2,2))
 plot(mod1_5)
 ```
 
-![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](COMPMUT_exp_1_knockouts_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 Look fine.
 
@@ -550,8 +606,5 @@ Fitness cost: -0.5218532
 Confidence interval: 0.0475899
 
 ------------------------------------------------------------------------
-
-**[On to COMPMUT experiments 2: Presentation and analysis of plasmid
-mutant fitness.](COMPMUT_exp_2_plasmids.md)**
 
 **[Back to index.](COMPMUT_index.md)**

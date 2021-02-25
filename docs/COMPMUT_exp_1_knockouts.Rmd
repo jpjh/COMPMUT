@@ -1,7 +1,7 @@
 ---
 title: 'COMPMUT Experiments 1: Presentation and analysis of knockout fitness'
+date: "compiled Feb 2021"
 author: "jpjh"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: rmarkdown::github_document
 ---
 
@@ -14,16 +14,18 @@ library(ggplot2)
 library(knitr)
 
 source("../functions/theme_pub.r")
-theme_set(theme_pub())
-```
+theme_github <- function(x){
+  theme_pub(base_size=12)
+}
 
-[Back to index.](COMPMUT_index.md)
+theme_set(theme_github())
+```
 
 ## Competition experiments with plasmid-carrying knockout strains
 
 #### Experimental design:
 
-Knockouts were made of *gacS* or *PFLU4242*, using allelic replacement, in a gentamicin-resistant background of *P. fluorescens* SBW25. These strains were sequenced to validate the deletion and confirm an absence of second-site mutations. Megaplasmids pQBR57 or pQBR103 were introduced to each of these knockouts (∆*gacS*, ∆*PFLU4242*), as well as the unmodified gentamicin-resistant strain ('wild-type'), by conjugation. Conjugations were performed in quadruplicate to mitigate any effect of jackpot mutations resulting in a total of (three 'host' treatments by two plasmid treatments by four replicates = ) 24 strains, which were confirmed by PCR.
+Knockouts were made of *gacS* or *PFLU4242*, using allelic replacement, in a gentamicin-resistant background of *P. fluorescens* SBW25. These strains were sequenced to validate the deletion and confirm an absence of second-site mutations. Megaplasmids pQBR57 or pQBR103 were introduced to each of these knockouts (∆*gacS*, ∆*PFLU4242*), as well as the unmodified gentamicin-resistant strain ('wild-type'), by conjugation. Conjugations were performed in quadruplicate to mitigate any effect of jackpot mutations resulting in a total of (three `host` treatments by two `plasmid` treatments by four `replicate`s = ) 24 strains, which were confirmed by PCR.
 
 Competition experiments were established for all of these 24 strains, alongside experiments for the plasmid-free wild-type, ∆*gacS*, and ∆*PFLU4242* strains, which were likewise performed in quadruplicate. There were therefore 36 'competitions'. 
 
@@ -31,7 +33,7 @@ For each competition, overnight cultures of the 'test' strain were mixed in appr
 
 Replica plating (patching) of 'end' culture onto mercury-containing media did not show substantial loss or conjugation of either plasmid sufficient to significantly impact calculation of relative fitness.
 
-The whole experiment was repeated twice.
+The whole experiment was repeated twice (giving two levels of `experiment`).
 
 #### Calculation of relative fitness and generation of figures
 
@@ -68,7 +70,7 @@ d1 %>% filter(timepoint=="start") %>%
 
 Looks ok, some skew but nothing really off.
 
-Calculate fitness. Load up `calulate_fitness()`.
+Calculate fitness as the [ratio of Mathusian parameters](https://doi.org/10.1086/285289). Load up `calulate_fitness()`.
 
 ```{r}
 source("../functions/calculate_fitness.R")
@@ -109,11 +111,22 @@ df1_summ <- df1 %>%
   scale_y_continuous(name="relative fitness (W)", breaks=seq(0,2,0.25)) +
   facet_grid(.~plasmid, scales="free") +
   theme(axis.text.x=element_text(angle=45, hjust=1)))
+```
 
+This is Figure 1. Output as `.svg` file.
+
+```{r}
 svglite::svglite(height=3, width=3.5, file = "../plots/Fig1.svg")
-plot_fig1
+plot_fig1 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
 dev.off()
 ```
+
+Output as `.rds` for use in another document.
+
+```{r}
+write_rds(plot_fig1, "../plots/Fig1.rds")
+```
+
 
 Make an alternative plot, where different plasmids are represented on the x-axis.
 
@@ -207,16 +220,51 @@ ggplot(data=df1, aes(x=host, y=mod1_2_resid)) +
 ggplot(data=df1, aes(x=plasmid, y=mod1_2_resid)) + 
   geom_boxplot() + labs(x="plasmid", y="residuals")
 
-ggplot(data=df1, aes(sample=mod1_2_resid)) + stat_qq() + stat_qq_line()
+ggplot(data=df1, aes(sample=mod1_2_resid)) + 
+    stat_qq() + stat_qq_line()
 ```
 
 These all look good, no obvious patterns in the residuals. There is possibly some non-normality of residuals, driven by a handful of lower-fitness outliers. 
+
+Examine these using [this tip](https://stackoverflow.com/questions/43217104/coloring-points-in-a-geom-qq-plot).
+
+```{r}
+make_qq <- function(dd, x) {
+    dd<-dd[order(dd[[x]]), ]
+    dd$qq <- qnorm(ppoints(nrow(dd)))
+    dd
+}
+
+ggplot(make_qq(df1, "mod1_2_resid")) + 
+    geom_point(aes(x=qq, y=mod1_2_resid, 
+                   colour=host, shape=plasmid)) + 
+    labs(x="Theoretical",y="Observed") +
+  theme(legend.position="right")
+```
+
+Test for significant deviation from normality.
 
 ```{r}
 shapiro.test(df1$mod1_2_resid)
 ```
 
-However, I will proceed with this modelling approach as, though the Shapiro-Wilk test is significant, the significance is not large (p ~ 0.01), and nonparametric alternatives are not available.
+Significant deviation from normality according to Shapiro-Wilk test.
+
+```{r}
+ks.test(df1$mod1_2_resid, pnorm)
+```
+
+However, not according to Kolmogorov-Smirnov test. 
+
+```{r}
+ggplot(data=df1, aes(x=mod1_2_resid)) + 
+  geom_histogram(aes(y=..density..), bins=20) + 
+  stat_function(fun=dnorm, 
+                args=list(mean=mean(df1$mod1_2_resid), 
+                          sd=sd(df1$mod1_2_resid)))
+```
+
+Given that Shapiro-Wilk test significance is not large (p ~ 0.01), deviation is driven by outliers, and nonparametric alternatives are not available, proceed with parametric modelling approach.
 
 Assess significance of terms.
 
@@ -362,7 +410,5 @@ Fitness cost: `r df1_summ %>% filter(host=="wild-type" & plasmid=="pQBR103") %>%
 Confidence interval: `r df1_summ %>% filter(host=="wild-type" & plasmid=="pQBR103") %>% pull(ci)`
 
 ---
-
-**[On to COMPMUT experiments 2: Presentation and analysis of plasmid mutant fitness.](COMPMUT_exp_2_plasmids.md)**
 
 **[Back to index.](COMPMUT_index.md)**

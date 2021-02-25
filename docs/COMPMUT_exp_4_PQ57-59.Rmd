@@ -1,0 +1,352 @@
+---
+title: 'COMPMUT Experiments 4: Presentation and analysis of fitness of expressing different PQBR57_0059 variants'
+author: "jpjh"
+date: "compiled Feb 2021"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+
+source("../functions/theme_pub.r")
+theme_github <- function(x){
+  theme_pub(base_size=12)
+}
+
+theme_set(theme_github())
+```
+
+## Competition experiments with strains expressing PQBR57_0059 variants
+
+#### Experimental design
+
+The presence of an ancestral, but not a V100A mutant, of PQBR57_0059 on the plasmid pQBR57 is associated with a fitness cost. Is this fitness cost due directly to the ancestral variant of PQBR57_0059, or is it due to interactions between the ancestral variant of this gene and other plasmid gene(s)? To assess this, ancestral or V100A variants of PQBR57_0059 were amplified and cloned into the multiple-cloning site (MCS) of expression vector pUCP18xK using EcoRI/KpnI. pUCP18xK (henceforth pUCP18) has a Plac promotor driving expression from the multiple cloning site, and the lack of a cognate LacI repressor in *P. fluorescens* SBW25 means that the cloned gene product is constitutively expressed. Three variants of pUCP18 were therefore available: 'empty' which contained no gene in the MCS; 'ancestral' which contained the ancestral variant of PQBR57_0059; and 'V100A' which contained the V100A variant of PQBR57_0059. *P. fluorescens* was transformed with each of these plasmids in triplicate, to generate nine strains. Megaplasmid pQBR57 with the ancestral variant of PQBR57_0059 (pQBR57_anc), or with the V100 variant (pQBR57_V100A) were then conjugated into each of these strains, generating 18 strains (two levels of pQBR57 plasmid, three levels of pUCP18 plasmid, in triplicate). 
+
+Competition assays were performed with these strains, alongside the 'no pUCP18' transconjugants that were generated in the wild-type genetic background for pQBR57_anc and pQBR57_V100A, described in [`COMPMUT_exp_3_knopla.Rmd`](COMPMUT_exp_3_knopla.md). Each transformant/transconjugant strain was tested in quadruplicate. These quadruplicate replicates are referred to as 'experimental replicates' (`exp_rep`), these are biological replicates of the same transformant/transconjugant. The different transformant/transconjugant strains are referred to as transconjugant replicates (`tc_rep`).
+
+Overall, competition assays were performed as described in [`COMPMUT_exp_1_knockouts.Rmd`](COMPMUT_exp_1_knockouts.md). Samples from overnight cultures of the 'test' strain (i.e. transconjugant/transformant), grown with kanamycin at 50 µg/ml to disfavour loss of pUCP18 where appropriate, were pelleted and resuspended in fresh KB to remove residual antibiotic. Each of these 'test' strains was then mixed in approximately equal proportions with a plasmid-free *lacZ*-expressing 'reference' strain of *P. fluorescens* SBW25, and the mixture subcultured into fresh media for growth for 48 hours. Changes in the relative abundance of 'test' and 'reference' were assessed by spreading diluted samples of 'start' and 'end' culture on X-gal-containing KB and counting colonies. Replica plating (patching) of 'end' culture onto mercury-containing or kanamycin-containing media did not show substantial loss or conjugation of either plasmid sufficient to significantly impact calculation of relative fitness.
+
+#### Calculation of relative fitness and generation of figures
+
+Load up and inspect data
+
+```{r}
+d4 <- read.table("../data/COMPMUT_exp_data_4.csv", header=TRUE, sep=",")
+
+kable(head(d4))
+```
+
+Order variables.
+
+```{r}
+d4 <- d4 %>% 
+  mutate(plasmid_pucp = factor(plasmid_pucp, levels=c("no pUCP18", "empty", "ancestral", "V100A"),
+                               labels=c("no pUCP18", "no insert", "ancestral", "V100A")),
+         plasmid_pq = factor(plasmid_pq, levels=c("no pQBR57", "pQBR57_anc", "pQBR57_V100A"),
+                             labels=c("no pQBR57", "ancestral", "V100A")))
+```
+
+Check starting ratios are approximately equal.
+
+```{r}
+pd <- position_dodge(width=0.3)
+
+d4 %>% filter(timepoint=="start") %>% 
+  mutate(ratio = count_white/(count_white + count_blue)) %>%
+  ggplot(aes(x=plasmid_pucp, y=ratio, colour=tc_rep)) + 
+    geom_hline(yintercept=0.5, linetype="dotted") +
+    facet_grid(.~plasmid_pq) + 
+    geom_point(position=pd) + 
+    lims(y=c(0,1)) +
+    theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1))
+```
+
+Looks good.
+
+Calculate fitness. Load up `calulate_fitness()`.
+
+```{r}
+source("../functions/calculate_fitness.R")
+
+id_cols <- c("exp_rep", "tc_rep", "plasmid_pucp", "plasmid_pq")
+df4 <- calculate_fitness(d4, id_cols)  
+```
+
+Calculate summary statistics and plot.
+
+```{r}
+df4_summ <- df4 %>% 
+  group_by(plasmid_pucp, plasmid_pq) %>%
+  summarise(mean = mean(W_gm), 
+            n = n(), 
+            se = sd(W_gm)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(W_gm=mean)
+
+(plot_fig4 <- ggplot(data=df4,
+                   aes(x=plasmid_pucp, y=W_gm, colour=tc_rep)) +
+  geom_hline(yintercept=1, size=0.2, linetype=111) +
+  geom_point(position=pd, alpha=0.8, size=1, shape=16) +
+  geom_point(data=df4_summ, 
+             position=pd,
+             shape=1, size=2, colour="black") +
+  scale_colour_manual(values=c("black","grey40","grey80"), name="transformant") +
+  labs(x="expression vector pUCP18 PQBR57_0059 variant") +
+  facet_grid(.~plasmid_pq, scales="free") +
+  scale_y_continuous(name="relative fitness (W)", breaks=seq(0.7,1.2,0.1)) +
+  theme(axis.text.x=element_text(angle=45, hjust=1)))
+```
+
+Looks good.
+
+Note that I am not showing error bars as I'm not sure if they should be over all replicates or just `tc_rep`. It may be clearer just to show the grand means and the individual data points.
+
+Output as `.svg`.
+
+```{r}
+svglite::svglite(height=3.5, width=3.6, file = "../plots/Fig4.svg")
+plot_fig4 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
+dev.off()
+```
+
+### Analysis
+
+#### Linear mixed-effects model
+
+There is some correlation in the data, because each transconjugant 'replicate' was tested four times.
+
+Is there an effect here?
+
+Each of the `tc_rep`s are different transconjugants
+
+```{r}
+df4 <- df4 %>% mutate(clone = ifelse(plasmid_pucp=="no pUCP18" & plasmid_pq=="no pQBR57",
+                                     "no pUCP18 / no pQBR57",
+                                     paste(tc_rep, plasmid_pucp, plasmid_pq, sep=".")))
+```
+
+Generate a linear model with and without the random effect of clone, and compare following Zuur et al. (2009).
+
+```{r}
+library(nlme)
+
+mod4_1 <- gls(data=df4, W_gm ~ plasmid_pucp * plasmid_pq, method="REML")
+mod4_2 <- lme(data=df4, W_gm ~ plasmid_pucp * plasmid_pq, 
+              random = ~1|clone, method="REML")
+
+anova(mod4_1, mod4_2)
+```
+
+Suggests that any effect of 'clone' is not significant, by AIC or BIC. However, the effect of clone will be retained in the model since it is part of the data structure.
+
+Generate plots for model validation.
+
+```{r}
+df4 <- df4 %>% mutate(mod4_2_resid  = resid(mod4_2, type = "normalized"),
+              mod4_2_fitted = fitted(mod4_2))
+
+ggplot(data=df4, aes(x=mod4_2_fitted, y=mod4_2_resid)) + 
+  geom_point() + labs(x="fitted values", y="residuals")
+
+ggplot(data=df4, aes(x=plasmid_pucp, y=mod4_2_resid)) + 
+  geom_boxplot() + labs(x="pUCP variant", y="residuals")
+
+ggplot(data=df4, aes(x=plasmid_pq, y=mod4_2_resid)) + 
+  geom_boxplot() + labs(x="pQBR57 variant", y="residuals")
+
+ggplot(data=df4, aes(sample=mod4_2_resid)) + stat_qq() + stat_qq_line()
+```
+
+Look perfect!
+
+Assess significance of terms.
+
+```{r}
+mod4_2_ml <- update(mod4_2, method="ML")
+
+mod4_3_ml <- update(mod4_2_ml, .~.-plasmid_pucp:plasmid_pq)
+
+anova(mod4_2_ml, mod4_3_ml)
+```
+
+Highly significant interaction between pUCP18 and pQBR57 variant. The effect on fitness of the PQBR57_0059 variant in pUCP18 is very significantly affected by the variant of pQBR57 that is present (if at all).
+
+Extract Tukey-corrected post-hoc pairwise (least-square means) comparisons.
+
+```{r}
+library(emmeans)
+
+posthoc <- lsmeans(mod4_2, pairwise ~ plasmid_pucp * plasmid_pq, adjust="mvt")
+
+contr <- data.frame(posthoc$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""))
+
+kable(contr)
+```
+
+Key lines from this table. Note that the format is "pUCP18 variant pQBR variant".
+
+1. no pUCP18 no pQBR57 - no pUCP18 ancestral: significant effect of ancestral pQBR57, even when there is no pUCP18 present.
+2. no pUCP18 no pQBR57 - no insert ancestral: remains significant effect, even if an empty pUCP18 plasmid is present.
+3. no pUCP18 no pQBR57 - ancestral ancestral: remains significant when pUCP18 is expressing the ancestral variant.
+4. no pUCP18 no pQBR57 - V100A ancestral: remains significant when pUCP18 is expressing the V100A variant.
+5. no pUCP18 no pQBR57 - ancestral V100A: expression of the ancestral variant in the presence of a costless pQBR57 can recreate a significant cost; expression of the V100A variant *in trans* has no effect on the costly plasmid.
+6. no insert no pQBR57 - no pUCP18 ancestral: As line 1 above, but shows that a no-insert pUCP18 has no effect.
+7. no insert no pQBR57 - no insert ancestral: As line 2 above.
+8. no insert no pQBR57 - ancestral ancestral: As line 3 above.
+9. no insert no pQBR57 - V100A ancestral: As line 4 above.
+10. no insert no pQBR57 - ancestral V100A: As line 5 above.
+11. ancestral no pQBR57 - no pUCP18 ancestral: As line 1 above, with ancestral pUCP18, showing no difference associated with expressing V100A from pUCP18. 
+12. ancestral no pQBR57 - no insert ancestral: As line 2 above.
+13. ancestral no pQBR57 - ancestral ancestral: As line 3 above.
+14. ancestral no pQBR57 - V100A ancestral: As line 4 above.
+15. ancestral no pQBR57 - ancestral V100A: As line 5 above.
+16. V100A no pQBR57 - no pUCP18 ancestral: As line 1 above, with V100A pUCP18, showing no difference associated with expressing V100A from pUCP18. 
+17. V100A no pQBR57 - no insert ancestral: As line 2 above.
+18. V100A no pQBR57 - ancestral ancestral: As line 3 above.
+19. V100A no pQBR57 - V100A ancestral: As line 4 above.
+20. V100A no pQBR57 - ancestral V100A: As line 5 above.
+21. no pUCP18 ancestral - ancestral ancestral: This shows that overexpressing the ancestral variant of PQBR57_0059 exacerbates fitness costs beyond that seen just with the wild-type plasmid.
+22. no pUCP18 ancestral - V100A ancestral: This shows that actually overexpressing the V100A variant also exacerbates fitness costs, consistent with it being an incomplete loss-of-function mutant.
+23. no pUCP18 ancestral - no pUCP18 V100A: Shows that the V100A amelioration on the megaplasmid resolves fitness costs.
+24. no pUCP18 ancestral - no insert V100A: As line 24 but shows that the costs remain resolved when the V100A strain carries an empty pUCP18.
+25. no pUCP18 ancestral - V100A V100A: As line 24 and line 25 but showing that costs remain resolved when the V100A strain carries pUCP18 with V100A.
+26. no insert ancestral - ancestral ancestral: As line 22 above, but with an empty vector in one of the strains.
+27. no insert ancestral - V100A ancestral: As line 23 above but again with an empty vector.
+28. no insert ancestral - no pUCP18 V100A: As line 24 above.
+29. no insert ancestral - no insert V100A: As line 24 above -- presence/absence of empty pUCP doesn't affect outcomes.
+30. no insert ancestral - V100A V100A: As line 24 and 25.
+31. ancestral ancestral - no pUCP18 V100A: As line 24 and 25, but showing that the differential remains when the pQBR57 carrying strain is overexpressing ancestral PQBR57_0059.
+32. ancestral ancestral - no insert V100A: As line 24 and 25, but showing that the differential remains when the pQBR57 carrying strain is overexpressing ancestral PQBR57_0059.
+33. ancestral ancestral - ancestral V100A: This shows that the combination of ancestral variant on the megaplasmid as well as on pUCP18 has an exacerbating effect compared with just expression of the ancestral variant *in trans*.
+34. ancestral ancestral - V100A V100A: Shows that amelioration works.
+35. V100A ancestral - no pUCP18 V100A: Again shows that amelioration works; there is no straightforward interpretation for why this particular contrast is insightful.
+36. V100A ancestral - no insert V100A: Again shows that amelioration works; there is no straightforward interpretation for why this particular contrast is insightful.
+37. V100A ancestral - ancestral V100A: Again shows that amelioration works; there is no straightforward interpretation for why this particular contrast is insightful.
+38. V100A ancestral - V100A V100A: Again shows that amelioration works; there is no straightforward interpretation for why this particular contrast is insightful.
+39. no pUCP18 V100A - ancestral V100A: Shows that expressing the ancestral PQBR57_0059 variant in an ameliorated background imposes a fitness cost. 
+40. no insert V100A - ancestral V100A: As with line 40, the effect persists regardless of whether there is a pUCP18 variant.
+41. ancestral V100A - V100A V100A: Shows that it is the PQBR57_0059 variant on pUCP18 that is responsible for the fitness cost, as a single mutation in this variant results in amelioration.
+
+#### Linear model
+
+The fact that random effects did not significantly improve model fit makes me wonder whether qualitatively similar results are obtained from a model that does not include the random effects of 'clone'.
+
+While the LMM is the 'correct' statistical approach, I will also investigate how robust these results are to this particular model formulation.
+
+There are two main ways to run this. Either, treat all replicates (`tc_rep` and `exp_rep`) as independent. Or, us `exp_rep` to calculate a mean value for each `tc_rep` and then analyse this.
+
+##### Linear model with all replicates
+
+```{r}
+mod4_4 <- lm(data=df4, W_gm ~ plasmid_pucp * plasmid_pq)
+
+df4 <- df4 %>% mutate(mod4_4_resid  = resid(mod4_4),
+              mod4_4_fitted = fitted(mod4_4))
+
+ggplot(data=df4, aes(x=mod4_4_fitted, y=mod4_4_resid)) + 
+  geom_point() + labs(x="fitted values", y="residuals")
+
+ggplot(data=df4, aes(x=plasmid_pucp, y=mod4_4_resid)) + 
+  geom_point(position=position_jitter(width=0.1)) + 
+  labs(x="pUCP18 variant", y="residuals")
+
+ggplot(data=df4, aes(x=plasmid_pq, y=mod4_4_resid)) + 
+  geom_point(position=position_jitter(width=0.1)) + 
+  labs(x="pQBR57 variant", y="residuals")
+
+ggplot(data=df4, aes(sample=mod4_4_resid)) + 
+    stat_qq() + stat_qq_line()
+```
+
+Looks good. Run tests to check:
+
+```{r}
+bartlett.test(W_gm ~ interaction(plasmid_pucp, plasmid_pq), data=df4)
+fligner.test(W_gm ~ interaction(plasmid_pucp, plasmid_pq), data=df4)
+car::leveneTest(W_gm ~ interaction(plasmid_pucp, plasmid_pq), data=df4)
+shapiro.test(resid(mod4_4))
+```
+
+All fine.
+
+```{r}
+kable(anova(mod4_4))
+```
+
+Highly significant interaction, like the LMM.
+
+```{r}
+posthoc4_4 <- lsmeans(mod4_4, pairwise ~ plasmid_pucp * plasmid_pq, adjust="Tukey")
+contr4_4 <- data.frame(posthoc4_4$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""))
+kable(contr4_4)
+```
+
+Same signiicant results as the LMM.
+
+##### Linear model averaging over experimental replicates
+
+```{r}
+df4_tc_summ <- df4 %>% 
+  group_by(tc_rep, plasmid_pucp, plasmid_pq) %>%
+  summarise(mean = mean(W_gm), 
+            n = n(), 
+            se = sd(W_gm)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(W_gm=mean)
+
+mod4_5 <- lm(W_gm ~ plasmid_pucp * plasmid_pq, data=df4_tc_summ)
+
+df4_tc_summ <- df4_tc_summ %>% ungroup() %>%
+  mutate(mod4_5_resid  = resid(mod4_5),
+         mod4_5_fitted = fitted(mod4_5))
+
+ggplot(data=df4_tc_summ, aes(x=mod4_5_fitted, y=mod4_5_resid)) + 
+  geom_point() + labs(x="fitted values", y="residuals")
+
+ggplot(data=df4_tc_summ, aes(x=plasmid_pucp, y=mod4_5_resid)) + 
+  geom_point(position=position_jitter(width=0.1)) + 
+  labs(x="pUCP18 variant", y="residuals")
+
+ggplot(data=df4_tc_summ, aes(x=plasmid_pq, y=mod4_5_resid)) + 
+  geom_point(position=position_jitter(width=0.1)) + 
+  labs(x="pQBR57 variant", y="residuals")
+
+ggplot(data=df4_tc_summ, aes(sample=mod4_5_resid)) + 
+    stat_qq() + stat_qq_line()
+```
+
+Looks good. Run tests to check:
+
+```{r}
+bartlett.test(W_gm ~ interaction(plasmid_pucp, plasmid_pq), data=df4_tc_summ)
+fligner.test(W_gm ~ interaction(plasmid_pucp, plasmid_pq), data=df4_tc_summ)
+car::leveneTest(W_gm ~ interaction(plasmid_pucp, plasmid_pq), data=df4_tc_summ)
+shapiro.test(resid(mod4_5))
+```
+
+Good. 
+
+```{r}
+kable(anova(mod4_5))
+```
+
+Again shows significant effect of the interaction.
+
+```{r}
+posthoc4_5 <- lsmeans(mod4_5, pairwise ~ plasmid_pucp * plasmid_pq, adjust="Tukey")
+contr4_5 <- data.frame(posthoc4_5$contrasts) %>% mutate(sign = ifelse(p.value<0.05, "*", ""))
+kable(contr4_5)
+```
+
+Again, same significant results as the LMM.
+
+Together this strongly suggests that the model outputs are robust to different methods of dealing with the nested data.
+
+---
+
+**[Back to index.](COMPMUT_index.md)**
