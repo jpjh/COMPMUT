@@ -35,7 +35,8 @@ Overnight cultures grown in the presence of tetracycline (100 µg/ml) to select 
 Load up data.
 
 ```{r}
-gr1 <- read.csv("../data/COMPMUT_exp_data_7.csv", header=TRUE, sep=",")
+gr1 <- read.csv("../data/COMPMUT_exp_data_7.csv", header=TRUE, sep=",") %>%
+  mutate(pME6032 = gsub("PFLU_","PFLU",pME6032))
 ```
 
 Calculate means for each set of technical replicates. Plot mean and an envelope of SE/CI for each transformant.

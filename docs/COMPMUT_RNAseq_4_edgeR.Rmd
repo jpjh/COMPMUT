@@ -301,7 +301,7 @@ Plot expression of the different genes.
   geom_hline(yintercept=0, size=0.1) +
   geom_point(position=position_dodge(width=0.2), alpha=0.8, shape=16) +
   scale_x_discrete(breaks=c("wt","dPFLU4242","PQBR57_0059_V100A","dgacS"),
-                   labels=c("wt","∆PFLU_4242","PQBR57_0059 V100A","∆gacS"),
+                   labels=c("wt","∆PFLU4242","PQBR57_0059 V100A","∆gacS"),
                    name="") +
   labs(y="counts per million", x="amelioration", name="expression (cpm)") +
   facet_grid(gene~., scales = "free_y") + 

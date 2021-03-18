@@ -1,6 +1,7 @@
 COMPMUT RNAseq Analysis 6b: pQBR57 genes — plots, figures, and analysis
 ================
-jpjh compiled Feb 2021
+jpjh
+compiled Feb 2021
 
 ## Analysis of edgeR tables outline
 
@@ -531,12 +532,15 @@ pq57_de_am_plot_all_gene_names$region <- factor(pq57_de_am_plot_all_gene_names$r
   scale_colour_manual(values=regions_cols$colour, name="") +
   scale_shape_manual(values=c(rep(20,5),32), name="") +
   facet_grid(amelioration~sig, scales="free", space="free") + 
+    scale_y_discrete(breaks=c("dPFLU4242","PQBR57_0059_V100A","dgacS"),
+                     labels=c("∆PFLU4242","PQBR57_0059_V100A","∆gacS")) +
   theme_pub() +
   labs(x="", y="") +
   scale_x_discrete(expand = expansion(add=1)) +
   theme(legend.position="bottom", strip.text=element_blank(),
         panel.border=element_blank(), axis.line=element_blank(),
-        axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+        axis.text.x=element_blank(), #element_text(angle=90, hjust=1, vjust=0.5), 
+        axis.ticks.x=element_blank(),
         panel.spacing.x=unit(5, units="pt")))
 ```
 
@@ -570,6 +574,12 @@ PQBR57\_0232, PQBR57\_0292, and PQBR57\_0424
 -   PQBR57\_0184-0185. Both uncharacterised, &lt;2x DE
 -   PQBR57\_0317-0318. Both uncharacterised, &lt;2x DE
 -   PQBR57\_0424. N6-adenine methyltransferase, &lt;2x DE
+
+Save the figure for compilation with the pQBR103 figure.
+
+``` r
+saveRDS(p_heatmap_pq57_amelioration_all, file = "../plots/Fig14b.rds")
+```
 
 **GacS deletion appears to have an unusual effect on pQBR57 gene
 expression, with specific sets of genes downregulated in the ∆gacS

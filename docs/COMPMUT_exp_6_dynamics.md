@@ -436,7 +436,7 @@ plasmid.
 Do the results hold if the ancestral strain is not included?
 
 ``` r
-drop1(lme(cp_boxcox ~ PQ5759, random = ~1|v, method="ML", data=filter(dr6_summ, v != "anc")),
+drop1(lme(cp_boxcox ~ PQ5759, random = ~1|v, method="ML", data=filter(dr6_summ, v != "unevolved")),
       test="Chisq")
 ```
 
@@ -445,8 +445,8 @@ drop1(lme(cp_boxcox ~ PQ5759, random = ~1|v, method="ML", data=filter(dr6_summ, 
     ## Model:
     ## cp_boxcox ~ PQ5759
     ##        Df    AIC    LRT Pr(>Chi)  
-    ## <none>    37.600                  
-    ## PQ5759  1 41.224 5.6244  0.01771 *
+    ## <none>    31.634                  
+    ## PQ5759  1 33.589 3.9554  0.04672 *
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 

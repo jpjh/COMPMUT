@@ -188,13 +188,15 @@ pq103_de_am_plot_gene_names$region <- factor(pq103_de_am_plot_gene_names$region,
        aes(y=amelioration, x=fct_reorder(gene, -logFC))) +
   geom_tile(colour="black", aes(fill=logFC, size=ifelse(FDR<0.05,"sig","ns"))) + 
   scale_size_manual(values=c(0,0.1), guide=FALSE) +
-  scale_fill_gradient2(high="red",mid="grey90",low="blue") +
+  scale_fill_gradient2(high="red",mid="grey90",low="blue",limits=c(-3,3)) +
   geom_point(data=pq103_de_am_plot_gene_names, size=0.8,
              aes(colour=region, alpha=region, shape=region)) +
   scale_alpha_manual(values=c(rep(1,6),0), name="") +
   scale_colour_manual(values=regions_cols$colour, name="") +
   scale_shape_manual(values=c(rep(20,6),32), name="") +
   facet_grid(amelioration~sig, scales="free", space="free") + 
+        scale_y_discrete(breaks=c("dPFLU4242","PQBR57_0059_V100A","dgacS"),
+                     labels=c("∆PFLU4242","PQBR57_0059_V100A","∆gacS")) +
   theme_pub() +
   labs(x="", y="") +
   scale_x_discrete(expand = expansion(add=1)) +
@@ -202,14 +204,27 @@ pq103_de_am_plot_gene_names$region <- factor(pq103_de_am_plot_gene_names$region,
         panel.border=element_blank(), axis.line=element_blank(),
         axis.text.x=element_blank(), axis.ticks.x=element_blank(),
         panel.spacing.x=unit(5, units="pt")))
+```
 
+Load up the pQBR57 image and output both together.
 
-svglite::svglite(height=2, width=3.6, file = "../plots/Fig15.svg")
-plot_fig15 + theme_pub() + 
+```{r}
+library(patchwork)
+
+plot_fig14b <- readRDS("../plots/Fig14b.rds")
+plot_fig14b <- plot_fig14b + theme_pub() + 
+  theme(strip.text=element_blank(),
+        panel.border=element_blank(), axis.line=element_blank(),
+        axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+        panel.spacing.x=unit(5, units="pt"))
+plot_fig15 <- plot_fig15 + theme_pub() + 
   theme(legend.position="bottom", strip.text=element_blank(),
         panel.border=element_blank(), axis.line=element_blank(),
         axis.text.x=element_blank(), axis.ticks.x=element_blank(),
         panel.spacing.x=unit(5, units="pt"))
+
+svglite::svglite(height=4, width=3.6, file = "../plots/Fig14_15.svg")
+plot_fig14b / plot_fig15 + plot_layout(heights=c(1.4,1))
 dev.off()
 ```
 

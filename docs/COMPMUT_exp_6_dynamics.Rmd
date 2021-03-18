@@ -292,7 +292,7 @@ A mutated PQBR57_0059 is associated with an increase in cumulative plasmid.
 Do the results hold if the ancestral strain is not included?
 
 ```{r}
-drop1(lme(cp_boxcox ~ PQ5759, random = ~1|v, method="ML", data=filter(dr6_summ, v != "anc")),
+drop1(lme(cp_boxcox ~ PQ5759, random = ~1|v, method="ML", data=filter(dr6_summ, v != "unevolved")),
       test="Chisq")
 ```
 

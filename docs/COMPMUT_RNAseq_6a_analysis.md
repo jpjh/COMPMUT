@@ -2,7 +2,7 @@ COMPMUT RNAseq Analysis 6a: Chromosomal genes — plots, figures, and
 analysis
 ================
 jpjh
-24 February, 2021
+17 March, 2021
 
 ## Analysis of edgeR tables outline
 
@@ -1692,6 +1692,20 @@ dev.off()
 There are 733 (733) genes differentially expressed by gacS. gacS mutants
 with the plasmids also have a large number of significantly DE genes.
 
+How many additional genes are differentially expressed with ∆gacS,
+beyond the 2x DE genes plotted above?
+
+``` r
+full_table_chr %>% filter((pQBR103.dgacS.FDR < 0.05 & abs(pQBR103.dgacS.logFC)>1) | 
+                            (pQBR57.dgacS.FDR < 0.05 & abs(pQBR57.dgacS.logFC)>1) |
+                            (none.dgacS.FDR < 0.05 & abs(none.dgacS.logFC)>1)) %>%
+  filter(!(gene %in% chr_2xde_gene_names$gene)) %>% nrow()
+```
+
+    ## [1] 401
+
+401 genes – including these would require the figure to be 3.5x bigger.
+
 Are there any genes which are differentially-expressed in the plasmid +
 ∆gacS mutation (and not with either plasmid or knockout alone)?
 
@@ -1720,7 +1734,7 @@ ggplot(data=chr_pq57_dgacS_de_subset,
   theme_pub()
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-72-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-73-1.png)<!-- -->
 
 Broadly similar distribution of up- and down-regulated genes in this
 interaction. The most upregulated gene is:
@@ -1767,7 +1781,7 @@ ggplot(data=chr_pq103_dgacS_de_subset,
   ggtitle("genes only DE with pQBR103 and ∆gacS together")
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-75-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-76-1.png)<!-- -->
 
 Here there’s one outlying downregulated gene:
 
@@ -1837,7 +1851,7 @@ are also independently regulated by gacS.
   theme(legend.position="right"))
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-79-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-80-1.png)<!-- -->
 
 Separate out plot.
 
@@ -1845,7 +1859,7 @@ Separate out plot.
 p_pq57_dgacS + facet_wrap(~sig)
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-80-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-81-1.png)<!-- -->
 
 There is no obvious correlation between genes upregulated by pQBR57
 acqusition, and those downregulated by gacS. In fact, the majority of
@@ -1891,7 +1905,7 @@ summary(tab_chr_pq57_x_dgacS_de$sig)
    theme(legend.position="right"))
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-82-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-83-1.png)<!-- -->
 
 ``` r
 (p_pq57_x_dgacS <- ggplot(data=tab_chr_pq57_x_dgacS_de,
@@ -1908,13 +1922,13 @@ summary(tab_chr_pq57_x_dgacS_de$sig)
   theme(legend.position="right"))
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-83-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-84-1.png)<!-- -->
 
 ``` r
 p_pq57_dgacS %+% facet_wrap(~sig)
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-84-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-85-1.png)<!-- -->
 
 No: it is clear that many of the genes upregulated by pQBR57 tend to
 remain upregulated in the ∆gacS mutant.
@@ -1965,7 +1979,7 @@ summary(tab_gacS_x_pq57_de$sig)
   theme(legend.position="right"))
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-87-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-88-1.png)<!-- -->
 
 This shows a clear trend whereby genes are regulated similarly in the
 gacS mutation with and without pQBR57, but with a cluster of genes above
@@ -2008,13 +2022,13 @@ are also independently regulated by gacS.
   theme(legend.position="right"))
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-89-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-90-1.png)<!-- -->
 
 ``` r
 p_pq103_dgacS + facet_wrap(~sig)
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-90-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-91-1.png)<!-- -->
 
 In contrast to pQBR57, we find a large cluster of genes here that are
 upregulated by pQBR103 but downregulated by ∆gacS. 76/105 of genes
@@ -2058,13 +2072,13 @@ summary(tab_chr_pq103_x_dgacS_de$sig)
   theme_pub() + theme(legend.position="right"))
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-92-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-93-1.png)<!-- -->
 
 ``` r
 p_pq103_dgacS %+% facet_wrap(~sig)
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-93-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-94-1.png)<!-- -->
 
 This plot is similar to the situation with pQBR57 in that many of the
 genes that are differentially-regulated by pQBR103 are also
@@ -2106,7 +2120,7 @@ Plot.
   theme(legend.position="right"))
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-95-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-96-1.png)<!-- -->
 
 This shows a clear trend whereby genes are regulated similarly in the
 gacS mutation with and without pQBR103.
@@ -2190,7 +2204,7 @@ ggplot(data=chr_pq57_dPFLU4242_comparisons,
   geom_point() + scale_shape_manual(values=c(16,1,4,2)) + theme(legend.position="right")
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-98-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-99-1.png)<!-- -->
 
 This plot shows the overall trend in genes being significantly
 downregulated following plasmid acquisition. However it also shows a
@@ -2244,7 +2258,7 @@ ggplot(data=chr_pq103_dPFLU4242_comparisons,
   geom_point() + scale_shape_manual(values=c(16,1,4,2)) + theme(legend.position="right")
 ```
 
-![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-101-1.png)<!-- -->
+![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-102-1.png)<!-- -->
 
 Similar overall to pQBR57, though the effect seems more complete for
 pQBR103.

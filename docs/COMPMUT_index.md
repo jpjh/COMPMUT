@@ -42,4 +42,4 @@ compiled Feb 2021
     [pQBR103 differential expression
     (`COMPMUT_RNAseq_6c_analysis.Rmd`)](COMPMUT_RNAseq_6c_analysis.md)**
 7.  **[Identification of SOS-associated genes
-    (`COMPMUT_RNAseq_lexA.Rmd`)](COMPMUT_RNAseq_lexA.md)**
+    (`COMPMUT_RNAseq_7_lexA.Rmd`)](COMPMUT_RNAseq_7_lexA.md)**

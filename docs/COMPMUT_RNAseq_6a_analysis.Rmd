@@ -1171,7 +1171,18 @@ dev.off()
 
 ###### Effect of gacS amelioration on plasmid differentially-expressed genes.
 
-There are `r length(chr_dgacS_de$gene)` (733) genes differentially expressed by gacS. gacS mutants with the plasmids also have a large number of significantly DE genes. 
+There are `r length(chr_dgacS_de$gene)` (733) genes differentially expressed by gacS. gacS mutants with the plasmids also have a large number of significantly DE genes.
+
+How many additional genes are differentially expressed with ∆gacS, beyond the 2x DE genes plotted above?
+
+```{r}
+full_table_chr %>% filter((pQBR103.dgacS.FDR < 0.05 & abs(pQBR103.dgacS.logFC)>1) | 
+                            (pQBR57.dgacS.FDR < 0.05 & abs(pQBR57.dgacS.logFC)>1) |
+                            (none.dgacS.FDR < 0.05 & abs(none.dgacS.logFC)>1)) %>%
+  filter(!(gene %in% chr_2xde_gene_names$gene)) %>% nrow()
+```
+
+401 genes -- including these would require the figure to be 3.5x bigger.
 
 Are there any genes which are differentially-expressed in the plasmid + ∆gacS mutation (and not with either plasmid or knockout alone)?
 

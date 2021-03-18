@@ -362,12 +362,15 @@ pq57_de_am_plot_all_gene_names$region <- factor(pq57_de_am_plot_all_gene_names$r
   scale_colour_manual(values=regions_cols$colour, name="") +
   scale_shape_manual(values=c(rep(20,5),32), name="") +
   facet_grid(amelioration~sig, scales="free", space="free") + 
+    scale_y_discrete(breaks=c("dPFLU4242","PQBR57_0059_V100A","dgacS"),
+                     labels=c("∆PFLU4242","PQBR57_0059_V100A","∆gacS")) +
   theme_pub() +
   labs(x="", y="") +
   scale_x_discrete(expand = expansion(add=1)) +
   theme(legend.position="bottom", strip.text=element_blank(),
         panel.border=element_blank(), axis.line=element_blank(),
-        axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+        axis.text.x=element_blank(), #element_text(angle=90, hjust=1, vjust=0.5), 
+        axis.ticks.x=element_blank(),
         panel.spacing.x=unit(5, units="pt")))
 ```
 
@@ -388,6 +391,12 @@ Include several sets of genes, as well as singletons PQBR57_0220, PQBR57_0232, P
 - PQBR57_0184-0185. Both uncharacterised, <2x DE
 - PQBR57_0317-0318. Both uncharacterised, <2x DE 
 - PQBR57_0424. N6-adenine methyltransferase, <2x DE
+
+Save the figure for compilation with the pQBR103 figure.
+
+```{r}
+saveRDS(p_heatmap_pq57_amelioration_all, file = "../plots/Fig14b.rds")
+```
 
 **GacS deletion appears to have an unusual effect on pQBR57 gene expression, with specific sets of genes downregulated in the ∆gacS mutant compared with the other ameliorations. These genes tend to be towards the putative origin-of-replication of pQBR57.**
 
