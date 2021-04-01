@@ -31,7 +31,7 @@ compiled Feb 2021
     featurecounts
     (`COMPMUT_RNAseq_3_Rsubread.Rmd`)](COMPMUT_RNAseq_3_Rsubread.md)**
 4.  **[Analysing differential expression with edgeR
-    (`COMPMUT_RNAseq_4_edgeR.Rmd`)](COMPMUT_RNAseq_4_edgeR.Rmd)**
+    (`COMPMUT_RNAseq_4_edgeR.Rmd`)](COMPMUT_RNAseq_4_edgeR.md)**
 5.  **[Preparing files with gene information
     (`COMPMUT_RNAseq_5_gene_info.Rmd`)](COMPMUT_RNAseq_5_gene_info.md)**
 6.  **Analysis of differential expression: [Chromosomal differential

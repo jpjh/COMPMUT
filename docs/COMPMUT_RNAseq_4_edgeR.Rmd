@@ -895,6 +895,28 @@ kable(cbind(ks_tests, plyr::ldply(ks_tests$trts, function(trt) pc_kstest(both_tp
 
 Note that in this plot, TPM was calculated from each replicate separately, and the mean taken from across 3 replicates. TPM was calculated from the total transcripts mapping to protein-coding genes on plasmid and on chromosome (so noncoding RNAs were not considered).
 
+Note also that TPM takes account of gene lengths (since it is calculated from FPKM). As an aside, how do plasmid genes and chromosomal genes differ in terms of length?
+
+```{r}
+genelengths_analysis <- genelengths %>% rownames_to_column(var="locus_tag") %>%
+  mutate(replicon = ifelse(locus_tag %in% rownames(gene_info_chr), "chr",
+                           ifelse(locus_tag %in% rownames(gene_info_pQ57), "pQBR57",
+                                  ifelse(locus_tag %in% rownames(gene_info_pQ103), "pQBR103",
+                                         "error"
+                                  ))))
+genelengths_analysis %>% group_by(replicon) %>%
+  summarise(mean = mean(length_na),
+            max = max(length_na),
+            min = min(length_na),
+            median = median(length_na))
+
+genelengths_analysis %>% ggplot(aes(x=replicon, y=length_na)) + geom_violin()
+
+genelengths_analysis %>% ggplot(aes(x=replicon, y=length_na)) + geom_violin() + 
+  coord_trans(y = "log10")
+```
+
+Plasmid genes tend to be shorter than chromosomal genes, but the range is similar for both. 
 
 #### Plot TPM across each plasmid
 

@@ -1472,6 +1472,47 @@ separately, and the mean taken from across 3 replicates. TPM was
 calculated from the total transcripts mapping to protein-coding genes on
 plasmid and on chromosome (so noncoding RNAs were not considered).
 
+Note also that TPM takes account of gene lengths (since it is calculated
+from FPKM). As an aside, how do plasmid genes and chromosomal genes
+differ in terms of length?
+
+``` r
+genelengths_analysis <- genelengths %>% rownames_to_column(var="locus_tag") %>%
+  mutate(replicon = ifelse(locus_tag %in% rownames(gene_info_chr), "chr",
+                           ifelse(locus_tag %in% rownames(gene_info_pQ57), "pQBR57",
+                                  ifelse(locus_tag %in% rownames(gene_info_pQ103), "pQBR103",
+                                         "error"
+                                  ))))
+genelengths_analysis %>% group_by(replicon) %>%
+  summarise(mean = mean(length_na),
+            max = max(length_na),
+            min = min(length_na),
+            median = median(length_na))
+```
+
+    ## # A tibble: 3 x 5
+    ##   replicon  mean   max   min median
+    ## * <chr>    <dbl> <dbl> <dbl>  <dbl>
+    ## 1 chr       997. 14073    72    864
+    ## 2 pQBR103   742.  5841    72    558
+    ## 3 pQBR57    600.  5646   114    402
+
+``` r
+genelengths_analysis %>% ggplot(aes(x=replicon, y=length_na)) + geom_violin()
+```
+
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-73-1.png)<!-- -->
+
+``` r
+genelengths_analysis %>% ggplot(aes(x=replicon, y=length_na)) + geom_violin() + 
+  coord_trans(y = "log10")
+```
+
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-73-2.png)<!-- -->
+
+Plasmid genes tend to be shorter than chromosomal genes, but the range
+is similar for both.
+
 #### Plot TPM across each plasmid
 
 ##### pQBR57
@@ -1485,7 +1526,7 @@ ggplot(data=pQ57_tpm_plot,
   geom_step(size=0.2) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-73-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-74-1.png)<!-- -->
 
 ``` r
 ggplot(data=pQ57_tpm_plot,
@@ -1493,7 +1534,7 @@ ggplot(data=pQ57_tpm_plot,
   geom_tile(height=0.9) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-73-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-74-2.png)<!-- -->
 
 Note that white bars here indicate genes removed for low expression.
 
@@ -1566,7 +1607,7 @@ ggplot(data=pQ57_tpm_plot, aes(x=fct_reorder(locus_tag, tpm),
   geom_point()
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-75-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-76-1.png)<!-- -->
 
 Clearly shows the negative effect that gacS knockout has on gene
 expression from pQBR57.
@@ -1582,7 +1623,7 @@ ggplot(data=pQ103_tpm_plot,
   geom_step(size=0.2) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-76-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-77-1.png)<!-- -->
 
 ``` r
 ggplot(data=pQ103_tpm_plot,
@@ -1590,7 +1631,7 @@ ggplot(data=pQ103_tpm_plot,
   geom_tile(height=0.9) + theme_pub() + theme(legend.position="bottom")
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-76-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-77-2.png)<!-- -->
 
 And the alternative plot
 
@@ -1600,7 +1641,7 @@ ggplot(data=pQ103_tpm_plot, aes(x=fct_reorder(locus_tag, tpm),
   geom_point()
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-77-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-78-1.png)<!-- -->
 
 Top expressed genes:
 
@@ -1756,7 +1797,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-1.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-1.png)<!-- -->
 
 ``` r
 (plot_pQBR103_heatmap <- ggplot(data=pQ103_tpm_plot,
@@ -1777,7 +1818,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-2.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-2.png)<!-- -->
 
 ``` r
 (plot_pQBR57_log_heatmap <- ggplot(data=pQ57_tpm_plot,
@@ -1799,7 +1840,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-3.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-3.png)<!-- -->
 
 ``` r
 (plot_pQBR103_log_heatmap <- ggplot(data=pQ103_tpm_plot,
@@ -1820,7 +1861,7 @@ untransformed and log-transformed tpm data.
              size=1))
 ```
 
-![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-84-4.png)<!-- -->
+![](COMPMUT_RNAseq_4_edgeR_files/figure-gfm/unnamed-chunk-85-4.png)<!-- -->
 
 Output.
 
