@@ -29,3 +29,6 @@ knitr::opts_chunk$set(echo = TRUE)
 6. **Analysis of differential expression: [Chromosomal differential expression (`COMPMUT_RNAseq_6a_analysis.Rmd`)](COMPMUT_RNAseq_6a_analysis.md). [pQBR57 differential expression (`COMPMUT_RNAseq_6b_analysis.Rmd`)](COMPMUT_RNAseq_6b_analysis.md). [pQBR103 differential expression (`COMPMUT_RNAseq_6c_analysis.Rmd`)](COMPMUT_RNAseq_6c_analysis.md)**
 7. **[Identification of SOS-associated genes (`COMPMUT_RNAseq_7_lexA.Rmd`)](COMPMUT_RNAseq_7_lexA.md)**
 
+### Compensatory mutations from previous studies
+
+1. **[Compensatory mutations (`COMPMUT_seqs_1_compmuts.Rmd`)](COMPMUT_seqs_1_compmuts.md)**

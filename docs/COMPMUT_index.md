@@ -1,7 +1,7 @@
 Compensatory mutations manuscript: Index page
 ================
 jpjh
-compiled Feb 2021
+compiled Mar 2021
 
 ### Experimental measurements of relative fitness, plasmid cost, etc
 
@@ -43,3 +43,8 @@ compiled Feb 2021
     (`COMPMUT_RNAseq_6c_analysis.Rmd`)](COMPMUT_RNAseq_6c_analysis.md)**
 7.  **[Identification of SOS-associated genes
     (`COMPMUT_RNAseq_7_lexA.Rmd`)](COMPMUT_RNAseq_7_lexA.md)**
+
+### Compensatory mutations from previous studies
+
+1.  **[Compensatory mutations
+    (`COMPMUT_seqs_1_compmuts.Rmd`)](COMPMUT_seqs_1_compmuts.md)**
