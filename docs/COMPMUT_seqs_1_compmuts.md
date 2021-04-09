@@ -109,10 +109,12 @@ plapha_compmuts <- read.csv("../ext/Harrison2017_data.csv") %>%
                                             1 - (POSITION - 4685929),
                                             ifelse(LOCUS_ID=="PFLU_2189",
                                                    1 + POSITION - 2372682, "ERROR"))),
+         target = factor(GENE_NAME..IF.AVALIBABLE., 
+                         levels=c("gacA","gacS","PFLU_4242"),
+                         labels=c("gacA","gacS","PFLU4242")),
          plasmid = "pQBR103") %>%
   rename(ref = WILD.TYPE.BASE.SEQUENCE, alt = MUTATION.BASE.SEQUENCE, 
-         clone = SAMPLE.ID..Library.code...population.ID...extraction.number.,
-         target = GENE_NAME..IF.AVALIBABLE.) %>%
+         clone = SAMPLE.ID..Library.code...population.ID...extraction.number.) %>%
   select(clone, ref, alt, target, position_na, plasmid)
 ```
 
@@ -128,7 +130,7 @@ Annotated manually.
 
 ``` r
 pp_compmuts <- read.csv("../ext/plapha_compmuts_edits.csv") %>%
-  mutate(study = "Harrison2017") %>% select(!(c(alt, ref)))
+  mutate(study = "Harrison et al. (2017)") %>% select(!(c(alt, ref)))
 ```
 
 #### Harrison et al. 2015
@@ -159,14 +161,13 @@ acid mutations haven’t copied across for P32-5. Replace this manually.
 
 ``` r
 parr_compmuts[25,"mutation_aa"] <- "L437_Q442del"
-
 parr_compmuts[20,"mutation_aa"] <- "V148M"
 ```
 
 ### Bind all together and plot.
 
 ``` r
-compmuts <- bind_rows(parr_compmuts, carr_compmuts, pq55_compmuts, soili_compmuts) %>%
+compmuts <- bind_rows(parr_compmuts, pp_compmuts, carr_compmuts, pq55_compmuts, soili_compmuts) %>%
   select(study, plasmid, clone, target, position_na, mutation_na, position_aa, mutation_aa)
 
 write.csv(compmuts, file = "../data/COMPMUT_mutations.csv", row.names=FALSE)
@@ -212,12 +213,12 @@ Summarise the table to get counts for each mutation.
 
 ``` r
 compmuts_summ <- compmuts %>% 
-  group_by(target, position_na, mutation_aa, mutation_na, plasmid, mut_type) %>%
+  group_by(target, position_na, mutation_aa, plasmid, mut_type) %>%
   summarise(count = n(),
             counts = ifelse(count>1, ">1", "1"))
 ```
 
-    ## `summarise()` has grouped output by 'target', 'position_na', 'mutation_aa', 'mutation_na', 'plasmid'. You can override using the `.groups` argument.
+    ## `summarise()` has grouped output by 'target', 'position_na', 'mutation_aa', 'plasmid'. You can override using the `.groups` argument.
 
 Plot.
 
