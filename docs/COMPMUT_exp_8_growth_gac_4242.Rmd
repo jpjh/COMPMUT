@@ -1,6 +1,8 @@
 ---
 title: "COMPMUT Experiments 8: Presentation and analysis of the effects of PFLU4242 expression in the ∆gacS mutant"
-output: html_document
+date: "compiled Jul 2021"
+author: "jpjh"
+output: rmarkdown::github_document
 ---
 
 ```{r setup, include=FALSE}
