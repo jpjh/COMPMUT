@@ -1,7 +1,7 @@
 ---
 title: "COMPMUT RNAseq Analysis 4: Analysing differential expression using edgeR"
 author: "jpjh"
-date: "compiled Feb 2021"
+date: "compiled Feb 2021, edited Jul 2021"
 output: rmarkdown::github_document
 ---
 
@@ -1128,6 +1128,76 @@ svglite::svglite(height=4, width=7.2, file = "../plots/Fig11_alt.svg")
 dev.off()
 ```
 
+### Side-project: Tn6291 gene expression
+
+We see upregulation of Tn6291 transposase-related genes. Might this be because Tn6291 has been duplicated?
+
+Plot expression of all genes from Tn6291.
+
+```{r}
+tn6291 <- paste("PFLU_", seq(1885, 1909, 1), sep="")
+tn6291[20] <- "PFLU_1903A"
+tn6291 <- tn6291[-5]
+
+y_tn6291 <- y_chr[tn6291,]
+counts_tn6291 <- data.frame(name = rownames(y_tn6291$samples),
+                        trt = y_tn6291$samples$group,
+                        lib.size = y_tn6291$samples$lib.size,
+                        norm.factors = z_chr$samples$norm.factors) %>%
+  cbind(t(y_tn6291$counts[tn6291,])) %>%
+  pivot_longer(-c("name","trt","lib.size","norm.factors"), 
+               names_to = "locus_tag", values_to = "raw_counts") %>%
+  mutate(scale_factor = (lib.size * norm.factors)/1e6,
+         cpm = raw_counts / scale_factor,
+         transposase = ifelse(locus_tag %in% c("PFLU_1886","PFLU_1887","PFLU_1888"), "y", "")) %>%
+  left_join(trt_trans, by=c("name","trt")) %>%
+  mutate(amelioration = factor(amelioration,
+                               levels=c("wt","dgacS","dPFLU4242","PQBR57_0059_V100A")),
+         rep = substr(name,1,1))
+```
+
+Plot.
+
+```{r}
+counts_tn6291 %>% 
+  ggplot(aes(x=amelioration, y=cpm, colour=transposase, shape=rep)) +
+  geom_hline(yintercept=0, size=0.1) +
+  geom_point(position=position_dodge(width=0.2), alpha=0.8) +
+  scale_x_discrete(breaks=c("wt","dPFLU4242","PQBR57_0059_V100A","dgacS"),
+                   labels=c("wt","∆PFLU4242","PQBR57_0059 V100A","∆gacS"),
+                   name="") +
+  labs(y="counts per million", x="amelioration", name="expression (cpm)") +
+  facet_grid(plasmid~locus_tag, scales = "free_y") + 
+  scale_colour_manual(values=c("grey", "dodgerblue")) +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+```
+
+A bit difficult to see. Instead show the key genes and three representative alternatives, with a different plot orientation.
+
+```{r}
+(plot_figr2 <- counts_tn6291 %>% 
+   filter(locus_tag %in% c("PFLU_1885","PFLU_1886","PFLU_1887","PFLU_1888",
+                           "PFLU_1892","PFLU_1897","PFLU_1903")) %>%
+  ggplot(aes(x=amelioration, y=cpm, colour=transposase, group=rep)) +
+  geom_hline(yintercept=0, size=0.1) +
+  geom_point(position=position_dodge(width=0.2), alpha=0.8, shape=16) +
+  scale_x_discrete(breaks=c("wt","dPFLU4242","PQBR57_0059_V100A","dgacS"),
+                   labels=c("wt","∆PFLU4242","PQBR57_0059 V100A","∆gacS"),
+                   name="") +
+  labs(y="counts per million", x="amelioration", name="expression (cpm)") +
+  facet_grid(locus_tag~plasmid, scales = "free_y") + 
+  scale_colour_manual(values=c("grey", "dodgerblue")) +
+  theme(axis.text.x=element_text(angle=45, hjust=1)))
+
+png(height=4.5, width=2.5, file = "../plots/FigR2.png", res=300, units="in")
+plot_figr2 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
+dev.off()
+```
+
+No evidence of general upregulation from Tn6291: differences are specific to the transposase genes, indicating that apparent upregulation is not due to Tn6291 duplication. 
+
 ---
 
 **[Back to index.](COMPMUT_index.md)**
+
+**[On to analysis.]()(COMPMUT_RNAseq_5_gene_info.md)**

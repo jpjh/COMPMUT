@@ -1,0 +1,247 @@
+---
+title: "COMPMUT Experiments 8: Presentation and analysis of the effects of PFLU4242 expression in the ∆gacS mutant"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+library(broom)
+
+source("../functions/theme_pub.r")
+theme_github <- function(x){
+  theme_pub(base_size=12)
+}
+
+theme_set(theme_github())
+```
+
+## Growth rate experiments with strains ectopically expressing PFLU4242 in the presence of ∆gacS compensated pQBR plasmids
+
+### Experimental design
+
+*Pseudomonas fluorescens* SBW25 *∆gacS* were transformed with pME6032 carrying either no insert, or the wild-type *PFLU4242* gene cloned into the SacI/KpnI sites. Transformations were conducted in quadruplicate. To each replicate was then introduced plasmids pQBR103, pQBR57, or pQBR55 by conjugation. Together this resulted in 24 strains (two pME6032 variants, by three introduced megaplasmids plus a no-megaplasmid control, by four independent replicates), which were validated by PCR. Overnight cultures grown in the presence of 100 µg/ml tetracycline (to select for pME6032) were subcultured ~1:1000 into KB broth supplemented with 100 µg/ml tetracycline, and either no IPTG or 2 mM IPTG, and grown in a Tecan Nano platereader at 28°C shaking, with optical density readings taken every 15 minutes.
+
+### Plotting
+
+```{r}
+d9 <- read.csv("../data/COMPMUT_exp_data_9.csv", header=TRUE)
+```
+
+Calculate means and standard error. 
+
+```{r}
+d9 <- d9 %>% mutate(IPTG = factor(IPTG, levels=c("0","100"), labels=c("uninduced","induced"))) 
+
+d9_summ <- d9 %>%
+  group_by(cycle, plasmid, pME6032, IPTG) %>%
+  summarise(mean = mean(OD600_corr), 
+            n = n(), 
+            se = sd(OD600_corr)/n, 
+            ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
+  rename(OD600_corr=mean)
+
+(plot_figS17 <- ggplot(data=d9,
+       aes(x=(cycle/4), y=OD600_corr,
+           colour=IPTG)) +
+  # geom_ribbon(data=d9_summ, aes(ymin=OD600_corr-se, ymax=OD600_corr+se, fill=IPTG),
+  #             alpha=0.3, colour=NA) +
+  geom_line(data=d9_summ) +
+  geom_line(data=d9, aes(group=well), alpha=0.4, size=0.2) +
+    scale_colour_manual(values=c("#53BCC2","#E98076")) +
+  labs(x="time (h)", y=expression(paste("OD600"["corrected"])), fill="", colour="") +
+  scale_x_continuous(breaks=c(0,6,12,18)) + scale_y_continuous(breaks=c(0,0.5,1.0)) +
+  facet_grid(plasmid~pME6032) +
+  theme(legend.position="bottom"))
+```
+
+Looks good, output as .svg.
+
+```{r, eval=FALSE}
+svglite::svglite(height=3, width=2.5, file = "../plots/Fig17.svg")
+plot_figS17 + theme_pub() + theme(legend.position="bottom")
+dev.off()
+```
+
+Output without pQBR55.
+
+```{r, eval=FALSE}
+d9_ss <- filter(d9, plasmid!="pQBR55")
+d9_summ_ss <- filter(d9_summ, plasmid!="pQBR55")
+       
+svglite::svglite(height=2.2, width=2.5, file = "../plots/Fig17_sub.svg")
+ggplot(data=d9_ss,
+       aes(x=(cycle/4), y=OD600_corr,
+           colour=IPTG)) +
+  geom_line(data=d9_summ_ss) +
+  geom_line(data=d9_ss, aes(group=well), alpha=0.4, size=0.2) +
+    scale_colour_manual(values=c("#53BCC2","#E98076")) +
+  labs(x="time (h)", y=expression(paste("OD600"["corrected"])), fill="", colour="") +
+  scale_x_continuous(breaks=c(0,6,12,18)) + scale_y_continuous(breaks=c(0,0.5,1.0)) +
+  facet_grid(plasmid~pME6032) +
+  theme_pub() + theme(legend.position="bottom")
+dev.off()
+```
+
+### Analysis
+
+Analyse as with the original growth curves.
+
+```{r}
+d9_auc <- d9 %>%
+  group_by(well, replicate, plasmid, pME6032, IPTG) %>%
+  summarise(AUC = sum(OD600_corr))
+```
+
+Plot to check it looks sensible.
+
+```{r}
+pd <- position_dodge(width=0.3)
+
+d9_auc %>% ggplot(aes(x=pME6032, y=AUC, colour=IPTG)) +
+  geom_point(position=pd) + facet_wrap(.~plasmid, nrow=1) + 
+  scale_colour_manual(values=c("#53BCC2","#E98076")) +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+```
+
+Looks good.
+
+We are interested in the ratio between growth when induced vs. growth when uninduced. 
+
+To do this, arrange the `d9_auc` dataframe such that consecutive rows are replicates ±IPTG, then use the `mutate()` and `lag()` functions to get the ratio between rows. 
+
+```{r}
+d9_ratio <- d9_auc %>% ungroup() %>% arrange(replicate, pME6032, plasmid, IPTG) %>%
+  mutate(ratio = AUC / lag(AUC)) %>% filter(IPTG=="induced")
+```
+
+Again, plot to check.
+
+```{r}
+d9_ratio %>% ggplot(aes(x=pME6032, y=ratio)) +
+  geom_hline(yintercept=1, linetype="dotted") +
+  geom_point(position=pd) + facet_wrap(.~plasmid, nrow=1) +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+```
+
+Looks good.
+
+We are interested in whether this ratio varies between pME6032 inserts in the presence of different plasmids.
+
+Analyse as an linear model. 
+
+```{r}
+mod12_1 <- lm(data=d9_ratio, ratio ~ pME6032 * plasmid)
+```
+
+Generate plots for model validation.
+
+```{r}
+par(mfrow=c(2,2))
+plot(mod12_1)
+```
+
+Probable problem with inhomogenous variances.
+
+Try box-cox transformation.
+
+```{r}
+MASS::boxcox(data=d9_ratio, ratio ~ pME6032 * plasmid, lambda=seq(-5, 10, 0.5))
+
+par(mfrow=c(1,1))
+lambda <- 2
+
+d9_ratio <- d9_ratio %>% mutate(ratio_bc = ((ratio^lambda) - 1) / lambda)
+
+mod12_2 <- lm(data=d9_ratio, ratio_bc ~ pME6032 * plasmid)
+
+par(mfrow=c(2,2))
+plot(mod12_2)
+```
+
+Improved, but still a problematic outlier from pQBR55, which shows unexpectedly high growth, probably due to a mutation or plasmid loss. 
+
+```{r}
+d9_ratio <- within(d9_ratio, {
+  groups <- interaction(plasmid,pME6032)
+  groups <- reorder(groups, ratio_bc, mean)
+})
+
+bartlett.test(ratio_bc ~ groups, data=d9_ratio)
+
+fligner.test(ratio_bc ~ groups, data=d9_ratio)
+
+car::leveneTest(ratio_bc ~ groups, data=d9_ratio)
+
+shapiro.test(resid(mod12_2))
+```
+
+Bartlett's test is significant, as is the Shapiro-Wilk test, due to the outlier pQBR55 replicate that began growing earlier than expected.
+
+Rebuild model without pQBR55.
+
+```{r}
+d9_ratio_no55 <- filter(d9_ratio, plasmid!="pQBR55")
+
+mod12_3 <- lm(data=d9_ratio_no55, ratio ~ pME6032 * plasmid)
+
+plot(mod12_3)
+
+bartlett.test(ratio_bc ~ groups, data=d9_ratio_no55)
+fligner.test(ratio_bc ~ groups, data=d9_ratio_no55)
+car::leveneTest(ratio_bc ~ groups, data=d9_ratio_no55)
+shapiro.test(resid(mod12_3))
+```
+
+Much better!
+
+Test both models to see whether including pQBR55 has a qualitative effect on the findings.
+
+```{r}
+anova(mod12_2)
+```
+
+Significant interaction; effects of PFLU4242 expression varies across pQBR plasmids.
+
+```{r}
+anova(mod12_3)
+```
+
+Also the case when pQBR55 is removed, in fact, the patterns are even clearer. 
+
+Perform comparisons with the empty vector control for each plasmid.
+
+```{r}
+d9_ratio %>% group_by(plasmid) %>%
+  summarise(t_test = tidy(t.test(ratio_bc ~ pME6032))) %>%
+  mutate(coef = t_test$estimate,
+         p_value = t_test$p.value,
+         p_adj = p.adjust(p_value, method="fdr"),
+         sig = ifelse(p_adj<0.05, "*", "")) %>%
+  select(!t_test) %>% arrange(plasmid) %>% kable()
+```
+
+Clear significant effect for all plasmids. 
+
+```{r}
+d9_ratio_no55  %>% group_by(plasmid) %>%
+  summarise(t_test = tidy(t.test(ratio_bc ~ pME6032))) %>%
+  mutate(stat = t_test$statistic,
+         df = t_test$parameter,
+         coef = t_test$estimate,
+         p_value = t_test$p.value,
+         p_adj = p.adjust(p_value, method="fdr"),
+         sig = ifelse(p_adj<0.05, "*", "")) %>%
+  select(!t_test) %>% arrange(plasmid) %>% kable()
+```
+
+Overall, increased expression of PFLU4242 can clearly compensate for the absence of *gacS* for generating costs for plasmids pQBR55 and pQBR57. The effects for pQBR103 are less extreme, but still detectable. 
+
+
+---
+
+**[Back to index.](COMPMUT_index.md)**

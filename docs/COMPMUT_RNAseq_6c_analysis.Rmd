@@ -1,7 +1,7 @@
 ---
 title: "COMPMUT RNAseq Analysis 6c: pQBR103 genes — plots, figures, and analysis"
 author: "jpjh"
-date: "compiled Feb 2021"
+date: "compiled Feb 2021, edited Jul 2021"
 output: rmarkdown::github_document
 ---
 
@@ -160,7 +160,7 @@ Plot different significances on different plots.
 p_pq103_am + facet_wrap(~sig)
 ```
 
-The pattern for pQBR103 is very different from that of pQBR103, with a large number of upregulated genes in both compensated variants. These include the transfer genes, and the pilus genes which are downregulated in pQBR103.
+The pattern for pQBR103 is very different from that of pQBR57, with a large number of upregulated genes in both compensated variants. These include the transfer genes, and the pilus genes which are downregulated in pQBR57.
 
 Genes downregulated by both are:
 
@@ -168,6 +168,15 @@ Genes downregulated by both are:
 pq103_am_both <- tab_pq103_am %>% filter(sig=="both") %>% select(gene) %>% pull() %>% unique()
 
 pq103_gene_info %>% filter(gene_name %in% pq103_am_both) %>% 
+  select(gene_name, protein_name, go, region) %>% kable()
+```
+
+Genes downregulated by ∆gacS specifically for pQBR103 are:
+
+```{r}
+pq103_gacs_down <- tab_pq103_am %>% filter(sig=="dgacS only") %>% select(gene) %>% pull() %>% unique()
+
+pq103_gene_info %>% filter(gene_name %in% pq103_gacs_down) %>% 
   select(gene_name, protein_name, go, region) %>% kable()
 ```
 

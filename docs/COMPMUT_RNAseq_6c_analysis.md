@@ -1,7 +1,7 @@
 COMPMUT RNAseq Analysis 6c: pQBR103 genes — plots, figures, and analysis
 ================
 jpjh
-compiled Feb 2021
+compiled Feb 2021, edited Jul 2021
 
 ## Analysis of edgeR tables outline
 
@@ -189,10 +189,10 @@ p_pq103_am + facet_wrap(~sig)
 
 ![](COMPMUT_RNAseq_6c_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-The pattern for pQBR103 is very different from that of pQBR103, with a
+The pattern for pQBR103 is very different from that of pQBR57, with a
 large number of upregulated genes in both compensated variants. These
 include the transfer genes, and the pilus genes which are downregulated
-in pQBR103.
+in pQBR57.
 
 Genes downregulated by both are:
 
@@ -252,6 +252,59 @@ pq103_gene_info %>% filter(gene_name %in% pq103_am_both) %>%
 | pQBR0404   | Uncharacterized protein                                 | <GO:0009279>; <GO:0016021>                                           | N/A    |
 | pQBR0447   | Uncharacterized protein                                 |                                                                      | N/A    |
 
+Genes downregulated by ∆gacS specifically for pQBR103 are:
+
+``` r
+pq103_gacs_down <- tab_pq103_am %>% filter(sig=="dgacS only") %>% select(gene) %>% pull() %>% unique()
+
+pq103_gene_info %>% filter(gene_name %in% pq103_gacs_down) %>% 
+  select(gene_name, protein_name, go, region) %>% kable()
+```
+
+| gene\_name | protein\_name                               | go                         | region |
+|:-----------|:--------------------------------------------|:---------------------------|:-------|
+| pQBR0001   | Putative partitioning protein               |                            | par    |
+| pQBR0002   | Putative partitioning protein               | <GO:0003677>               | par    |
+| pQBR0017   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0019   | Putative transmembrane anchored protein     | <GO:0016021>               | N/A    |
+| pQBR0020   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0026   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0043   | Uncharacterized protein                     | <GO:0003824>               | sam    |
+| pQBR0064   | Conserved hypothetical exported protein     |                            | N/A    |
+| pQBR0068   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0077   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0127   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0131   | Putative transmembrane protein              | <GO:0016021>               | N/A    |
+| pQBR0132   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0143   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0148   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0158   | Putative DNA repair protein ruvB            | <GO:0003684>; <GO:0006281> | uvr    |
+| pQBR0179   | Uncharacterized protein                     |                            | tra    |
+| pQBR0221   | Conserved hypothetical DNA-binding protein  | <GO:0003677>               | N/A    |
+| pQBR0229   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0265   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0271   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0282   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0287   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0296   | Putative transmembrane protein              | <GO:0016021>               | N/A    |
+| pQBR0302   | Putative transmembrane protein              | <GO:0016021>               | N/A    |
+| pQBR0307   | Putative acetyltransferase                  | <GO:0016740>               | N/A    |
+| pQBR0311   | Putative stringent starvation protein A     |                            | N/A    |
+| pQBR0314   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0315   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0316   | Putative transmembrane protein              | <GO:0016021>               | N/A    |
+| pQBR0327   | Putative phage-related protein              |                            | N/A    |
+| pQBR0343   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0372   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0375   | Putative phage-related protein              |                            | N/A    |
+| pQBR0412   | Conserved hypothetical HD domain protein    |                            | N/A    |
+| pQBR0414   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0415   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0416   | Conserved hypothetical exported protein     |                            | N/A    |
+| pQBR0420   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0446   | Uncharacterized protein                     |                            | N/A    |
+| pQBR0472   | Putative CheR chemotaxis signalling protein | <GO:0008757>               | che    |
+
 Make a heatmap.
 
 ``` r
@@ -287,7 +340,7 @@ pq103_de_am_plot_gene_names$region <- factor(pq103_de_am_plot_gene_names$region,
         panel.spacing.x=unit(5, units="pt")))
 ```
 
-![](COMPMUT_RNAseq_6c_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](COMPMUT_RNAseq_6c_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 Load up the pQBR57 image and output both together.
 

@@ -2,7 +2,7 @@ COMPMUT Experiments 7: Presentation and analysis of growth curves with
 candidate cost genes
 ================
 jpjh
-compiled Feb 2021
+compiled Feb 2021, edited Jul 2021
 
 ## Growth rate experiments with strains overexpressing candidate cost genes
 
@@ -98,7 +98,7 @@ densities.
 Calculate AUC for all experimental replicates separately.
 
 ``` r
-gr1 <- gr1 %>% mutate(IPTG = factor(IPTG, levels=c("0","100"), labels=c("uninduced","induced"))) %>%
+gr1_AUC <- gr1 %>% mutate(IPTG = factor(IPTG, levels=c("0","100"), labels=c("uninduced","induced"))) %>%
   group_by(exp, well, exp_rep, t_rep, pME6032, IPTG) %>%
   summarise(AUC = sum(OD600_corr))
 ```
@@ -110,7 +110,7 @@ Plot to check it looks sensible.
 ``` r
 pd <- position_dodge(width=0.3)
 
-gr1 %>% ggplot(aes(x=pME6032, y=AUC, colour=IPTG, shape=t_rep)) +
+gr1_AUC %>% ggplot(aes(x=pME6032, y=AUC, colour=IPTG, shape=t_rep)) +
   geom_point(position=pd) +
   theme(axis.text.x = element_text(angle=45, hjust=1))
 ```
@@ -127,7 +127,7 @@ have ±IPTG, then use the `mutate()` and `lag()` functions to get the
 ratio between rows.
 
 ``` r
-gr1_ratio <- gr1 %>% ungroup() %>% arrange(exp, t_rep, exp_rep, pME6032, IPTG) %>%
+gr1_ratio <- gr1_AUC %>% ungroup() %>% arrange(exp, t_rep, exp_rep, pME6032, IPTG) %>%
   mutate(ratio = AUC / lag(AUC)) %>% filter(IPTG=="induced")
 ```
 
@@ -144,8 +144,7 @@ gr1_ratio %>% ggplot(aes(x=pME6032, y=ratio, shape=t_rep)) +
 
 Looks good.
 
-We are interested in (1) whether this ratio varies between pME6032
-inserts, and (2) whether this ratio is significantly below 1.
+We are interested in whether this ratio varies between pME6032 inserts.
 
 Analyse as an LMM.
 
@@ -306,15 +305,15 @@ kable(contr)
 | contrast                 |   estimate |        SE |  df |    t.ratio |   p.value | sign |
 |:-------------------------|-----------:|----------:|----:|-----------:|----------:|:-----|
 | PFLU0054 - empty vector  |  0.0161221 | 0.0436426 |  26 |  0.3694117 | 0.9999923 |      |
-| PFLU1169 - empty vector  | -0.2337423 | 0.0436426 |  26 | -5.3558312 | 0.0001408 | \*   |
-| PFLU1170 - empty vector  | -0.1391306 | 0.0436426 |  26 | -3.1879555 | 0.0324671 | \*   |
+| PFLU1169 - empty vector  | -0.2337423 | 0.0436426 |  26 | -5.3558312 | 0.0001468 | \*   |
+| PFLU1170 - empty vector  | -0.1391306 | 0.0436426 |  26 | -3.1879555 | 0.0324241 | \*   |
 | PFLU1171 - empty vector  |  0.0081161 | 0.0436426 |  26 |  0.1859678 | 1.0000000 |      |
 | PFLU1173 - empty vector  |  0.0134568 | 0.0436426 |  26 |  0.3083406 | 0.9999989 |      |
 | PFLU1174 - empty vector  |  0.0118874 | 0.0436426 |  26 |  0.2723801 | 0.9999997 |      |
-| PFLU1886 - empty vector  | -0.0302590 | 0.0436426 |  26 | -0.6933369 | 0.9964945 |      |
+| PFLU1886 - empty vector  | -0.0302590 | 0.0436426 |  26 | -0.6933369 | 0.9965026 |      |
 | PFLU1887 - empty vector  |  0.0016810 | 0.0436426 |  26 |  0.0385170 | 1.0000000 |      |
 | PFLU2839 - empty vector  | -0.0162898 | 0.0436426 |  26 | -0.3732538 | 0.9999914 |      |
-| PFLU2841 - empty vector  |  0.0230435 | 0.0436426 |  26 |  0.5280054 | 0.9997006 |      |
+| PFLU2841 - empty vector  |  0.0230435 | 0.0436426 |  26 |  0.5280054 | 0.9997011 |      |
 | PFLU4128A - empty vector | -0.0131310 | 0.0436426 |  26 | -0.3008767 | 0.9999992 |      |
 | PFLU5278 - empty vector  |  0.0001989 | 0.0436426 |  26 |  0.0045585 | 1.0000000 |      |
 

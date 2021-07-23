@@ -1,7 +1,7 @@
 Compensatory mutations manuscript: Index page
 ================
 jpjh
-compiled Mar 2021
+compiled Mar 2021, edited Jul 2021
 
 ### Experimental measurements of relative fitness, plasmid cost, etc
 
@@ -13,13 +13,16 @@ compiled Mar 2021
     (`COMPMUT_exp_3_knopla.Rmd`)](COMPMUT_exp_3_knopla.md)**
 4.  **[Fitness of strains expressing of PQBR57\_0059 variants *in trans*
     (`COMPMUT_exp_4_PQ57-59.Rmd`)](COMPMUT_exp_4_PQ57-59.md)**
-5.  **[Fitness of strains expressing of par genes *in trans*
-    (`COMPMUT_exp_5_par.Rmd`)](COMPMUT_exp_5_par.md)**
+5.  **[Fitness and segregation of strains expressing of par genes *in
+    trans* (`COMPMUT_exp_5_par.Rmd`)](COMPMUT_exp_5_par.md)**
 6.  **[Dynamics of plasmid-bearing strains in the medium term
     (`COMPMUT_exp_6_dynamics.Rmd`)](COMPMUT_exp_6_dynamics.md)**
 7.  **[Growth curve experiments from expression of plasmid-upregulated
     genes
     (`COMPMUT_exp_7_growthcurves.Rmd`)](COMPMUT_exp_7_growthcurves.md)**
+8.  **[Growth curve experiments from expression of PFLU4242 in ∆gacS
+    background
+    (`COMPMUT_exp_8_growth_gac_4242.Rmd`)](COMPMUT_exp_8_growth_gac_4242.md)**
 
 ### RNAseq analysis
 

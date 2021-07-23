@@ -1,7 +1,7 @@
 ---
 title: "COMPMUT RNAseq Analysis 6b: pQBR57 genes — plots, figures, and analysis"
 author: "jpjh"
-date: "compiled Feb 2021"
+date: "compiled Feb 2021, edited Jul 2021"
 output: rmarkdown::github_document
 ---
 
@@ -355,7 +355,7 @@ pq57_de_am_plot_all_gene_names$region <- factor(pq57_de_am_plot_all_gene_names$r
        aes(y=amelioration, x=fct_reorder(gene, -logFC))) +
   geom_tile(colour="black", aes(fill=logFC, size=ifelse(FDR<0.05,"sig","ns"))) + 
   scale_size_manual(values=c(0,0.1), guide=FALSE) +
-  scale_fill_gradient2(high="red",mid="grey90",low="blue") +
+  scale_fill_gradient2(high="red",mid="grey90",low="blue", limits=c(-3,3)) +
   geom_point(data=pq57_de_am_plot_all_gene_names, size=0.8,
              aes(colour=region, alpha=region, shape=region)) +
   scale_alpha_manual(values=c(rep(1,5),0), name="") +

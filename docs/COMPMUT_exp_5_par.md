@@ -2,7 +2,7 @@ COMPMUT Experiments 5: Presentation and analysis of fitness of
 expressing pQBR57 *par* genes
 ================
 jpjh
-compiled Feb 2021
+compiled Feb 2021, edited Jul 2021
 
 ## Competition experiments with strains expressing pQBR57\_0054\_0055
 
@@ -180,7 +180,7 @@ anova(mod5_1, mod5_2)
 
     ##        Model df       AIC       BIC   logLik   Test      L.Ratio p-value
     ## mod5_1     1  7 -186.6325 -171.3049 100.3162                            
-    ## mod5_2     2  8 -184.6325 -167.1152 100.3162 1 vs 2 9.227023e-09  0.9999
+    ## mod5_2     2  8 -184.6325 -167.1152 100.3162 1 vs 2 9.401219e-09  0.9999
 
 Suggests that any effect of ‘clone’ is not significant, by AIC or BIC.
 However, the effect of clone will be retained in the model since it is
@@ -289,21 +289,21 @@ kable(contr)
 
 | contrast                                  |   estimate |        SE |  df |    t.ratio |   p.value | sign |
 |:------------------------------------------|-----------:|----------:|----:|-----------:|----------:|:-----|
-| no pUCP18 no pQBR57 - no insert no pQBR57 | -0.0182666 | 0.0192988 |  10 | -0.9465164 | 0.9247263 |      |
-| no pUCP18 no pQBR57 - par no pQBR57       |  0.0168931 | 0.0192988 |  10 |  0.8753417 | 0.9442675 |      |
-| no pUCP18 no pQBR57 - no pUCP18 pQBR57    |  0.0871887 | 0.0192988 |  10 |  4.5178273 | 0.0103610 | \*   |
-| no pUCP18 no pQBR57 - no insert pQBR57    |  0.0727145 | 0.0192988 |  10 |  3.7678198 | 0.0319271 | \*   |
-| no pUCP18 no pQBR57 - par pQBR57          | -0.0268409 | 0.0192988 |  10 | -1.3908029 | 0.7318803 |      |
-| no insert no pQBR57 - par no pQBR57       |  0.0351597 | 0.0192988 |  10 |  1.8218581 | 0.4940949 |      |
-| no insert no pQBR57 - no pUCP18 pQBR57    |  0.1054554 | 0.0192988 |  10 |  5.4643437 | 0.0027096 | \*   |
-| no insert no pQBR57 - no insert pQBR57    |  0.0909811 | 0.0192988 |  10 |  4.7143362 | 0.0077952 | \*   |
-| no insert no pQBR57 - par pQBR57          | -0.0085742 | 0.0192988 |  10 | -0.4442865 | 0.9971252 |      |
-| par no pQBR57 - no pUCP18 pQBR57          |  0.0702957 | 0.0192988 |  10 |  3.6424856 | 0.0386134 | \*   |
-| par no pQBR57 - no insert pQBR57          |  0.0558214 | 0.0192988 |  10 |  2.8924781 | 0.1198301 |      |
-| par no pQBR57 - par pQBR57                | -0.0437339 | 0.0192988 |  10 | -2.2661446 | 0.2898045 |      |
-| no pUCP18 pQBR57 - no insert pQBR57       | -0.0144743 | 0.0192988 |  10 | -0.7500075 | 0.9701924 |      |
-| no pUCP18 pQBR57 - par pQBR57             | -0.1140296 | 0.0192988 |  10 | -5.9086302 | 0.0014574 | \*   |
-| no insert pQBR57 - par pQBR57             | -0.0995553 | 0.0192988 |  10 | -5.1586227 | 0.0040935 | \*   |
+| no pUCP18 no pQBR57 - no insert no pQBR57 | -0.0182666 | 0.0192988 |  10 | -0.9465164 | 0.9247598 |      |
+| no pUCP18 no pQBR57 - par no pQBR57       |  0.0168931 | 0.0192988 |  10 |  0.8753417 | 0.9442702 |      |
+| no pUCP18 no pQBR57 - no pUCP18 pQBR57    |  0.0871887 | 0.0192988 |  10 |  4.5178273 | 0.0104141 | \*   |
+| no pUCP18 no pQBR57 - no insert pQBR57    |  0.0727145 | 0.0192988 |  10 |  3.7678198 | 0.0319783 | \*   |
+| no pUCP18 no pQBR57 - par pQBR57          | -0.0268409 | 0.0192988 |  10 | -1.3908029 | 0.7318304 |      |
+| no insert no pQBR57 - par no pQBR57       |  0.0351597 | 0.0192988 |  10 |  1.8218581 | 0.4941235 |      |
+| no insert no pQBR57 - no pUCP18 pQBR57    |  0.1054554 | 0.0192988 |  10 |  5.4643437 | 0.0027143 | \*   |
+| no insert no pQBR57 - no insert pQBR57    |  0.0909811 | 0.0192988 |  10 |  4.7143362 | 0.0077760 | \*   |
+| no insert no pQBR57 - par pQBR57          | -0.0085742 | 0.0192988 |  10 | -0.4442865 | 0.9971209 |      |
+| par no pQBR57 - no pUCP18 pQBR57          |  0.0702957 | 0.0192988 |  10 |  3.6424856 | 0.0386705 | \*   |
+| par no pQBR57 - no insert pQBR57          |  0.0558214 | 0.0192988 |  10 |  2.8924781 | 0.1200039 |      |
+| par no pQBR57 - par pQBR57                | -0.0437339 | 0.0192988 |  10 | -2.2661446 | 0.2895807 |      |
+| no pUCP18 pQBR57 - no insert pQBR57       | -0.0144743 | 0.0192988 |  10 | -0.7500075 | 0.9701682 |      |
+| no pUCP18 pQBR57 - par pQBR57             | -0.1140296 | 0.0192988 |  10 | -5.9086302 | 0.0014777 | \*   |
+| no insert pQBR57 - par pQBR57             | -0.0995553 | 0.0192988 |  10 | -5.1586227 | 0.0042131 | \*   |
 
 Key lines from this table. Note that the format is “pUCP18 variant pQBR
 variant”.
@@ -445,21 +445,21 @@ kable(contr5_4)
 
 | contrast                                  |   estimate |        SE |  df |    t.ratio |   p.value | sign |
 |:------------------------------------------|-----------:|----------:|----:|-----------:|----------:|:-----|
-| no pUCP18 no pQBR57 - no insert no pQBR57 | -0.0182666 | 0.0192988 |  66 | -0.9465164 | 0.9327042 |      |
-| no pUCP18 no pQBR57 - par no pQBR57       |  0.0168931 | 0.0192988 |  66 |  0.8753417 | 0.9510860 |      |
-| no pUCP18 no pQBR57 - no pUCP18 pQBR57    |  0.0871887 | 0.0192988 |  66 |  4.5178273 | 0.0003881 | \*   |
-| no pUCP18 no pQBR57 - no insert pQBR57    |  0.0727145 | 0.0192988 |  66 |  3.7678198 | 0.0045585 | \*   |
-| no pUCP18 no pQBR57 - par pQBR57          | -0.0268409 | 0.0192988 |  66 | -1.3908029 | 0.7322861 |      |
-| no insert no pQBR57 - par no pQBR57       |  0.0351597 | 0.0192988 |  66 |  1.8218581 | 0.4591041 |      |
-| no insert no pQBR57 - no pUCP18 pQBR57    |  0.1054554 | 0.0192988 |  66 |  5.4643437 | 0.0000158 | \*   |
-| no insert no pQBR57 - no insert pQBR57    |  0.0909811 | 0.0192988 |  66 |  4.7143362 | 0.0002041 | \*   |
-| no insert no pQBR57 - par pQBR57          | -0.0085742 | 0.0192988 |  66 | -0.4442865 | 0.9977200 |      |
-| par no pQBR57 - no pUCP18 pQBR57          |  0.0702957 | 0.0192988 |  66 |  3.6424856 | 0.0067840 | \*   |
-| par no pQBR57 - no insert pQBR57          |  0.0558214 | 0.0192988 |  66 |  2.8924781 | 0.0556646 |      |
-| par no pQBR57 - par pQBR57                | -0.0437339 | 0.0192988 |  66 | -2.2661446 | 0.2228650 |      |
-| no pUCP18 pQBR57 - no insert pQBR57       | -0.0144743 | 0.0192988 |  66 | -0.7500075 | 0.9746757 |      |
-| no pUCP18 pQBR57 - par pQBR57             | -0.1140296 | 0.0192988 |  66 | -5.9086302 | 0.0000015 | \*   |
-| no insert pQBR57 - par pQBR57             | -0.0995553 | 0.0192988 |  66 | -5.1586227 | 0.0000474 | \*   |
+| no pUCP18 no pQBR57 - no insert no pQBR57 | -0.0182666 | 0.0192988 |  66 | -0.9465164 | 0.9327038 |      |
+| no pUCP18 no pQBR57 - par no pQBR57       |  0.0168931 | 0.0192988 |  66 |  0.8753417 | 0.9510878 |      |
+| no pUCP18 no pQBR57 - no pUCP18 pQBR57    |  0.0871887 | 0.0192988 |  66 |  4.5178273 | 0.0003723 | \*   |
+| no pUCP18 no pQBR57 - no insert pQBR57    |  0.0727145 | 0.0192988 |  66 |  3.7678198 | 0.0046016 | \*   |
+| no pUCP18 no pQBR57 - par pQBR57          | -0.0268409 | 0.0192988 |  66 | -1.3908029 | 0.7323172 |      |
+| no insert no pQBR57 - par no pQBR57       |  0.0351597 | 0.0192988 |  66 |  1.8218581 | 0.4592237 |      |
+| no insert no pQBR57 - no pUCP18 pQBR57    |  0.1054554 | 0.0192988 |  66 |  5.4643437 | 0.0000099 | \*   |
+| no insert no pQBR57 - no insert pQBR57    |  0.0909811 | 0.0192988 |  66 |  4.7143362 | 0.0001694 | \*   |
+| no insert no pQBR57 - par pQBR57          | -0.0085742 | 0.0192988 |  66 | -0.4442865 | 0.9977204 |      |
+| par no pQBR57 - no pUCP18 pQBR57          |  0.0702957 | 0.0192988 |  66 |  3.6424856 | 0.0068904 | \*   |
+| par no pQBR57 - no insert pQBR57          |  0.0558214 | 0.0192988 |  66 |  2.8924781 | 0.0557411 |      |
+| par no pQBR57 - par pQBR57                | -0.0437339 | 0.0192988 |  66 | -2.2661446 | 0.2225852 |      |
+| no pUCP18 pQBR57 - no insert pQBR57       | -0.0144743 | 0.0192988 |  66 | -0.7500075 | 0.9746740 |      |
+| no pUCP18 pQBR57 - par pQBR57             | -0.1140296 | 0.0192988 |  66 | -5.9086302 | 0.0000014 | \*   |
+| no insert pQBR57 - par pQBR57             | -0.0995553 | 0.0192988 |  66 | -5.1586227 | 0.0000424 | \*   |
 
 Same signiicant results as the LMM.
 
@@ -577,21 +577,21 @@ kable(contr5_5)
 
 | contrast                                  |   estimate |      SE |  df |    t.ratio |   p.value | sign |
 |:------------------------------------------|-----------:|--------:|----:|-----------:|----------:|:-----|
-| no pUCP18 no pQBR57 - no insert no pQBR57 | -0.0182666 | 0.01813 |  12 | -1.0075375 | 0.9067007 |      |
-| no pUCP18 no pQBR57 - par no pQBR57       |  0.0168931 | 0.01813 |  12 |  0.9317743 | 0.9304666 |      |
-| no pUCP18 no pQBR57 - no pUCP18 pQBR57    |  0.0871887 | 0.01813 |  12 |  4.8090880 | 0.0043967 | \*   |
-| no pUCP18 no pQBR57 - no insert pQBR57    |  0.0727145 | 0.01813 |  12 |  4.0107281 | 0.0166036 | \*   |
-| no pUCP18 no pQBR57 - par pQBR57          | -0.0268409 | 0.01813 |  12 | -1.4804668 | 0.6818997 |      |
-| no insert no pQBR57 - par no pQBR57       |  0.0351597 | 0.01813 |  12 |  1.9393118 | 0.4259657 |      |
-| no insert no pQBR57 - no pUCP18 pQBR57    |  0.1054554 | 0.01813 |  12 |  5.8166255 | 0.0008943 | \*   |
-| no insert no pQBR57 - no insert pQBR57    |  0.0909811 | 0.01813 |  12 |  5.0182657 | 0.0031669 | \*   |
-| no insert no pQBR57 - par pQBR57          | -0.0085742 | 0.01813 |  12 | -0.4729293 | 0.9962990 |      |
-| par no pQBR57 - no pUCP18 pQBR57          |  0.0702957 | 0.01813 |  12 |  3.8773137 | 0.0208505 | \*   |
-| par no pQBR57 - no insert pQBR57          |  0.0558214 | 0.01813 |  12 |  3.0789539 | 0.0794261 |      |
-| par no pQBR57 - par pQBR57                | -0.0437339 | 0.01813 |  12 | -2.4122411 | 0.2259648 |      |
-| no pUCP18 pQBR57 - no insert pQBR57       | -0.0144743 | 0.01813 |  12 | -0.7983598 | 0.9624236 |      |
-| no pUCP18 pQBR57 - par pQBR57             | -0.1140296 | 0.01813 |  12 | -6.2895548 | 0.0004304 | \*   |
-| no insert pQBR57 - par pQBR57             | -0.0995553 | 0.01813 |  12 | -5.4911950 | 0.0015353 | \*   |
+| no pUCP18 no pQBR57 - no insert no pQBR57 | -0.0182666 | 0.01813 |  12 | -1.0075375 | 0.9067130 |      |
+| no pUCP18 no pQBR57 - par no pQBR57       |  0.0168931 | 0.01813 |  12 |  0.9317743 | 0.9304890 |      |
+| no pUCP18 no pQBR57 - no pUCP18 pQBR57    |  0.0871887 | 0.01813 |  12 |  4.8090880 | 0.0043609 | \*   |
+| no pUCP18 no pQBR57 - no insert pQBR57    |  0.0727145 | 0.01813 |  12 |  4.0107281 | 0.0165229 | \*   |
+| no pUCP18 no pQBR57 - par pQBR57          | -0.0268409 | 0.01813 |  12 | -1.4804668 | 0.6818417 |      |
+| no insert no pQBR57 - par no pQBR57       |  0.0351597 | 0.01813 |  12 |  1.9393118 | 0.4259528 |      |
+| no insert no pQBR57 - no pUCP18 pQBR57    |  0.1054554 | 0.01813 |  12 |  5.8166255 | 0.0008685 | \*   |
+| no insert no pQBR57 - no insert pQBR57    |  0.0909811 | 0.01813 |  12 |  5.0182657 | 0.0031110 | \*   |
+| no insert no pQBR57 - par pQBR57          | -0.0085742 | 0.01813 |  12 | -0.4729293 | 0.9963007 |      |
+| par no pQBR57 - no pUCP18 pQBR57          |  0.0702957 | 0.01813 |  12 |  3.8773137 | 0.0208416 | \*   |
+| par no pQBR57 - no insert pQBR57          |  0.0558214 | 0.01813 |  12 |  3.0789539 | 0.0796524 |      |
+| par no pQBR57 - par pQBR57                | -0.0437339 | 0.01813 |  12 | -2.4122411 | 0.2257448 |      |
+| no pUCP18 pQBR57 - no insert pQBR57       | -0.0144743 | 0.01813 |  12 | -0.7983598 | 0.9624342 |      |
+| no pUCP18 pQBR57 - par pQBR57             | -0.1140296 | 0.01813 |  12 | -6.2895548 | 0.0003764 | \*   |
+| no insert pQBR57 - par pQBR57             | -0.0995553 | 0.01813 |  12 | -5.4911950 | 0.0015271 | \*   |
 
 Again, same signiicant results as the LMM.
 
@@ -697,8 +697,15 @@ df55_summ <- df55 %>%
 Output as `.svg`.
 
 ``` r
+library(patchwork)
+
+p5 <- plot_fig5 + theme_pub() + ggtitle("A") +
+  theme(axis.text.x=element_text(angle=45, hjust=1), plot.title=element_text(hjust=0))
+p55 <- plot_fig55 + theme_pub() + ggtitle("B") +
+  theme(axis.text.x=element_text(angle=45, hjust=1), plot.title=element_text(hjust=0))
+
 svglite::svglite(height=3.5, width=3.6, file = "../plots/Fig5-1.svg")
-plot_fig55 + theme_pub() + theme(axis.text.x=element_text(angle=45, hjust=1))
+p5 + p55
 dev.off()
 ```
 
@@ -826,21 +833,21 @@ kable(contr_55)
 
 | contrast                              |  estimate |        SE |  df |    t.ratio |   p.value | sign |
 |:--------------------------------------|----------:|----------:|----:|-----------:|----------:|:-----|
-| no pUCP18 none - no insert none       | 0.0109371 | 0.0372872 |  26 |  0.2933199 | 0.9920298 |      |
-| no pUCP18 none - par none             | 0.1009001 | 0.0372872 |  26 |  2.7060253 | 0.0651732 |      |
+| no pUCP18 none - no insert none       | 0.0109371 | 0.0372872 |  26 |  0.2933199 | 0.9920302 |      |
+| no pUCP18 none - par none             | 0.1009001 | 0.0372872 |  26 |  2.7060253 | 0.0651300 |      |
 | no pUCP18 none - no pUCP18 pQBR103    | 0.5377296 | 0.0304449 |  26 | 17.6624006 | 0.0000000 | \*   |
 | no pUCP18 none - no insert pQBR103    | 0.5486667 | 0.0481376 |  26 | 11.3978876 | 0.0000000 | \*   |
 | no pUCP18 none - par pQBR103          | 0.6386297 | 0.0481376 |  26 | 13.2667612 | 0.0000000 | \*   |
-| no insert none - par none             | 0.0899630 | 0.0372872 |  26 |  2.4127055 | 0.1165178 |      |
+| no insert none - par none             | 0.0899630 | 0.0372872 |  26 |  2.4127055 | 0.1165275 |      |
 | no insert none - no pUCP18 pQBR103    | 0.5267925 | 0.0481376 |  26 | 10.9434784 | 0.0000000 | \*   |
 | no insert none - no insert pQBR103    | 0.5377296 | 0.0304449 |  26 | 17.6624006 | 0.0000000 | \*   |
 | no insert none - par pQBR103          | 0.6276927 | 0.0481376 |  26 | 13.0395566 | 0.0000000 | \*   |
 | par none - no pUCP18 pQBR103          | 0.4368295 | 0.0481376 |  26 |  9.0746048 | 0.0000000 | \*   |
 | par none - no insert pQBR103          | 0.4477666 | 0.0481376 |  26 |  9.3018094 | 0.0000000 | \*   |
 | par none - par pQBR103                | 0.5377296 | 0.0304449 |  26 | 17.6624006 | 0.0000000 | \*   |
-| no pUCP18 pQBR103 - no insert pQBR103 | 0.0109371 | 0.0372872 |  26 |  0.2933199 | 0.9920311 |      |
-| no pUCP18 pQBR103 - par pQBR103       | 0.1009001 | 0.0372872 |  26 |  2.7060253 | 0.0651918 |      |
-| no insert pQBR103 - par pQBR103       | 0.0899630 | 0.0372872 |  26 |  2.4127055 | 0.1164649 |      |
+| no pUCP18 pQBR103 - no insert pQBR103 | 0.0109371 | 0.0372872 |  26 |  0.2933199 | 0.9920307 |      |
+| no pUCP18 pQBR103 - par pQBR103       | 0.1009001 | 0.0372872 |  26 |  2.7060253 | 0.0652031 |      |
+| no insert pQBR103 - par pQBR103       | 0.0899630 | 0.0372872 |  26 |  2.4127055 | 0.1165463 |      |
 
 This shows:
 
@@ -880,6 +887,114 @@ summary(mod55_2)
     ## Residual standard error: 0.08338 on 26 degrees of freedom
     ## Multiple R-squared:  0.925,  Adjusted R-squared:  0.9164 
     ## F-statistic: 106.9 on 3 and 26 DF,  p-value: 9.548e-15
+
+## Effect of ectopic expression of pQBR57\_par on segregation
+
+#### Experimental design
+
+Expression vector pUCP18 containing either no insert (‘empty’) or
+PQBR57\_0054-0055 (‘par’) was transformed in quadruplicate into SBW25.
+Plasmid pQBR57 or pQBR103 was subsequently conjugated into these
+strains, to give 16 experimental lineages. Strains were streaked out on
+KB supplemented with kanamycin (for pUCP18 selection) and mercury (for
+pQBR plasmid selection) and single colonies used to inoculate KB broth
+supplemented with kanamycin. PCR showed that initial colonies contained
+pQBR plasmid and expression vector. Populations were maintained for four
+cycles of growth in KB broth supplemented with kanamycin, with a 1:100
+dilution every transfer. Samples were spread on KB agar and pQBR plasmid
+carriage assessed by replica plating onto KB with mercury every
+transfer.
+
+#### Load up data and plot
+
+``` r
+d8 <- read.csv("../data/COMPMUT_exp_data_8.csv", header=TRUE, sep=",")
+
+kable(head(d8))
+```
+
+| code      | timepoint | replicate | par | plasmid | spread | dilution | count | count\_hgs |
+|:----------|----------:|:----------|:----|:--------|-------:|---------:|------:|-----------:|
+| a.57.e    |         1 | a         | e   | pQBR57  |     40 |        6 |    76 |          2 |
+| a.57.par  |         1 | a         | par | pQBR57  |     40 |        6 |    59 |          0 |
+| a.103.e   |         1 | a         | e   | pQBR103 |     40 |        6 |    18 |          1 |
+| a.103.par |         1 | a         | par | pQBR103 |     40 |        6 |    20 |          0 |
+| b.57.e    |         1 | b         | e   | pQBR57  |     40 |        6 |    69 |          0 |
+| b.57.par  |         1 | b         | par | pQBR57  |     40 |        6 |    96 |          0 |
+
+Calculate total cells at each transfer, and proportions of segregants.
+Plot.
+
+``` r
+d8 <- d8 %>% mutate(cfu.ml = (1000/spread)*(10^dilution)*count,
+                    proportion = (count - count_hgs)/count,
+                    plasmid = factor(plasmid, levels=c("pQBR57","pQBR103")))
+
+ggplot(data = d8,
+       aes(x=timepoint, y=log10(cfu.ml), group=code, colour=par, shape=par)) +
+  geom_line() + geom_point() + facet_grid(.~plasmid) +
+  scale_colour_manual(values=c("grey70", "darkorange1"),
+                      labels=c("empty", "par"), name="pUCP18 insert") +
+  scale_shape_manual(values=c(16,18),
+                     labels=c("empty", "par"), name="pUCP18 insert") +
+  theme(legend.position="right")
+```
+
+![](COMPMUT_exp_5_par_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+
+As expected, cfu/ml increase over the course of the four transfers.
+pQBR57 reaches higher density at transfer.
+
+``` r
+(plot_fig_R8 <- ggplot(data = d8,
+       aes(x=timepoint, y=proportion, group=code, colour=par, shape=par)) +
+  geom_hline(yintercept=c(1,0), size=0.2, linetype="dotted") +
+  geom_line() + geom_point() + facet_grid(.~plasmid) +
+    scale_colour_manual(values=c("grey70", "darkorange1"),
+                      labels=c("empty", "par"), name="pUCP18 insert") +
+  scale_shape_manual(values=c(16,18),
+                     labels=c("empty", "par"), name="pUCP18 insert") +
+  theme(legend.position="right") +
+  scale_y_continuous(limits=c(0,1.05), name=c("proportion of segregants")) +
+  labs(x="transfer"))
+```
+
+![](COMPMUT_exp_5_par_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+``` r
+svglite::svglite(height=2, width=2.5, file = "../plots/FigR8.svg")
+plot_fig_R8 + theme_pub() + theme(legend.position=c(0.25,0.5), legend.title = element_text(size=5))
+dev.off()
+```
+
+    ## quartz_off_screen 
+    ##                 2
+
+Statistical analysis. Check for significant effect at each transfer, for
+each pQBR plasmid separately. Do not correct p-values, to increase
+sensitivity.
+
+``` r
+d8 %>%
+  group_by(timepoint, plasmid) %>% summarise(p.value = t.test(proportion ~ par)$p.value,
+                                             statistic = t.test(proportion ~ par)$statistic) %>%
+  kable()
+```
+
+    ## `summarise()` has grouped output by 'timepoint'. You can override using the `.groups` argument.
+
+| timepoint | plasmid |   p.value |  statistic |
+|----------:|:--------|----------:|-----------:|
+|         1 | pQBR57  | 0.3910022 | -1.0000000 |
+|         1 | pQBR103 | 0.1022097 | -2.3293361 |
+|         2 | pQBR57  | 0.0671399 |  2.8127466 |
+|         2 | pQBR103 | 0.3969596 | -0.9137481 |
+|         3 | pQBR57  | 0.3910022 | -1.0000000 |
+|         3 | pQBR103 | 0.8946308 | -0.1389937 |
+|         4 | pQBR57  | 0.7368419 | -0.3520913 |
+|         4 | pQBR103 | 0.8089384 | -0.2543280 |
+
+No significant effect at any timepoint for either plasmid.
 
 ------------------------------------------------------------------------
 

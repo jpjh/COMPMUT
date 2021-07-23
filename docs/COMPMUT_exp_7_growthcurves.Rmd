@@ -1,7 +1,7 @@
 ---
 title: 'COMPMUT Experiments 7: Presentation and analysis of growth curves with candidate cost genes'
 author: "jpjh"
-date: "compiled Feb 2021"
+date: "compiled Feb 2021, edited Jul 2021"
 output: rmarkdown::github_document
 ---
 
@@ -87,7 +87,7 @@ As we have datapoints for all samples at all timepoints, AUC = sum of densities.
 Calculate AUC for all experimental replicates separately.
 
 ```{r}
-gr1 <- gr1 %>% mutate(IPTG = factor(IPTG, levels=c("0","100"), labels=c("uninduced","induced"))) %>%
+gr1_AUC <- gr1 %>% mutate(IPTG = factor(IPTG, levels=c("0","100"), labels=c("uninduced","induced"))) %>%
   group_by(exp, well, exp_rep, t_rep, pME6032, IPTG) %>%
   summarise(AUC = sum(OD600_corr))
 ```
@@ -97,7 +97,7 @@ Plot to check it looks sensible.
 ```{r}
 pd <- position_dodge(width=0.3)
 
-gr1 %>% ggplot(aes(x=pME6032, y=AUC, colour=IPTG, shape=t_rep)) +
+gr1_AUC %>% ggplot(aes(x=pME6032, y=AUC, colour=IPTG, shape=t_rep)) +
   geom_point(position=pd) +
   theme(axis.text.x = element_text(angle=45, hjust=1))
 ```
@@ -109,7 +109,7 @@ We are interested in the ratio between growth when induced vs. growth when unind
 To do this, arrange the `gr1_AUC` dataframe such that consecutive rows have ±IPTG, then use the `mutate()` and `lag()` functions to get the ratio between rows. 
 
 ```{r}
-gr1_ratio <- gr1 %>% ungroup() %>% arrange(exp, t_rep, exp_rep, pME6032, IPTG) %>%
+gr1_ratio <- gr1_AUC %>% ungroup() %>% arrange(exp, t_rep, exp_rep, pME6032, IPTG) %>%
   mutate(ratio = AUC / lag(AUC)) %>% filter(IPTG=="induced")
 ```
 
@@ -124,7 +124,7 @@ gr1_ratio %>% ggplot(aes(x=pME6032, y=ratio, shape=t_rep)) +
 
 Looks good.
 
-We are interested in (1) whether this ratio varies between pME6032 inserts, and (2) whether this ratio is significantly below 1.
+We are interested in whether this ratio varies between pME6032 inserts.
 
 Analyse as an LMM.
 

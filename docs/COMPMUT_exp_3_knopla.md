@@ -2,7 +2,7 @@ COMPMUT Experiments 3: Presentation and analysis of plasmid mutant and
 knockout fitness
 ================
 jpjh
-compiled Feb 2021
+compiled Feb 2021, edited Jul 2021
 
 ## Competition experiments with knockout strains carrying different pQBR57 variants
 
@@ -241,42 +241,42 @@ kable(contr)
 
 | contrast                                                    |   estimate |        SE |  df |    t.ratio |   p.value | sign |
 |:------------------------------------------------------------|-----------:|----------:|----:|-----------:|----------:|:-----|
-| (wild-type plasmid-free) - (delta\_gacS plasmid-free)       | -0.0511473 | 0.0310831 |  27 | -1.6454997 | 0.7720884 |      |
-| (wild-type plasmid-free) - (delta\_PFLU4242 plasmid-free)   | -0.0105851 | 0.0310831 |  27 | -0.3405408 | 0.9999925 |      |
-| (wild-type plasmid-free) - (wild-type ancestral)            |  0.1150825 | 0.0310831 |  27 |  3.7024133 | 0.0229374 | \*   |
-| (wild-type plasmid-free) - delta\_gacS ancestral            |  0.0155234 | 0.0310831 |  27 |  0.4994162 | 0.9998613 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 ancestral        | -0.0275831 | 0.0310831 |  27 | -0.8873981 | 0.9918741 |      |
-| (wild-type plasmid-free) - (wild-type V100A)                | -0.0176469 | 0.0310831 |  27 | -0.5677317 | 0.9996393 |      |
-| (wild-type plasmid-free) - delta\_gacS V100A                | -0.0370378 | 0.0310831 |  27 | -1.1915746 | 0.9515259 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 V100A            | -0.0221880 | 0.0310831 |  27 | -0.7138290 | 0.9981369 |      |
-| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0405622 | 0.0310831 |  27 |  1.3049589 | 0.9211932 |      |
-| (delta\_gacS plasmid-free) - (wild-type ancestral)          |  0.1662298 | 0.0310831 |  27 |  5.3479130 | 0.0003701 | \*   |
-| (delta\_gacS plasmid-free) - delta\_gacS ancestral          |  0.0666707 | 0.0310831 |  27 |  2.1449159 | 0.4667877 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 ancestral      |  0.0235642 | 0.0310831 |  27 |  0.7581017 | 0.9971749 |      |
-| (delta\_gacS plasmid-free) - (wild-type V100A)              |  0.0335004 | 0.0310831 |  27 |  1.0777680 | 0.9727577 |      |
-| (delta\_gacS plasmid-free) - delta\_gacS V100A              |  0.0141094 | 0.0310831 |  27 |  0.4539252 | 0.9999323 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 V100A          |  0.0289592 | 0.0310831 |  27 |  0.9316708 | 0.9888860 |      |
-| (delta\_PFLU4242 plasmid-free) - (wild-type ancestral)      |  0.1256676 | 0.0310831 |  27 |  4.0429541 | 0.0102566 | \*   |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS ancestral      |  0.0261085 | 0.0310831 |  27 |  0.8399570 | 0.9943362 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 ancestral  | -0.0169980 | 0.0310831 |  27 | -0.5468573 | 0.9997274 |      |
+| (wild-type plasmid-free) - (delta\_gacS plasmid-free)       | -0.0511473 | 0.0310831 |  27 | -1.6454997 | 0.7720330 |      |
+| (wild-type plasmid-free) - (delta\_PFLU4242 plasmid-free)   | -0.0105851 | 0.0310831 |  27 | -0.3405408 | 0.9999926 |      |
+| (wild-type plasmid-free) - (wild-type ancestral)            |  0.1150825 | 0.0310831 |  27 |  3.7024133 | 0.0228478 | \*   |
+| (wild-type plasmid-free) - delta\_gacS ancestral            |  0.0155234 | 0.0310831 |  27 |  0.4994162 | 0.9998606 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 ancestral        | -0.0275831 | 0.0310831 |  27 | -0.8873981 | 0.9918576 |      |
+| (wild-type plasmid-free) - (wild-type V100A)                | -0.0176469 | 0.0310831 |  27 | -0.5677317 | 0.9996397 |      |
+| (wild-type plasmid-free) - delta\_gacS V100A                | -0.0370378 | 0.0310831 |  27 | -1.1915746 | 0.9515058 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 V100A            | -0.0221880 | 0.0310831 |  27 | -0.7138290 | 0.9981358 |      |
+| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0405622 | 0.0310831 |  27 |  1.3049589 | 0.9212845 |      |
+| (delta\_gacS plasmid-free) - (wild-type ancestral)          |  0.1662298 | 0.0310831 |  27 |  5.3479130 | 0.0003590 | \*   |
+| (delta\_gacS plasmid-free) - delta\_gacS ancestral          |  0.0666707 | 0.0310831 |  27 |  2.1449159 | 0.4660765 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 ancestral      |  0.0235642 | 0.0310831 |  27 |  0.7581017 | 0.9971735 |      |
+| (delta\_gacS plasmid-free) - (wild-type V100A)              |  0.0335004 | 0.0310831 |  27 |  1.0777680 | 0.9727243 |      |
+| (delta\_gacS plasmid-free) - delta\_gacS V100A              |  0.0141094 | 0.0310831 |  27 |  0.4539252 | 0.9999328 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 V100A          |  0.0289592 | 0.0310831 |  27 |  0.9316708 | 0.9888715 |      |
+| (delta\_PFLU4242 plasmid-free) - (wild-type ancestral)      |  0.1256676 | 0.0310831 |  27 |  4.0429541 | 0.0102393 | \*   |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS ancestral      |  0.0261085 | 0.0310831 |  27 |  0.8399570 | 0.9943459 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 ancestral  | -0.0169980 | 0.0310831 |  27 | -0.5468573 | 0.9997277 |      |
 | (delta\_PFLU4242 plasmid-free) - (wild-type V100A)          | -0.0070618 | 0.0310831 |  27 | -0.2271909 | 0.9999997 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS V100A          | -0.0264528 | 0.0310831 |  27 | -0.8510338 | 0.9938080 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 V100A      | -0.0116030 | 0.0310831 |  27 | -0.3732882 | 0.9999849 |      |
-| (wild-type ancestral) - delta\_gacS ancestral               | -0.0995591 | 0.0310831 |  27 | -3.2029971 | 0.0711580 |      |
-| (wild-type ancestral) - delta\_PFLU4242 ancestral           | -0.1426656 | 0.0310831 |  27 | -4.5898114 | 0.0024545 | \*   |
-| (wild-type ancestral) - (wild-type V100A)                   | -0.1327294 | 0.0310831 |  27 | -4.2701450 | 0.0057216 | \*   |
-| (wild-type ancestral) - delta\_gacS V100A                   | -0.1521204 | 0.0310831 |  27 | -4.8939879 | 0.0011389 | \*   |
-| (wild-type ancestral) - delta\_PFLU4242 V100A               | -0.1372706 | 0.0310831 |  27 | -4.4162423 | 0.0040394 | \*   |
-| delta\_gacS ancestral - delta\_PFLU4242 ancestral           | -0.0431065 | 0.0310831 |  27 | -1.3868143 | 0.8932382 |      |
-| delta\_gacS ancestral - (wild-type V100A)                   | -0.0331703 | 0.0310831 |  27 | -1.0671479 | 0.9742512 |      |
-| delta\_gacS ancestral - delta\_gacS V100A                   | -0.0525613 | 0.0310831 |  27 | -1.6909908 | 0.7465022 |      |
-| delta\_gacS ancestral - delta\_PFLU4242 V100A               | -0.0377114 | 0.0310831 |  27 | -1.2132452 | 0.9464291 |      |
-| delta\_PFLU4242 ancestral - (wild-type V100A)               |  0.0099362 | 0.0310831 |  27 |  0.3196664 | 0.9999955 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS V100A          | -0.0264528 | 0.0310831 |  27 | -0.8510338 | 0.9938207 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 V100A      | -0.0116030 | 0.0310831 |  27 | -0.3732882 | 0.9999848 |      |
+| (wild-type ancestral) - delta\_gacS ancestral               | -0.0995591 | 0.0310831 |  27 | -3.2029971 | 0.0711619 |      |
+| (wild-type ancestral) - delta\_PFLU4242 ancestral           | -0.1426656 | 0.0310831 |  27 | -4.5898114 | 0.0025940 | \*   |
+| (wild-type ancestral) - (wild-type V100A)                   | -0.1327294 | 0.0310831 |  27 | -4.2701450 | 0.0056283 | \*   |
+| (wild-type ancestral) - delta\_gacS V100A                   | -0.1521204 | 0.0310831 |  27 | -4.8939879 | 0.0011753 | \*   |
+| (wild-type ancestral) - delta\_PFLU4242 V100A               | -0.1372706 | 0.0310831 |  27 | -4.4162423 | 0.0040581 | \*   |
+| delta\_gacS ancestral - delta\_PFLU4242 ancestral           | -0.0431065 | 0.0310831 |  27 | -1.3868143 | 0.8931304 |      |
+| delta\_gacS ancestral - (wild-type V100A)                   | -0.0331703 | 0.0310831 |  27 | -1.0671479 | 0.9742994 |      |
+| delta\_gacS ancestral - delta\_gacS V100A                   | -0.0525613 | 0.0310831 |  27 | -1.6909908 | 0.7463589 |      |
+| delta\_gacS ancestral - delta\_PFLU4242 V100A               | -0.0377114 | 0.0310831 |  27 | -1.2132452 | 0.9465086 |      |
+| delta\_PFLU4242 ancestral - (wild-type V100A)               |  0.0099362 | 0.0310831 |  27 |  0.3196664 | 0.9999954 |      |
 | delta\_PFLU4242 ancestral - delta\_gacS V100A               | -0.0094548 | 0.0310831 |  27 | -0.3041765 | 0.9999969 |      |
 | delta\_PFLU4242 ancestral - delta\_PFLU4242 V100A           |  0.0053951 | 0.0310831 |  27 |  0.1735691 | 1.0000000 |      |
-| (wild-type V100A) - delta\_gacS V100A                       | -0.0193910 | 0.0310831 |  27 | -0.6238429 | 0.9992864 |      |
+| (wild-type V100A) - delta\_gacS V100A                       | -0.0193910 | 0.0310831 |  27 | -0.6238429 | 0.9992849 |      |
 | (wild-type V100A) - delta\_PFLU4242 V100A                   | -0.0045412 | 0.0310831 |  27 | -0.1460973 | 1.0000000 |      |
-| delta\_gacS V100A - delta\_PFLU4242 V100A                   |  0.0148498 | 0.0310831 |  27 |  0.4777456 | 0.9998997 |      |
+| delta\_gacS V100A - delta\_PFLU4242 V100A                   |  0.0148498 | 0.0310831 |  27 |  0.4777456 | 0.9999003 |      |
 
 Shows a significant cost of pQBR57\_anc, a significant effect of
 PFLU4242 amelioration, and a significant effect of pQBR57\_V100A
@@ -638,15 +638,15 @@ contr_c %>% kable()
 
 | contrast                                                                        |   estimate |        SE |  df |     t.ratio |   p.value | sign |
 |:--------------------------------------------------------------------------------|-----------:|----------:|----:|------------:|----------:|:-----|
-| (ancestral P. fluorescens wild-type) - (V100A P. fluorescens wild-type)         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551495 |      |
+| (ancestral P. fluorescens wild-type) - (V100A P. fluorescens wild-type)         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551390 |      |
 | (ancestral P. fluorescens wild-type) - (ancestral P. putida wild-type)          |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - (V100A P. putida wild-type)              |  1.9739123 | 0.1053882 |  43 |  18.7299095 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - ancestral P. fluorescens delta\_gacS     |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
-| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_gacS         |  0.8724771 | 0.1178276 |  43 |   7.4046900 | 0.0000001 | \*   |
+| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_gacS         |  0.8724771 | 0.1178276 |  43 |   7.4046900 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - ancestral P. putida delta\_gacS          |  3.2913046 | 0.1178276 |  43 |  27.9332136 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - V100A P. putida delta\_gacS              |  3.0688470 | 0.1394155 |  43 |  22.0122301 | 0.0000000 | \*   |
-| (ancestral P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242 | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9375993 |      |
-| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242     | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1427980 |      |
+| (ancestral P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242 | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9375988 |      |
+| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242     | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1424882 |      |
 | (ancestral P. fluorescens wild-type) - ancestral P. putida delta\_PFLU4242      |  2.1202000 | 0.1178276 |  43 |  17.9940802 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - V100A P. putida delta\_PFLU4242          |  1.8977424 | 0.1394155 |  43 |  13.6121293 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - (ancestral P. putida wild-type)              |  2.4188275 | 0.1053882 |  43 |  22.9515871 | 0.0000000 | \*   |
@@ -655,41 +655,41 @@ contr_c %>% kable()
 | (V100A P. fluorescens wild-type) - V100A P. fluorescens delta\_gacS             |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - ancestral P. putida delta\_gacS              |  3.5137622 | 0.1394155 |  43 |  25.2035185 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - V100A P. putida delta\_gacS                  |  3.2913046 | 0.1178276 |  43 |  27.9332136 | 0.0000000 | \*   |
-| (V100A P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242     |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793508 |      |
-| (V100A P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242         | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376100 |      |
+| (V100A P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242     |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793609 |      |
+| (V100A P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242         | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376052 |      |
 | (V100A P. fluorescens wild-type) - ancestral P. putida delta\_PFLU4242          |  2.3426576 | 0.1394155 |  43 |  16.8034176 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - V100A P. putida delta\_PFLU4242              |  2.1202000 | 0.1178276 |  43 |  17.9940802 | 0.0000000 | \*   |
-| (ancestral P. putida wild-type) - (V100A P. putida wild-type)                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550414 |      |
+| (ancestral P. putida wild-type) - (V100A P. putida wild-type)                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550862 |      |
 | (ancestral P. putida wild-type) - ancestral P. fluorescens delta\_gacS          | -1.1014351 | 0.1178276 |  43 |  -9.3478503 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - V100A P. fluorescens delta\_gacS              | -1.3238927 | 0.1394155 |  43 |  -9.4960196 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - ancestral P. putida delta\_gacS               |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - V100A P. putida delta\_gacS                   |  0.8724771 | 0.1178276 |  43 |   7.4046900 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - ancestral P. fluorescens delta\_PFLU4242      | -2.2725397 | 0.1178276 |  43 | -19.2869837 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - V100A P. fluorescens delta\_PFLU4242          | -2.4949973 | 0.1394155 |  43 | -17.8961205 | 0.0000000 | \*   |
-| (ancestral P. putida wild-type) - ancestral P. putida delta\_PFLU4242           | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9375955 |      |
-| (ancestral P. putida wild-type) - V100A P. putida delta\_PFLU4242               | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1429407 |      |
-| (V100A P. putida wild-type) - ancestral P. fluorescens delta\_gacS              | -0.8789775 | 0.1394155 |  43 |  -6.3047313 | 0.0000016 | \*   |
+| (ancestral P. putida wild-type) - ancestral P. putida delta\_PFLU4242           | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376071 |      |
+| (ancestral P. putida wild-type) - V100A P. putida delta\_PFLU4242               | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1425959 |      |
+| (V100A P. putida wild-type) - ancestral P. fluorescens delta\_gacS              | -0.8789775 | 0.1394155 |  43 |  -6.3047313 | 0.0000041 | \*   |
 | (V100A P. putida wild-type) - V100A P. fluorescens delta\_gacS                  | -1.1014351 | 0.1178276 |  43 |  -9.3478503 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - ancestral P. putida delta\_gacS                   |  1.3173923 | 0.1178276 |  43 |  11.1806733 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - V100A P. putida delta\_gacS                       |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - ancestral P. fluorescens delta\_PFLU4242          | -2.0500821 | 0.1394155 |  43 | -14.7048321 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - V100A P. fluorescens delta\_PFLU4242              | -2.2725397 | 0.1178276 |  43 | -19.2869837 | 0.0000000 | \*   |
-| (V100A P. putida wild-type) - ancestral P. putida delta\_PFLU4242               |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793350 |      |
-| (V100A P. putida wild-type) - V100A P. putida delta\_PFLU4242                   | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376102 |      |
-| ancestral P. fluorescens delta\_gacS - V100A P. fluorescens delta\_gacS         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0552077 |      |
+| (V100A P. putida wild-type) - ancestral P. putida delta\_PFLU4242               |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793316 |      |
+| (V100A P. putida wild-type) - V100A P. putida delta\_PFLU4242                   | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376106 |      |
+| ancestral P. fluorescens delta\_gacS - V100A P. fluorescens delta\_gacS         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550972 |      |
 | ancestral P. fluorescens delta\_gacS - ancestral P. putida delta\_gacS          |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - V100A P. putida delta\_gacS              |  1.9739123 | 0.1053882 |  43 |  18.7299095 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - ancestral P. fluorescens delta\_PFLU4242 | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - V100A P. fluorescens delta\_PFLU4242     | -1.3935622 | 0.1178276 |  43 | -11.8271250 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - ancestral P. putida delta\_PFLU4242      |  1.0252652 | 0.1178276 |  43 |   8.7013986 | 0.0000000 | \*   |
-| ancestral P. fluorescens delta\_gacS - V100A P. putida delta\_PFLU4242          |  0.8028076 | 0.1394155 |  43 |   5.7583799 | 0.0000194 | \*   |
+| ancestral P. fluorescens delta\_gacS - V100A P. putida delta\_PFLU4242          |  0.8028076 | 0.1394155 |  43 |   5.7583799 | 0.0000204 | \*   |
 | V100A P. fluorescens delta\_gacS - ancestral P. putida delta\_gacS              |  2.4188275 | 0.1053882 |  43 |  22.9515871 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - V100A P. putida delta\_gacS                  |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - ancestral P. fluorescens delta\_PFLU4242     | -0.9486470 | 0.1178276 |  43 |  -8.0511417 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - V100A P. fluorescens delta\_PFLU4242         | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - ancestral P. putida delta\_PFLU4242          |  1.2477228 | 0.1394155 |  43 |   8.9496682 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - V100A P. putida delta\_PFLU4242              |  1.0252652 | 0.1178276 |  43 |   8.7013986 | 0.0000000 | \*   |
-| ancestral P. putida delta\_gacS - V100A P. putida delta\_gacS                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551240 |      |
+| ancestral P. putida delta\_gacS - V100A P. putida delta\_gacS                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551370 |      |
 | ancestral P. putida delta\_gacS - ancestral P. fluorescens delta\_PFLU4242      | -3.3674745 | 0.1178276 |  43 | -28.5796653 | 0.0000000 | \*   |
 | ancestral P. putida delta\_gacS - V100A P. fluorescens delta\_PFLU4242          | -3.5899321 | 0.1394155 |  43 | -25.7498699 | 0.0000000 | \*   |
 | ancestral P. putida delta\_gacS - ancestral P. putida delta\_PFLU4242           | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
@@ -698,12 +698,12 @@ contr_c %>% kable()
 | V100A P. putida delta\_gacS - V100A P. fluorescens delta\_PFLU4242              | -3.3674745 | 0.1178276 |  43 | -28.5796653 | 0.0000000 | \*   |
 | V100A P. putida delta\_gacS - ancestral P. putida delta\_PFLU4242               | -0.9486470 | 0.1178276 |  43 |  -8.0511417 | 0.0000000 | \*   |
 | V100A P. putida delta\_gacS - V100A P. putida delta\_PFLU4242                   | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
-| ancestral P. fluorescens delta\_PFLU4242 - V100A P. fluorescens delta\_PFLU4242 | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0552065 |      |
+| ancestral P. fluorescens delta\_PFLU4242 - V100A P. fluorescens delta\_PFLU4242 | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551626 |      |
 | ancestral P. fluorescens delta\_PFLU4242 - ancestral P. putida delta\_PFLU4242  |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_PFLU4242 - V100A P. putida delta\_PFLU4242      |  1.9739123 | 0.1053882 |  43 |  18.7299095 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_PFLU4242 - ancestral P. putida delta\_PFLU4242      |  2.4188275 | 0.1053882 |  43 |  22.9515871 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_PFLU4242 - V100A P. putida delta\_PFLU4242          |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
-| ancestral P. putida delta\_PFLU4242 - V100A P. putida delta\_PFLU4242           | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551467 |      |
+| ancestral P. putida delta\_PFLU4242 - V100A P. putida delta\_PFLU4242           | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0549882 |      |
 
 Are these conclusions qualitatively different when we just consider the
 *P. fluorescens* data?
@@ -825,7 +825,7 @@ ggplot(data=dc7, aes(x=log10(TC), y=log10(gamma), shape=plasmid, colour=donor)) 
 
 ![](COMPMUT_exp_3_knopla_files/figure-gfm/unnamed-chunk-29-5.png)<!-- -->
 
-These plots clearly show tat the main driver of conjugation rate
+These plots clearly show that the main driver of conjugation rate
 calculations is the transconjugants.
 
 ### How much does conjugation affect measures of fitness?
@@ -939,13 +939,13 @@ dc7 <- dc7 %>% mutate(m_D = log(D/D0),
                       m_Dadj = log((D+TC)/D0),
                       m_Radj = log((R-TC)/R0),
                       W = m_D/m_R,
-                      W_corr = m_Dadj/m_Radj)
+                      W_pla = m_Dadj/m_Radj)
 
 cols_to_take <- c("replicate", "recipient","plasmid", "donor")
 
 dc7l <- dc7 %>%
-  select(all_of(cols_to_take), W, W_corr) %>%
-  pivot_longer(cols = c("W", "W_corr"), names_to = "fitness_measure", values_to = "fitness")
+  select(all_of(cols_to_take), W, W_pla) %>%
+  pivot_longer(cols = c("W", "W_pla"), names_to = "fitness_measure", values_to = "fitness")
 ```
 
 Plot this:
@@ -966,7 +966,7 @@ double mutant which benefits from higher conjugation rates. What are the
 statistics?
 
 ``` r
-dc7 %>% mutate(ratio = W_corr/W) %>% 
+dc7 %>% mutate(ratio = W_pla/W) %>% 
   group_by(recipient, donor, plasmid) %>%
   summarise(mean = mean(ratio), sd = sd(ratio), max=max(ratio), min=min(ratio)) %>% kable()
 ```
@@ -992,6 +992,148 @@ When including transconjugants, fitness of the plasmid is up to 12%
 greater for the V100A variant in the PFLU4242 background (for one
 replicate). But fitness is on average increased by 4%, and is likely to
 have only a minor effect on outcomes.
+
+Plot fitness against conjugation rate. If fitness is strongly influenced
+by conjugation, there should be a correlation.
+
+``` r
+ggplot(data=dc7, aes(x=W, y=(log10(gamma)), shape=plasmid, colour=donor)) + 
+  geom_point() + facet_grid(.~recipient) + theme(legend.position="right")
+```
+
+![](COMPMUT_exp_3_knopla_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+
+Analyse.
+
+``` r
+mod8 <- lm(W ~ log10(gamma) * donor * plasmid, data=subset(dc7, recipient=="P. fluorescens"))
+par(mfrow=c(2,2))
+plot(mod8)
+```
+
+![](COMPMUT_exp_3_knopla_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+Residual plots look OK for a linear model.
+
+``` r
+shapiro.test(resid(mod8))  
+```
+
+    ## 
+    ##  Shapiro-Wilk normality test
+    ## 
+    ## data:  resid(mod8)
+    ## W = 0.97036, p-value = 0.6759
+
+Normally-distributed residuals.
+
+``` r
+anova(mod8)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: W
+    ##                            Df   Sum Sq   Mean Sq F value  Pr(>F)  
+    ## log10(gamma)                1 0.002424 0.0024235  0.6880 0.42305  
+    ## donor                       2 0.042670 0.0213351  6.0564 0.01519 *
+    ## plasmid                     1 0.028090 0.0280903  7.9739 0.01535 *
+    ## log10(gamma):donor          2 0.012615 0.0063073  1.7904 0.20871  
+    ## log10(gamma):plasmid        1 0.000034 0.0000345  0.0098 0.92283  
+    ## donor:plasmid               2 0.011614 0.0058069  1.6484 0.23307  
+    ## log10(gamma):donor:plasmid  2 0.005023 0.0025116  0.7130 0.50982  
+    ## Residuals                  12 0.042273 0.0035228                  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+No obvious significant effect or interactions of conjugation rate.
+
+``` r
+mod8_1 <- step(mod8)
+```
+
+    ## Start:  AIC=-128.2
+    ## W ~ log10(gamma) * donor * plasmid
+    ## 
+    ##                              Df Sum of Sq      RSS    AIC
+    ## - log10(gamma):donor:plasmid  2 0.0050233 0.047296 -129.5
+    ## <none>                                    0.042273 -128.2
+    ## 
+    ## Step:  AIC=-129.51
+    ## W ~ log10(gamma) + donor + plasmid + log10(gamma):donor + log10(gamma):plasmid + 
+    ##     donor:plasmid
+    ## 
+    ##                        Df Sum of Sq      RSS     AIC
+    ## - log10(gamma):donor    2 0.0009763 0.048273 -133.01
+    ## - log10(gamma):plasmid  1 0.0027835 0.050080 -130.13
+    ## <none>                              0.047296 -129.50
+    ## - donor:plasmid         2 0.0116137 0.058910 -128.24
+    ## 
+    ## Step:  AIC=-133.01
+    ## W ~ log10(gamma) + donor + plasmid + log10(gamma):plasmid + donor:plasmid
+    ## 
+    ##                        Df Sum of Sq      RSS     AIC
+    ## - log10(gamma):plasmid  1 0.0034356 0.051708 -133.37
+    ## <none>                              0.048273 -133.01
+    ## - donor:plasmid         2 0.0232581 0.071531 -127.58
+    ## 
+    ## Step:  AIC=-133.36
+    ## W ~ log10(gamma) + donor + plasmid + donor:plasmid
+    ## 
+    ##                 Df Sum of Sq      RSS     AIC
+    ## <none>                       0.051708 -133.37
+    ## - log10(gamma)   1  0.005862 0.057570 -132.79
+    ## - donor:plasmid  2  0.019851 0.071559 -129.57
+
+``` r
+anova(mod8_1)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: W
+    ##               Df   Sum Sq   Mean Sq F value   Pr(>F)   
+    ## log10(gamma)   1 0.002424 0.0024235  0.7968 0.384522   
+    ## donor          2 0.042670 0.0213351  7.0143 0.006010 **
+    ## plasmid        1 0.028090 0.0280903  9.2352 0.007412 **
+    ## donor:plasmid  2 0.019851 0.0099254  3.2632 0.063184 . 
+    ## Residuals     17 0.051708 0.0030417                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+No main effect, or interaction effects, of conjugation rate on fitness.
+Main and interaction effects of plasmid and donor make sense given what
+we know about compensation, namely, compensation works, but there is not
+an additive effect of PQBR57\_0059\_V100A and ∆PFLU4242.
+
+Add model outputs to plot.
+
+``` r
+(mod8_plot <- ggplot(data=subset(dc7, recipient=="P. fluorescens"), 
+       aes(y=W, x=(log10(gamma)), shape=plasmid, colour=donor, linetype=plasmid)) + 
+  geom_hline(yintercept=1, colour="black", linetype="dotted") +
+  geom_point() + facet_grid(.~recipient) +
+  stat_smooth(method = "lm", size=0.5) + theme_pub() + theme(legend.position="right") +
+  labs(x=expression(paste("log"[10], "(\u03B3)")))) 
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](COMPMUT_exp_3_knopla_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+
+``` r
+png("../plots/mod8_plot_review.png", height=8, width=9, units="cm", res=300)
+mod8_plot
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+``` r
+dev.off()
+```
+
+    ## quartz_off_screen 
+    ##                 2
 
 ------------------------------------------------------------------------
 

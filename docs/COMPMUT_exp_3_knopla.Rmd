@@ -1,7 +1,7 @@
 ---
 title: 'COMPMUT Experiments 3: Presentation and analysis of plasmid mutant and knockout fitness'
 author: "jpjh"
-date: "compiled Feb 2021"
+date: "compiled Feb 2021, edited Jul 2021"
 output: rmarkdown::github_document
 ---
 
@@ -473,7 +473,7 @@ ggplot(data=dc7, aes(x=log10(TC), y=log10(gamma), shape=plasmid, colour=donor)) 
   theme(legend.position="right") + ggtitle("transconjugants vs gamma")
 ```
 
-These plots clearly show tat the main driver of conjugation rate calculations is the transconjugants.
+These plots clearly show that the main driver of conjugation rate calculations is the transconjugants.
 
 ### How much does conjugation affect measures of fitness?
 
@@ -553,13 +553,13 @@ dc7 <- dc7 %>% mutate(m_D = log(D/D0),
                       m_Dadj = log((D+TC)/D0),
                       m_Radj = log((R-TC)/R0),
                       W = m_D/m_R,
-                      W_corr = m_Dadj/m_Radj)
+                      W_pla = m_Dadj/m_Radj)
 
 cols_to_take <- c("replicate", "recipient","plasmid", "donor")
 
 dc7l <- dc7 %>%
-  select(all_of(cols_to_take), W, W_corr) %>%
-  pivot_longer(cols = c("W", "W_corr"), names_to = "fitness_measure", values_to = "fitness")
+  select(all_of(cols_to_take), W, W_pla) %>%
+  pivot_longer(cols = c("W", "W_pla"), names_to = "fitness_measure", values_to = "fitness")
 ```
 
 Plot this:
@@ -576,12 +576,64 @@ dc7l %>% filter(recipient != "P. putida") %>%
 Looks very similar; no outstanding difference, except possibly for the double mutant which benefits from higher conjugation rates. What are the statistics?
 
 ```{r}
-dc7 %>% mutate(ratio = W_corr/W) %>% 
+dc7 %>% mutate(ratio = W_pla/W) %>% 
   group_by(recipient, donor, plasmid) %>%
   summarise(mean = mean(ratio), sd = sd(ratio), max=max(ratio), min=min(ratio)) %>% kable()
 ```
 
 When including transconjugants, fitness of the plasmid is up to 12% greater for the V100A variant in the PFLU4242 background (for one replicate). But fitness is on average increased by 4%, and is likely to have only a minor effect on outcomes.
+
+Plot fitness against conjugation rate. If fitness is strongly influenced by conjugation, there should be a correlation. 
+
+```{r}
+ggplot(data=dc7, aes(x=W, y=(log10(gamma)), shape=plasmid, colour=donor)) + 
+  geom_point() + facet_grid(.~recipient) + theme(legend.position="right")
+```
+
+Analyse.
+
+```{r}
+mod8 <- lm(W ~ log10(gamma) * donor * plasmid, data=subset(dc7, recipient=="P. fluorescens"))
+par(mfrow=c(2,2))
+plot(mod8)
+```
+
+Residual plots look OK for a linear model.
+
+```{r}
+shapiro.test(resid(mod8))  
+```
+
+Normally-distributed residuals.
+
+```{r}
+anova(mod8)
+```
+
+No obvious significant effect or interactions of conjugation rate. 
+
+```{r}
+mod8_1 <- step(mod8)
+anova(mod8_1)
+```
+
+No main effect, or interaction effects, of conjugation rate on fitness. Main and interaction effects of plasmid and donor make sense given what we know about compensation, namely, compensation works, but there is not an additive effect of PQBR57_0059_V100A and ∆PFLU4242.
+
+Add model outputs to plot.
+
+```{r}
+(mod8_plot <- ggplot(data=subset(dc7, recipient=="P. fluorescens"), 
+       aes(y=W, x=(log10(gamma)), shape=plasmid, colour=donor, linetype=plasmid)) + 
+  geom_hline(yintercept=1, colour="black", linetype="dotted") +
+  geom_point() + facet_grid(.~recipient) +
+  stat_smooth(method = "lm", size=0.5) + theme_pub() + theme(legend.position="right") +
+  labs(x=expression(paste("log"[10], "(\u03B3)")))) 
+
+png("../plots/mod8_plot_review.png", height=8, width=9, units="cm", res=300)
+mod8_plot
+dev.off()
+```
+
 
 ---
 

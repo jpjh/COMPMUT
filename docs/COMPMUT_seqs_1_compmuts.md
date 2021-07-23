@@ -269,7 +269,7 @@ Output to scale by dividing the gene lengths by a set factor, so the
 scale images can be compiled in Inkscape.
 
 ``` r
-scalefactor <- 400
+scalefactor <- 800
 
 output_svg <- function(x) {
   gene <- x

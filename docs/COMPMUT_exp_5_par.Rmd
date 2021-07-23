@@ -1,7 +1,7 @@
 ---
 title: 'COMPMUT Experiments 5: Presentation and analysis of fitness of expressing pQBR57 *par* genes'
 author: "jpjh"
-date: "compiled Feb 2021"
+date: "compiled Feb 2021, edited Jul 2021"
 output: rmarkdown::github_document
 ---
 
@@ -495,6 +495,68 @@ The marginally significnt (p = 0.02) effect of *par* is not detected in the pair
 ```{r}
 summary(mod55_2)
 ```
+
+## Effect of ectopic expression of pQBR57_par on segregation
+
+#### Experimental design
+
+Expression vector pUCP18 containing either no insert ('empty') or PQBR57_0054-0055 ('par') was transformed in quadruplicate into SBW25. Plasmid pQBR57 or pQBR103 was subsequently conjugated into these strains, to give 16 experimental lineages. Strains were streaked out on KB supplemented with kanamycin (for pUCP18 selection) and mercury (for pQBR plasmid selection) and single colonies used to inoculate KB broth supplemented with kanamycin. PCR showed that initial colonies contained pQBR plasmid and expression vector. Populations were maintained for four cycles of growth in KB broth supplemented with kanamycin, with a 1:100 dilution every transfer. Samples were spread on KB agar and pQBR plasmid carriage assessed by replica plating onto KB with mercury every transfer.
+
+#### Load up data and plot
+
+```{r}
+d8 <- read.csv("../data/COMPMUT_exp_data_8.csv", header=TRUE, sep=",")
+
+kable(head(d8))
+```
+
+Calculate total cells at each transfer, and proportions of segregants. Plot.
+
+```{r}
+d8 <- d8 %>% mutate(cfu.ml = (1000/spread)*(10^dilution)*count,
+                    proportion = (count - count_hgs)/count,
+                    plasmid = factor(plasmid, levels=c("pQBR57","pQBR103")))
+
+ggplot(data = d8,
+       aes(x=timepoint, y=log10(cfu.ml), group=code, colour=par, shape=par)) +
+  geom_line() + geom_point() + facet_grid(.~plasmid) +
+  scale_colour_manual(values=c("grey70", "darkorange1"),
+                      labels=c("empty", "par"), name="pUCP18 insert") +
+  scale_shape_manual(values=c(16,18),
+                     labels=c("empty", "par"), name="pUCP18 insert") +
+  theme(legend.position="right")
+```
+
+As expected, cfu/ml increase over the course of the four transfers. pQBR57 reaches higher density at transfer. 
+
+```{r}
+(plot_fig_R8 <- ggplot(data = d8,
+       aes(x=timepoint, y=proportion, group=code, colour=par, shape=par)) +
+  geom_hline(yintercept=c(1,0), size=0.2, linetype="dotted") +
+  geom_line() + geom_point() + facet_grid(.~plasmid) +
+    scale_colour_manual(values=c("grey70", "darkorange1"),
+                      labels=c("empty", "par"), name="pUCP18 insert") +
+  scale_shape_manual(values=c(16,18),
+                     labels=c("empty", "par"), name="pUCP18 insert") +
+  theme(legend.position="right") +
+  scale_y_continuous(limits=c(0,1.05), name=c("proportion of segregants")) +
+  labs(x="transfer"))
+
+svglite::svglite(height=2, width=2.5, file = "../plots/FigR8.svg")
+plot_fig_R8 + theme_pub() + theme(legend.position=c(0.25,0.5), legend.title = element_text(size=5))
+dev.off()
+```
+
+Statistical analysis. Check for significant effect at each transfer, for each pQBR plasmid separately. Do not correct p-values, to increase sensitivity.
+
+```{r}
+d8 %>%
+  group_by(timepoint, plasmid) %>% summarise(p.value = t.test(proportion ~ par)$p.value,
+                                             statistic = t.test(proportion ~ par)$statistic) %>%
+  kable()
+```
+
+No significant effect at any timepoint for either plasmid. 
 
 ---
 

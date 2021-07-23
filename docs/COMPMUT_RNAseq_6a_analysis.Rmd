@@ -1,7 +1,7 @@
 ---
 title: "COMPMUT RNAseq Analysis 6a: Chromosomal genes — plots, figures, and analysis"
 author: "jpjh"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "compiled Feb 2021, edited Jul 2021"
 output: rmarkdown::github_document
 ---
 
@@ -1634,6 +1634,41 @@ full_table_chr[gln,grep("pQBR[0-9]*\\.wt.(logFC|FDR)", colnames(full_table_chr))
 ```
 
 No significantly differentially-expressed genes here.
+
+### Side-project: Other genes on Tn6291
+
+We see upregulation of Tn6291 transposase-related genes. Might this be because Tn6291 has been duplicated?
+
+Examine all genes carried by Tn6291. Note that PFLU_1904 is called PFLU_1903A, and there is no PFLU_1889.
+
+```{r}
+tn6291 <- paste("PFLU_", seq(1885, 1909, 1), sep="")
+tn6291[20] <- "PFLU_1903A"
+
+full_table_chr[tn6291,grep("pQBR[0-9]*\\.wt.(logFC|FDR)", colnames(full_table_chr))] %>% kable()
+```
+
+No evidence of significant upregulation of any other Tn6291 genes following plasmid acquisition (one downregulated with pQBR57).
+
+```{r}
+full_table_chr[tn6291,grep("pQBR[0-9]*\\.dPFLU4242.(logFC|FDR)", colnames(full_table_chr))] %>% kable()
+```
+
+No evidence of significant upregulation of any other Tn6291 genes following chromosomal amelioration. 
+
+```{r}
+full_table_chr[tn6291,grep("pQBR[0-9]*\\.dgacS.(logFC|FDR)", colnames(full_table_chr))] %>% kable()
+```
+
+No evidence of significant upregulation of any other Tn6291 genes following *gacS* amelioration (PFLU_1898 is down for both plasmids). 
+
+```{r}
+full_table_chr[tn6291,grep("pQBR[0-9]*\\.PQBR57_0059_V100A.(logFC|FDR)", colnames(full_table_chr))] %>% kable()
+```
+
+No significant upregulation with plasmid-borne amelioration.
+
+Conclusion: only the putative transposase-encoding genes are upregulated, suggesting that it is specific upregulation rather than gene duplication causing this pattern. 
 
 ---
 
