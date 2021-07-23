@@ -1,6 +1,6 @@
 ---
 title: 'COMPMUT Sequences 1: Presentation of previously-identified compensatory mutations'
-date: "compiled Mar 2021"
+date: "compiled Mar 2021, edited Jul 2021"
 author: "jpjh"
 output: rmarkdown::github_document
 ---
@@ -25,7 +25,7 @@ theme_set(theme_github())
 
 Get mutations in PFLU4242 from the following studies:
 
-- Carrilero et al. 2021 (in press): *P. fluorescens* with pQBR103 or pQBR57.
+- [Carrilero et al. 2021](https://journals.asm.org/doi/full/10.1128/mBio.00558-21): *P. fluorescens* with pQBR103 and/or pQBR57.
 - [Hall et al. 2019](https://www.microbiologyresearch.org/content/journal/micro/10.1099/mic.0.000862): *P. fluroescens* with pQBR55.
 - [Hall et al. 2017](https://www.nature.com/articles/s41559-017-0250-3): *P. fluorescens* and *P. putida* with pQBR57.
 - [Harrison et al. 2017](https://onlinelibrary.wiley.com/doi/full/10.1111/mec.14080): *P. fluorescens* with pQBR103 and bacteriophage phi-2.

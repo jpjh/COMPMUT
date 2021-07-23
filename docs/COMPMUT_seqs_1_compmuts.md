@@ -2,14 +2,15 @@ COMPMUT Sequences 1: Presentation of previously-identified compensatory
 mutations
 ================
 jpjh
-compiled Mar 2021
+compiled Mar 2021, edited Jul 2021
 
 ## PFLU4242
 
 Get mutations in PFLU4242 from the following studies:
 
--   Carrilero et al. 2021 (in press): *P. fluorescens* with pQBR103 or
-    pQBR57.
+-   [Carrilero et
+    al. 2021](https://journals.asm.org/doi/full/10.1128/mBio.00558-21):
+    *P. fluorescens* with pQBR103 and/or pQBR57.
 -   [Hall et
     al. 2019](https://www.microbiologyresearch.org/content/journal/micro/10.1099/mic.0.000862):
     *P. fluroescens* with pQBR55.
