@@ -1,7 +1,11 @@
 Readme for: *Data files associated with "Plasmid fitness costs are caused by specific genetic conflicts" by Hall, Wright, Harrison, Muddiman, Wood, Paterson, and Brockhurst*
 ================
 
+<<<<<<< HEAD
 April 2021, updated July 2021, updated September 2021
+=======
+April 2021, updated July 2021
+>>>>>>> 0cd36b7761263f351903298ee715ca57cb0ded9f
 
 Full analysis scripts associated with this raw data can be found at [github.com/jpjh/COMPMUT](github.com/jpjh/COMPMUT).
 
