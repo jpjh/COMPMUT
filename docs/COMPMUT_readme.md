@@ -29,3 +29,7 @@ Full analysis scripts associated with this raw data can be found at [github.com/
 ### Compensatory mutations from previous studies
 
 - [`COMPMUT_mutations.csv`](COMPMUT_mutations.csv). Compensatory mutations aggregated from published studies. Note: data was not available for all columns for all mutations. 
+
+### Predicted RsmA binding sites
+
+- [`COMPMUT_RsmA_prediction.txt`](COMPMUT_RsmA_prediction.txt). Predicted RsmA binding sites in the *P. fluorescens* SBW25 chromosome. Output from running the script `CSRA_TARGET.pl` from [Kulkarni et al. 2014](http://dx.doi.org/10.1093/nar/gku309).

@@ -1,7 +1,7 @@
 Readme for: *Data files associated with "Plasmid fitness costs are caused by specific genetic conflicts" by Hall, Wright, Harrison, Muddiman, Wood, Paterson, and Brockhurst*
 ================
 
-April 2021
+April 2021, updated July 2021
 
 Full analysis scripts associated with this raw data can be found at [github.com/jpjh/COMPMUT](github.com/jpjh/COMPMUT).
 
@@ -15,6 +15,8 @@ Full analysis scripts associated with this raw data can be found at [github.com/
 - [`COMPMUT_exp_data_5.csv`](COMPMUT_exp_data_5.csv). Competition data from expressing pQBR57 *par* genes *in trans* alongside pQBR57. Columns are the same as `COMPMUT_exp_data_4.csv` . [`COMPMUT_exp_data_5-1.csv`](COMPMUT_exp_data_5-1.csv) is similar but from expressing alongside pQBR103.
 - [`COMPMUT_exp_data_6.csv`](COMPMUT_exp_data_6.csv). Count data from medium-term cultures of different plasmid variants in soil. Data was collected by selective plating and replica plating. `replicate` indicates different transconjugants; `variant` is an abbreviated name referring to the population from which the clone came; `marker` indicates the antibiotic marker of the plasmid-bearing strain (Gm = plasmid initially  in the gentamicin-resistant background; Sm = plasmid initially in the streptomycin-resistant *lacZ* background); `media` indicates the selective media (KB = no antibiotics, Gm3 = gentamicin at 3 µg/ml, Sm50 = streptomycin at 50 µg/ml); `dilution` indicates the dilution factor; `spread` indicates the volume spread in µl; `count_white` indicates the number of white (gentamicin-resistant) colonies; `count_blue` indicates the number of blue (streptomycin-resistant) colonies; `hg_kept` indicates the number of colonies from the originally-plasmid-free strain that had become mercury resistant; `hg_lost` indicates the number of colonies from the originally-plasmid-bearing strain that had become mercury sensitive.
 - [`COMPMUT_exp_data_7.csv`](COMPMUT_exp_data_7.csv). Growth curve data. `exp` refers to the plate in which the experiment was performed; `well` refers to plate well; `cycle` is the measurement cycle; `time` is time in seconds; `t_rep` is transformant replicate; `exp_rep` is experimental replicate; `pME6032` is the insert (if any); `IPTG` is IPTG concentration (0 µM or 100 µM); `OD600_corr` is the corrected OD~600~ (OD~600~ minus the mean blank well measurement).
+- [`COMPMUT_exp_data_8.csv`](COMPMUT_exp_data_8.csv). pQBR57 par segregation data. `code` is a shorthand for each experimental condition, `timepoint` is transfer number, `replicate` is independent transconjugant/transformant replicate, `par` is whether pUCP18 was empty or whether it carried pQBR57 par, `plasmid` is whether it carried pQBR57 or pQBR103, `spread` is volume of dilution spread on plate, `dilution` is (log10) dilution factor), `count` is total colonies counted, `count_hgs` is sensitive colonies as assessed by replica plating.
+- [`COMPMUT_exp_data_9.csv`](COMPMUT_exp_data_9.csv). Ectopic PFLU4242 expression in ∆gacS strains growth curve data. `well` is the well in the plate, `cycle` is measurement cycle (measurements taken every 15 mins), `replicate` is independent transformant/transconjugant replicate, `pME6032` is whether pME6032 was empty or whether it carried PFLU4242, `plasmid` is the pQBR plasmid carried, `IPTG` is whether or not cells were induced with IPTG, `OD600_corr` is the OD600 reading for that well, with blank values subtracted.
 
 ### RNAseq analysis
 
@@ -27,3 +29,7 @@ Full analysis scripts associated with this raw data can be found at [github.com/
 ### Compensatory mutations from previous studies
 
 - [`COMPMUT_mutations.csv`](COMPMUT_mutations.csv). Compensatory mutations aggregated from published studies. Note: data was not available for all columns for all mutations. 
+
+### Predicted RsmA binding sites
+
+- [`COMPMUT_RsmA_prediction.txt`](COMPMUT_RsmA_prediction.txt). Predicted RsmA binding sites in the *P. fluorescens* SBW25 chromosome. Output from running the script `CSRA_TARGET.pl` from [Kulkarni et al. 2014](http://dx.doi.org/10.1093/nar/gku309).
