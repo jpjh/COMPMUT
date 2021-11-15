@@ -17,4 +17,3 @@ Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie Wood, A.,
 ---
 
 Questions, comments, suggestions, please [get in touch](mailto:j.p.j.hall@liverpool.ac.uk)!
-
