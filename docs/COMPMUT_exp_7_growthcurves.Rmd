@@ -83,7 +83,6 @@ plot_fig16 + theme_pub() + theme(legend.position="bottom")
 dev.off()
 ```
 
-
 #### Analysis
 
 Preliminary attempts to fit curves to these data were unsuccessful — particularly bad at fitting to the PFLU_1169 induced curves, which are the key features to capture.

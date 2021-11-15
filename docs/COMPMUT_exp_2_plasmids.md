@@ -375,8 +375,8 @@ kable(contr)
 | contrast                   |   estimate |        SE |  df |   t.ratio |   p.value | sign |
 |:---------------------------|-----------:|----------:|----:|----------:|----------:|:-----|
 | (plasmid-free) - ancestral |  0.1877998 | 0.0210410 |  27 |  8.925401 | 0.0000000 | \*   |
-| (plasmid-free) - V100A     |  0.0550393 | 0.0210410 |  27 |  2.615805 | 0.0366598 | \*   |
-| ancestral - V100A          | -0.1327605 | 0.0171799 |  27 | -7.727645 | 0.0000000 | \*   |
+| (plasmid-free) - V100A     |  0.0550393 | 0.0210410 |  27 |  2.615805 | 0.0368029 | \*   |
+| ancestral - V100A          | -0.1327605 | 0.0171799 |  27 | -7.727645 | 0.0000001 | \*   |
 
 Significant effect of ancestral plasmid acquisition, compared with V100A
 mutation and with plasmid-free.

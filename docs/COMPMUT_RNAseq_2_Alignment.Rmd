@@ -228,4 +228,3 @@ Note that Rsubread can extract the strandedness information automatically, so th
 ---
 
 **[Back to index.](COMPMUT_index.md)**
-

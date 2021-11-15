@@ -95,7 +95,6 @@ Run `featureCounts`.
 
 Using `strandSpecific = 2` since the library prep is reverse stranded (exploratory analysis using Sample_1 showed that this was the correct option). Specifying paired-end reads but not requiring both ends to map (I figure that since some genes are transcribed as operons it is possible that the mate for one read might map to the adjacent feature). 
 
-
 ```{r, eval=FALSE}
 counts <- featureCounts(sample_ids, annot.ext = "../rnaseq/ref/SBW25_pQBR57_pQBR103.gtf",
                         isGTFAnnotationFile = TRUE,

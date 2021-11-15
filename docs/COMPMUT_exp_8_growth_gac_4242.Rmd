@@ -251,7 +251,6 @@ d9_ratio_no55  %>% group_by(plasmid) %>%
 
 Overall, increased expression of PFLU4242 can clearly compensate for the absence of *gacS* for generating costs for plasmids pQBR55 and pQBR57. The effects for pQBR103 are less extreme, but still detectable. 
 
-
 ---
 
 **[Back to index.](COMPMUT_index.md)**

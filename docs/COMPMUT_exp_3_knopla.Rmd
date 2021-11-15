@@ -642,7 +642,6 @@ mod8_plot
 dev.off()
 ```
 
-
 ---
 
 **[Back to index.](COMPMUT_index.md)**

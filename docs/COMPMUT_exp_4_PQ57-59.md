@@ -288,71 +288,71 @@ kable(contr)
 | contrast                                  |   estimate |        SE |  df |     t.ratio |   p.value | sign |
 |:------------------------------------------|-----------:|----------:|----:|------------:|----------:|:-----|
 | no pUCP18 no pQBR57 - no insert no pQBR57 | -0.0072403 | 0.0251559 |  22 |  -0.2878173 | 1.0000000 |      |
-| no pUCP18 no pQBR57 - ancestral no pQBR57 |  0.0384927 | 0.0251559 |  22 |   1.5301665 | 0.9157998 |      |
+| no pUCP18 no pQBR57 - ancestral no pQBR57 |  0.0384927 | 0.0251559 |  22 |   1.5301665 | 0.9158975 |      |
 | no pUCP18 no pQBR57 - V100A no pQBR57     |  0.0019069 | 0.0251559 |  22 |   0.0758052 | 1.0000000 |      |
-| no pUCP18 no pQBR57 - no pUCP18 ancestral |  0.1555271 | 0.0251559 |  22 |   6.1825329 | 0.0001659 | \*   |
-| no pUCP18 no pQBR57 - no insert ancestral |  0.1525173 | 0.0251559 |  22 |   6.0628850 | 0.0002070 | \*   |
-| no pUCP18 no pQBR57 - ancestral ancestral |  0.2571032 | 0.0251559 |  22 |  10.2203962 | 0.0000002 | \*   |
-| no pUCP18 no pQBR57 - V100A ancestral     |  0.2554199 | 0.0251559 |  22 |  10.1534834 | 0.0000003 | \*   |
-| no pUCP18 no pQBR57 - no pUCP18 V100A     | -0.0210082 | 0.0251559 |  22 |  -0.8351203 | 0.9991710 |      |
-| no pUCP18 no pQBR57 - no insert V100A     | -0.0306660 | 0.0251559 |  22 |  -1.2190383 | 0.9811952 |      |
-| no pUCP18 no pQBR57 - ancestral V100A     |  0.1544613 | 0.0251559 |  22 |   6.1401628 | 0.0001788 | \*   |
-| no pUCP18 no pQBR57 - V100A V100A         |  0.0385333 | 0.0251559 |  22 |   1.5317821 | 0.9153069 |      |
-| no insert no pQBR57 - ancestral no pQBR57 |  0.0457330 | 0.0233251 |  22 |   1.9606816 | 0.7122104 |      |
-| no insert no pQBR57 - V100A no pQBR57     |  0.0091472 | 0.0233251 |  22 |   0.3921640 | 0.9999995 |      |
-| no insert no pQBR57 - no pUCP18 ancestral |  0.1627674 | 0.0233251 |  22 |   6.9782230 | 0.0000264 | \*   |
-| no insert no pQBR57 - no insert ancestral |  0.1597576 | 0.0233251 |  22 |   6.8491837 | 0.0000505 | \*   |
+| no pUCP18 no pQBR57 - no pUCP18 ancestral |  0.1555271 | 0.0251559 |  22 |   6.1825329 | 0.0001573 | \*   |
+| no pUCP18 no pQBR57 - no insert ancestral |  0.1525173 | 0.0251559 |  22 |   6.0628850 | 0.0002129 | \*   |
+| no pUCP18 no pQBR57 - ancestral ancestral |  0.2571032 | 0.0251559 |  22 |  10.2203962 | 0.0000000 | \*   |
+| no pUCP18 no pQBR57 - V100A ancestral     |  0.2554199 | 0.0251559 |  22 |  10.1534834 | 0.0000000 | \*   |
+| no pUCP18 no pQBR57 - no pUCP18 V100A     | -0.0210082 | 0.0251559 |  22 |  -0.8351203 | 0.9991637 |      |
+| no pUCP18 no pQBR57 - no insert V100A     | -0.0306660 | 0.0251559 |  22 |  -1.2190383 | 0.9813107 |      |
+| no pUCP18 no pQBR57 - ancestral V100A     |  0.1544613 | 0.0251559 |  22 |   6.1401628 | 0.0001968 | \*   |
+| no pUCP18 no pQBR57 - V100A V100A         |  0.0385333 | 0.0251559 |  22 |   1.5317821 | 0.9151975 |      |
+| no insert no pQBR57 - ancestral no pQBR57 |  0.0457330 | 0.0233251 |  22 |   1.9606816 | 0.7129865 |      |
+| no insert no pQBR57 - V100A no pQBR57     |  0.0091472 | 0.0233251 |  22 |   0.3921640 | 0.9999996 |      |
+| no insert no pQBR57 - no pUCP18 ancestral |  0.1627674 | 0.0233251 |  22 |   6.9782230 | 0.0000371 | \*   |
+| no insert no pQBR57 - no insert ancestral |  0.1597576 | 0.0233251 |  22 |   6.8491837 | 0.0000444 | \*   |
 | no insert no pQBR57 - ancestral ancestral |  0.2643434 | 0.0233251 |  22 |  11.3330276 | 0.0000000 | \*   |
 | no insert no pQBR57 - V100A ancestral     |  0.2626602 | 0.0233251 |  22 |  11.2608627 | 0.0000000 | \*   |
-| no insert no pQBR57 - no pUCP18 V100A     | -0.0137679 | 0.0233251 |  22 |  -0.5902622 | 0.9999690 |      |
-| no insert no pQBR57 - no insert V100A     | -0.0234257 | 0.0233251 |  22 |  -1.0043148 | 0.9959008 |      |
-| no insert no pQBR57 - ancestral V100A     |  0.1617016 | 0.0233251 |  22 |   6.9325272 | 0.0000358 | \*   |
-| no insert no pQBR57 - V100A V100A         |  0.0457736 | 0.0233251 |  22 |   1.9624239 | 0.7109243 |      |
-| ancestral no pQBR57 - V100A no pQBR57     | -0.0365858 | 0.0233251 |  22 |  -1.5685176 | 0.9030478 |      |
-| ancestral no pQBR57 - no pUCP18 ancestral |  0.1170344 | 0.0233251 |  22 |   5.0175414 | 0.0022773 | \*   |
-| ancestral no pQBR57 - no insert ancestral |  0.1140246 | 0.0233251 |  22 |   4.8885021 | 0.0032888 | \*   |
-| ancestral no pQBR57 - ancestral ancestral |  0.2186105 | 0.0233251 |  22 |   9.3723460 | 0.0000001 | \*   |
+| no insert no pQBR57 - no pUCP18 V100A     | -0.0137679 | 0.0233251 |  22 |  -0.5902622 | 0.9999697 |      |
+| no insert no pQBR57 - no insert V100A     | -0.0234257 | 0.0233251 |  22 |  -1.0043148 | 0.9958967 |      |
+| no insert no pQBR57 - ancestral V100A     |  0.1617016 | 0.0233251 |  22 |   6.9325272 | 0.0000454 | \*   |
+| no insert no pQBR57 - V100A V100A         |  0.0457736 | 0.0233251 |  22 |   1.9624239 | 0.7112997 |      |
+| ancestral no pQBR57 - V100A no pQBR57     | -0.0365858 | 0.0233251 |  22 |  -1.5685176 | 0.9028612 |      |
+| ancestral no pQBR57 - no pUCP18 ancestral |  0.1170344 | 0.0233251 |  22 |   5.0175414 | 0.0023705 | \*   |
+| ancestral no pQBR57 - no insert ancestral |  0.1140246 | 0.0233251 |  22 |   4.8885021 | 0.0033496 | \*   |
+| ancestral no pQBR57 - ancestral ancestral |  0.2186105 | 0.0233251 |  22 |   9.3723460 | 0.0000000 | \*   |
 | ancestral no pQBR57 - V100A ancestral     |  0.2169272 | 0.0233251 |  22 |   9.3001811 | 0.0000001 | \*   |
-| ancestral no pQBR57 - no pUCP18 V100A     | -0.0595009 | 0.0233251 |  22 |  -2.5509438 | 0.3609934 |      |
-| ancestral no pQBR57 - no insert V100A     | -0.0691587 | 0.0233251 |  22 |  -2.9649964 | 0.1844820 |      |
-| ancestral no pQBR57 - ancestral V100A     |  0.1159686 | 0.0233251 |  22 |   4.9718456 | 0.0024523 | \*   |
+| ancestral no pQBR57 - no pUCP18 V100A     | -0.0595009 | 0.0233251 |  22 |  -2.5509438 | 0.3608542 |      |
+| ancestral no pQBR57 - no insert V100A     | -0.0691587 | 0.0233251 |  22 |  -2.9649964 | 0.1853695 |      |
+| ancestral no pQBR57 - ancestral V100A     |  0.1159686 | 0.0233251 |  22 |   4.9718456 | 0.0025619 | \*   |
 | ancestral no pQBR57 - V100A V100A         |  0.0000406 | 0.0233251 |  22 |   0.0017423 | 1.0000000 |      |
-| V100A no pQBR57 - no pUCP18 ancestral     |  0.1536202 | 0.0233251 |  22 |   6.5860590 | 0.0000384 | \*   |
-| V100A no pQBR57 - no insert ancestral     |  0.1506103 | 0.0233251 |  22 |   6.4570197 | 0.0000986 | \*   |
+| V100A no pQBR57 - no pUCP18 ancestral     |  0.1536202 | 0.0233251 |  22 |   6.5860590 | 0.0000531 | \*   |
+| V100A no pQBR57 - no insert ancestral     |  0.1506103 | 0.0233251 |  22 |   6.4570197 | 0.0001318 | \*   |
 | V100A no pQBR57 - ancestral ancestral     |  0.2551962 | 0.0233251 |  22 |  10.9408636 | 0.0000000 | \*   |
 | V100A no pQBR57 - V100A ancestral         |  0.2535130 | 0.0233251 |  22 |  10.8686987 | 0.0000000 | \*   |
-| V100A no pQBR57 - no pUCP18 V100A         | -0.0229151 | 0.0233251 |  22 |  -0.9824262 | 0.9965921 |      |
-| V100A no pQBR57 - no insert V100A         | -0.0325729 | 0.0233251 |  22 |  -1.3964788 | 0.9521403 |      |
-| V100A no pQBR57 - ancestral V100A         |  0.1525543 | 0.0233251 |  22 |   6.5403632 | 0.0000551 | \*   |
-| V100A no pQBR57 - V100A V100A             |  0.0366264 | 0.0233251 |  22 |   1.5702599 | 0.9021804 |      |
+| V100A no pQBR57 - no pUCP18 V100A         | -0.0229151 | 0.0233251 |  22 |  -0.9824262 | 0.9966105 |      |
+| V100A no pQBR57 - no insert V100A         | -0.0325729 | 0.0233251 |  22 |  -1.3964788 | 0.9522235 |      |
+| V100A no pQBR57 - ancestral V100A         |  0.1525543 | 0.0233251 |  22 |   6.5403632 | 0.0000719 | \*   |
+| V100A no pQBR57 - V100A V100A             |  0.0366264 | 0.0233251 |  22 |   1.5702599 | 0.9022823 |      |
 | no pUCP18 ancestral - no insert ancestral | -0.0030098 | 0.0233251 |  22 |  -0.1290393 | 1.0000000 |      |
-| no pUCP18 ancestral - ancestral ancestral |  0.1015760 | 0.0233251 |  22 |   4.3548046 | 0.0106672 | \*   |
-| no pUCP18 ancestral - V100A ancestral     |  0.0998928 | 0.0233251 |  22 |   4.2826397 | 0.0126437 | \*   |
-| no pUCP18 ancestral - no pUCP18 V100A     | -0.1765353 | 0.0233251 |  22 |  -7.5684852 | 0.0000035 | \*   |
-| no pUCP18 ancestral - no insert V100A     | -0.1861931 | 0.0233251 |  22 |  -7.9825377 | 0.0000015 | \*   |
+| no pUCP18 ancestral - ancestral ancestral |  0.1015760 | 0.0233251 |  22 |   4.3548046 | 0.0104443 | \*   |
+| no pUCP18 ancestral - V100A ancestral     |  0.0998928 | 0.0233251 |  22 |   4.2826397 | 0.0120721 | \*   |
+| no pUCP18 ancestral - no pUCP18 V100A     | -0.1765353 | 0.0233251 |  22 |  -7.5684852 | 0.0000071 | \*   |
+| no pUCP18 ancestral - no insert V100A     | -0.1861931 | 0.0233251 |  22 |  -7.9825377 | 0.0000028 | \*   |
 | no pUCP18 ancestral - ancestral V100A     | -0.0010659 | 0.0233251 |  22 |  -0.0456957 | 1.0000000 |      |
-| no pUCP18 ancestral - V100A V100A         | -0.1169938 | 0.0233251 |  22 |  -5.0157990 | 0.0022624 | \*   |
-| no insert ancestral - ancestral ancestral |  0.1045859 | 0.0233251 |  22 |   4.4838439 | 0.0077457 | \*   |
-| no insert ancestral - V100A ancestral     |  0.1029026 | 0.0233251 |  22 |   4.4116790 | 0.0091431 | \*   |
-| no insert ancestral - no pUCP18 V100A     | -0.1735255 | 0.0233251 |  22 |  -7.4394459 | 0.0000042 | \*   |
-| no insert ancestral - no insert V100A     | -0.1831833 | 0.0233251 |  22 |  -7.8534985 | 0.0000025 | \*   |
+| no pUCP18 ancestral - V100A V100A         | -0.1169938 | 0.0233251 |  22 |  -5.0157990 | 0.0023190 | \*   |
+| no insert ancestral - ancestral ancestral |  0.1045859 | 0.0233251 |  22 |   4.4838439 | 0.0078551 | \*   |
+| no insert ancestral - V100A ancestral     |  0.1029026 | 0.0233251 |  22 |   4.4116790 | 0.0094370 | \*   |
+| no insert ancestral - no pUCP18 V100A     | -0.1735255 | 0.0233251 |  22 |  -7.4394459 | 0.0000054 | \*   |
+| no insert ancestral - no insert V100A     | -0.1831833 | 0.0233251 |  22 |  -7.8534985 | 0.0000062 | \*   |
 | no insert ancestral - ancestral V100A     |  0.0019440 | 0.0233251 |  22 |   0.0833435 | 1.0000000 |      |
-| no insert ancestral - V100A V100A         | -0.1139839 | 0.0233251 |  22 |  -4.8867598 | 0.0029780 | \*   |
+| no insert ancestral - V100A V100A         | -0.1139839 | 0.0233251 |  22 |  -4.8867598 | 0.0031369 | \*   |
 | ancestral ancestral - V100A ancestral     | -0.0016832 | 0.0233251 |  22 |  -0.0721649 | 1.0000000 |      |
 | ancestral ancestral - no pUCP18 V100A     | -0.2781113 | 0.0233251 |  22 | -11.9232898 | 0.0000000 | \*   |
 | ancestral ancestral - no insert V100A     | -0.2877691 | 0.0233251 |  22 | -12.3373423 | 0.0000000 | \*   |
-| ancestral ancestral - ancestral V100A     | -0.1026419 | 0.0233251 |  22 |  -4.4005004 | 0.0092655 | \*   |
-| ancestral ancestral - V100A V100A         | -0.2185698 | 0.0233251 |  22 |  -9.3706036 | 0.0000012 | \*   |
+| ancestral ancestral - ancestral V100A     | -0.1026419 | 0.0233251 |  22 |  -4.4005004 | 0.0099346 | \*   |
+| ancestral ancestral - V100A V100A         | -0.2185698 | 0.0233251 |  22 |  -9.3706036 | 0.0000000 | \*   |
 | V100A ancestral - no pUCP18 V100A         | -0.2764281 | 0.0233251 |  22 | -11.8511249 | 0.0000000 | \*   |
 | V100A ancestral - no insert V100A         | -0.2860859 | 0.0233251 |  22 | -12.2651775 | 0.0000000 | \*   |
-| V100A ancestral - ancestral V100A         | -0.1009586 | 0.0233251 |  22 |  -4.3283355 | 0.0113209 | \*   |
+| V100A ancestral - ancestral V100A         | -0.1009586 | 0.0233251 |  22 |  -4.3283355 | 0.0111387 | \*   |
 | V100A ancestral - V100A V100A             | -0.2168866 | 0.0233251 |  22 |  -9.2984388 | 0.0000001 | \*   |
 | no pUCP18 V100A - no insert V100A         | -0.0096578 | 0.0233251 |  22 |  -0.4140526 | 0.9999992 |      |
-| no pUCP18 V100A - ancestral V100A         |  0.1754694 | 0.0233251 |  22 |   7.5227894 | 0.0000050 | \*   |
-| no pUCP18 V100A - V100A V100A             |  0.0595415 | 0.0233251 |  22 |   2.5526861 | 0.3595931 |      |
-| no insert V100A - ancestral V100A         |  0.1851272 | 0.0233251 |  22 |   7.9368420 | 0.0000056 | \*   |
-| no insert V100A - V100A V100A             |  0.0691993 | 0.0233251 |  22 |   2.9667387 | 0.1839285 |      |
-| ancestral V100A - V100A V100A             | -0.1159279 | 0.0233251 |  22 |  -4.9701033 | 0.0025816 | \*   |
+| no pUCP18 V100A - ancestral V100A         |  0.1754694 | 0.0233251 |  22 |   7.5227894 | 0.0000041 | \*   |
+| no pUCP18 V100A - V100A V100A             |  0.0595415 | 0.0233251 |  22 |   2.5526861 | 0.3597758 |      |
+| no insert V100A - ancestral V100A         |  0.1851272 | 0.0233251 |  22 |   7.9368420 | 0.0000009 | \*   |
+| no insert V100A - V100A V100A             |  0.0691993 | 0.0233251 |  22 |   2.9667387 | 0.1846424 |      |
+| ancestral V100A - V100A V100A             | -0.1159279 | 0.0233251 |  22 |  -4.9701033 | 0.0025821 | \*   |
 
 Key lines from this table. Note that the format is “pUCP18 variant pQBR
 variant”.
