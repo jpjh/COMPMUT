@@ -254,42 +254,42 @@ kable(contr)
 
 | contrast                                                    |   estimate |        SE |  df |    t.ratio |   p.value | sign |
 |:------------------------------------------------------------|-----------:|----------:|----:|-----------:|----------:|:-----|
-| (wild-type plasmid-free) - (delta\_gacS plasmid-free)       | -0.0511473 | 0.0310831 |  27 | -1.6454997 | 0.7720675 |      |
-| (wild-type plasmid-free) - (delta\_PFLU4242 plasmid-free)   | -0.0105851 | 0.0310831 |  27 | -0.3405408 | 0.9999926 |      |
-| (wild-type plasmid-free) - (wild-type ancestral)            |  0.1150825 | 0.0310831 |  27 |  3.7024133 | 0.0230748 | \*   |
-| (wild-type plasmid-free) - delta\_gacS ancestral            |  0.0155234 | 0.0310831 |  27 |  0.4994162 | 0.9998617 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 ancestral        | -0.0275831 | 0.0310831 |  27 | -0.8873981 | 0.9918597 |      |
-| (wild-type plasmid-free) - (wild-type V100A)                | -0.0176469 | 0.0310831 |  27 | -0.5677317 | 0.9996410 |      |
-| (wild-type plasmid-free) - delta\_gacS V100A                | -0.0370378 | 0.0310831 |  27 | -1.1915746 | 0.9515192 |      |
-| (wild-type plasmid-free) - delta\_PFLU4242 V100A            | -0.0221880 | 0.0310831 |  27 | -0.7138290 | 0.9981387 |      |
-| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0405622 | 0.0310831 |  27 |  1.3049589 | 0.9212695 |      |
-| (delta\_gacS plasmid-free) - (wild-type ancestral)          |  0.1662298 | 0.0310831 |  27 |  5.3479130 | 0.0004074 | \*   |
-| (delta\_gacS plasmid-free) - delta\_gacS ancestral          |  0.0666707 | 0.0310831 |  27 |  2.1449159 | 0.4664172 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 ancestral      |  0.0235642 | 0.0310831 |  27 |  0.7581017 | 0.9971741 |      |
-| (delta\_gacS plasmid-free) - (wild-type V100A)              |  0.0335004 | 0.0310831 |  27 |  1.0777680 | 0.9727074 |      |
-| (delta\_gacS plasmid-free) - delta\_gacS V100A              |  0.0141094 | 0.0310831 |  27 |  0.4539252 | 0.9999323 |      |
-| (delta\_gacS plasmid-free) - delta\_PFLU4242 V100A          |  0.0289592 | 0.0310831 |  27 |  0.9316708 | 0.9888933 |      |
-| (delta\_PFLU4242 plasmid-free) - (wild-type ancestral)      |  0.1256676 | 0.0310831 |  27 |  4.0429541 | 0.0100157 | \*   |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS ancestral      |  0.0261085 | 0.0310831 |  27 |  0.8399570 | 0.9943424 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 ancestral  | -0.0169980 | 0.0310831 |  27 | -0.5468573 | 0.9997282 |      |
+| (wild-type plasmid-free) - (delta\_gacS plasmid-free)       | -0.0511473 | 0.0310831 |  27 | -1.6454997 | 0.7721663 |      |
+| (wild-type plasmid-free) - (delta\_PFLU4242 plasmid-free)   | -0.0105851 | 0.0310831 |  27 | -0.3405408 | 0.9999925 |      |
+| (wild-type plasmid-free) - (wild-type ancestral)            |  0.1150825 | 0.0310831 |  27 |  3.7024133 | 0.0229686 | \*   |
+| (wild-type plasmid-free) - delta\_gacS ancestral            |  0.0155234 | 0.0310831 |  27 |  0.4994162 | 0.9998609 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 ancestral        | -0.0275831 | 0.0310831 |  27 | -0.8873981 | 0.9918523 |      |
+| (wild-type plasmid-free) - (wild-type V100A)                | -0.0176469 | 0.0310831 |  27 | -0.5677317 | 0.9996411 |      |
+| (wild-type plasmid-free) - delta\_gacS V100A                | -0.0370378 | 0.0310831 |  27 | -1.1915746 | 0.9514843 |      |
+| (wild-type plasmid-free) - delta\_PFLU4242 V100A            | -0.0221880 | 0.0310831 |  27 | -0.7138290 | 0.9981415 |      |
+| (delta\_gacS plasmid-free) - (delta\_PFLU4242 plasmid-free) |  0.0405622 | 0.0310831 |  27 |  1.3049589 | 0.9212210 |      |
+| (delta\_gacS plasmid-free) - (wild-type ancestral)          |  0.1662298 | 0.0310831 |  27 |  5.3479130 | 0.0003616 | \*   |
+| (delta\_gacS plasmid-free) - delta\_gacS ancestral          |  0.0666707 | 0.0310831 |  27 |  2.1449159 | 0.4660445 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 ancestral      |  0.0235642 | 0.0310831 |  27 |  0.7581017 | 0.9971711 |      |
+| (delta\_gacS plasmid-free) - (wild-type V100A)              |  0.0335004 | 0.0310831 |  27 |  1.0777680 | 0.9727114 |      |
+| (delta\_gacS plasmid-free) - delta\_gacS V100A              |  0.0141094 | 0.0310831 |  27 |  0.4539252 | 0.9999325 |      |
+| (delta\_gacS plasmid-free) - delta\_PFLU4242 V100A          |  0.0289592 | 0.0310831 |  27 |  0.9316708 | 0.9888794 |      |
+| (delta\_PFLU4242 plasmid-free) - (wild-type ancestral)      |  0.1256676 | 0.0310831 |  27 |  4.0429541 | 0.0101786 | \*   |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS ancestral      |  0.0261085 | 0.0310831 |  27 |  0.8399570 | 0.9943218 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 ancestral  | -0.0169980 | 0.0310831 |  27 | -0.5468573 | 0.9997275 |      |
 | (delta\_PFLU4242 plasmid-free) - (wild-type V100A)          | -0.0070618 | 0.0310831 |  27 | -0.2271909 | 0.9999997 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_gacS V100A          | -0.0264528 | 0.0310831 |  27 | -0.8510338 | 0.9938135 |      |
-| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 V100A      | -0.0116030 | 0.0310831 |  27 | -0.3732882 | 0.9999848 |      |
-| (wild-type ancestral) - delta\_gacS ancestral               | -0.0995591 | 0.0310831 |  27 | -3.2029971 | 0.0718126 |      |
-| (wild-type ancestral) - delta\_PFLU4242 ancestral           | -0.1426656 | 0.0310831 |  27 | -4.5898114 | 0.0025498 | \*   |
-| (wild-type ancestral) - (wild-type V100A)                   | -0.1327294 | 0.0310831 |  27 | -4.2701450 | 0.0055890 | \*   |
-| (wild-type ancestral) - delta\_gacS V100A                   | -0.1521204 | 0.0310831 |  27 | -4.8939879 | 0.0012237 | \*   |
-| (wild-type ancestral) - delta\_PFLU4242 V100A               | -0.1372706 | 0.0310831 |  27 | -4.4162423 | 0.0039087 | \*   |
-| delta\_gacS ancestral - delta\_PFLU4242 ancestral           | -0.0431065 | 0.0310831 |  27 | -1.3868143 | 0.8931602 |      |
-| delta\_gacS ancestral - (wild-type V100A)                   | -0.0331703 | 0.0310831 |  27 | -1.0671479 | 0.9742617 |      |
-| delta\_gacS ancestral - delta\_gacS V100A                   | -0.0525613 | 0.0310831 |  27 | -1.6909908 | 0.7463876 |      |
-| delta\_gacS ancestral - delta\_PFLU4242 V100A               | -0.0377114 | 0.0310831 |  27 | -1.2132452 | 0.9464474 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_gacS V100A          | -0.0264528 | 0.0310831 |  27 | -0.8510338 | 0.9938040 |      |
+| (delta\_PFLU4242 plasmid-free) - delta\_PFLU4242 V100A      | -0.0116030 | 0.0310831 |  27 | -0.3732882 | 0.9999849 |      |
+| (wild-type ancestral) - delta\_gacS ancestral               | -0.0995591 | 0.0310831 |  27 | -3.2029971 | 0.0709445 |      |
+| (wild-type ancestral) - delta\_PFLU4242 ancestral           | -0.1426656 | 0.0310831 |  27 | -4.5898114 | 0.0026222 | \*   |
+| (wild-type ancestral) - (wild-type V100A)                   | -0.1327294 | 0.0310831 |  27 | -4.2701450 | 0.0057719 | \*   |
+| (wild-type ancestral) - delta\_gacS V100A                   | -0.1521204 | 0.0310831 |  27 | -4.8939879 | 0.0013007 | \*   |
+| (wild-type ancestral) - delta\_PFLU4242 V100A               | -0.1372706 | 0.0310831 |  27 | -4.4162423 | 0.0037467 | \*   |
+| delta\_gacS ancestral - delta\_PFLU4242 ancestral           | -0.0431065 | 0.0310831 |  27 | -1.3868143 | 0.8932556 |      |
+| delta\_gacS ancestral - (wild-type V100A)                   | -0.0331703 | 0.0310831 |  27 | -1.0671479 | 0.9742534 |      |
+| delta\_gacS ancestral - delta\_gacS V100A                   | -0.0525613 | 0.0310831 |  27 | -1.6909908 | 0.7465729 |      |
+| delta\_gacS ancestral - delta\_PFLU4242 V100A               | -0.0377114 | 0.0310831 |  27 | -1.2132452 | 0.9464966 |      |
 | delta\_PFLU4242 ancestral - (wild-type V100A)               |  0.0099362 | 0.0310831 |  27 |  0.3196664 | 0.9999954 |      |
 | delta\_PFLU4242 ancestral - delta\_gacS V100A               | -0.0094548 | 0.0310831 |  27 | -0.3041765 | 0.9999969 |      |
 | delta\_PFLU4242 ancestral - delta\_PFLU4242 V100A           |  0.0053951 | 0.0310831 |  27 |  0.1735691 | 1.0000000 |      |
-| (wild-type V100A) - delta\_gacS V100A                       | -0.0193910 | 0.0310831 |  27 | -0.6238429 | 0.9992868 |      |
+| (wild-type V100A) - delta\_gacS V100A                       | -0.0193910 | 0.0310831 |  27 | -0.6238429 | 0.9992850 |      |
 | (wild-type V100A) - delta\_PFLU4242 V100A                   | -0.0045412 | 0.0310831 |  27 | -0.1460973 | 1.0000000 |      |
-| delta\_gacS V100A - delta\_PFLU4242 V100A                   |  0.0148498 | 0.0310831 |  27 |  0.4777456 | 0.9999003 |      |
+| delta\_gacS V100A - delta\_PFLU4242 V100A                   |  0.0148498 | 0.0310831 |  27 |  0.4777456 | 0.9999009 |      |
 
 Shows a significant cost of pQBR57\_anc, a significant effect of
 PFLU4242 amelioration, and a significant effect of pQBR57\_V100A
@@ -646,15 +646,15 @@ contr_c %>% kable()
 
 | contrast                                                                        |   estimate |        SE |  df |     t.ratio |   p.value | sign |
 |:--------------------------------------------------------------------------------|-----------:|----------:|----:|------------:|----------:|:-----|
-| (ancestral P. fluorescens wild-type) - (V100A P. fluorescens wild-type)         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0552516 |      |
+| (ancestral P. fluorescens wild-type) - (V100A P. fluorescens wild-type)         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551360 |      |
 | (ancestral P. fluorescens wild-type) - (ancestral P. putida wild-type)          |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - (V100A P. putida wild-type)              |  1.9739123 | 0.1053882 |  43 |  18.7299095 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - ancestral P. fluorescens delta\_gacS     |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
-| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_gacS         |  0.8724771 | 0.1178276 |  43 |   7.4046900 | 0.0000000 | \*   |
+| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_gacS         |  0.8724771 | 0.1178276 |  43 |   7.4046900 | 0.0000001 | \*   |
 | (ancestral P. fluorescens wild-type) - ancestral P. putida delta\_gacS          |  3.2913046 | 0.1178276 |  43 |  27.9332136 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - V100A P. putida delta\_gacS              |  3.0688470 | 0.1394155 |  43 |  22.0122301 | 0.0000000 | \*   |
-| (ancestral P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242 | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376168 |      |
-| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242     | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1426211 |      |
+| (ancestral P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242 | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376173 |      |
+| (ancestral P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242     | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1426071 |      |
 | (ancestral P. fluorescens wild-type) - ancestral P. putida delta\_PFLU4242      |  2.1202000 | 0.1178276 |  43 |  17.9940802 | 0.0000000 | \*   |
 | (ancestral P. fluorescens wild-type) - V100A P. putida delta\_PFLU4242          |  1.8977424 | 0.1394155 |  43 |  13.6121293 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - (ancestral P. putida wild-type)              |  2.4188275 | 0.1053882 |  43 |  22.9515871 | 0.0000000 | \*   |
@@ -663,41 +663,41 @@ contr_c %>% kable()
 | (V100A P. fluorescens wild-type) - V100A P. fluorescens delta\_gacS             |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - ancestral P. putida delta\_gacS              |  3.5137622 | 0.1394155 |  43 |  25.2035185 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - V100A P. putida delta\_gacS                  |  3.2913046 | 0.1178276 |  43 |  27.9332136 | 0.0000000 | \*   |
-| (V100A P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242     |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793687 |      |
-| (V100A P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242         | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376449 |      |
+| (V100A P. fluorescens wild-type) - ancestral P. fluorescens delta\_PFLU4242     |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793423 |      |
+| (V100A P. fluorescens wild-type) - V100A P. fluorescens delta\_PFLU4242         | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376845 |      |
 | (V100A P. fluorescens wild-type) - ancestral P. putida delta\_PFLU4242          |  2.3426576 | 0.1394155 |  43 |  16.8034176 | 0.0000000 | \*   |
 | (V100A P. fluorescens wild-type) - V100A P. putida delta\_PFLU4242              |  2.1202000 | 0.1178276 |  43 |  17.9940802 | 0.0000000 | \*   |
-| (ancestral P. putida wild-type) - (V100A P. putida wild-type)                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550865 |      |
+| (ancestral P. putida wild-type) - (V100A P. putida wild-type)                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550618 |      |
 | (ancestral P. putida wild-type) - ancestral P. fluorescens delta\_gacS          | -1.1014351 | 0.1178276 |  43 |  -9.3478503 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - V100A P. fluorescens delta\_gacS              | -1.3238927 | 0.1394155 |  43 |  -9.4960196 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - ancestral P. putida delta\_gacS               |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - V100A P. putida delta\_gacS                   |  0.8724771 | 0.1178276 |  43 |   7.4046900 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - ancestral P. fluorescens delta\_PFLU4242      | -2.2725397 | 0.1178276 |  43 | -19.2869837 | 0.0000000 | \*   |
 | (ancestral P. putida wild-type) - V100A P. fluorescens delta\_PFLU4242          | -2.4949973 | 0.1394155 |  43 | -17.8961205 | 0.0000000 | \*   |
-| (ancestral P. putida wild-type) - ancestral P. putida delta\_PFLU4242           | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376148 |      |
-| (ancestral P. putida wild-type) - V100A P. putida delta\_PFLU4242               | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1426056 |      |
+| (ancestral P. putida wild-type) - ancestral P. putida delta\_PFLU4242           | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376126 |      |
+| (ancestral P. putida wild-type) - V100A P. putida delta\_PFLU4242               | -0.2986275 | 0.1178276 |  43 |  -2.5344434 | 0.1425073 |      |
 | (V100A P. putida wild-type) - ancestral P. fluorescens delta\_gacS              | -0.8789775 | 0.1394155 |  43 |  -6.3047313 | 0.0000030 | \*   |
 | (V100A P. putida wild-type) - V100A P. fluorescens delta\_gacS                  | -1.1014351 | 0.1178276 |  43 |  -9.3478503 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - ancestral P. putida delta\_gacS                   |  1.3173923 | 0.1178276 |  43 |  11.1806733 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - V100A P. putida delta\_gacS                       |  1.0949347 | 0.0912689 |  43 |  11.9968004 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - ancestral P. fluorescens delta\_PFLU4242          | -2.0500821 | 0.1394155 |  43 | -14.7048321 | 0.0000000 | \*   |
 | (V100A P. putida wild-type) - V100A P. fluorescens delta\_PFLU4242              | -2.2725397 | 0.1178276 |  43 | -19.2869837 | 0.0000000 | \*   |
-| (V100A P. putida wild-type) - ancestral P. putida delta\_PFLU4242               |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793310 |      |
-| (V100A P. putida wild-type) - V100A P. putida delta\_PFLU4242                   | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376206 |      |
-| ancestral P. fluorescens delta\_gacS - V100A P. fluorescens delta\_gacS         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550982 |      |
+| (V100A P. putida wild-type) - ancestral P. putida delta\_PFLU4242               |  0.1462877 | 0.1178276 |  43 |   1.2415399 | 0.7793512 |      |
+| (V100A P. putida wild-type) - V100A P. putida delta\_PFLU4242                   | -0.0761699 | 0.0912689 |  43 |  -0.8345656 | 0.9376158 |      |
+| ancestral P. fluorescens delta\_gacS - V100A P. fluorescens delta\_gacS         | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550278 |      |
 | ancestral P. fluorescens delta\_gacS - ancestral P. putida delta\_gacS          |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - V100A P. putida delta\_gacS              |  1.9739123 | 0.1053882 |  43 |  18.7299095 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - ancestral P. fluorescens delta\_PFLU4242 | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - V100A P. fluorescens delta\_PFLU4242     | -1.3935622 | 0.1178276 |  43 | -11.8271250 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_gacS - ancestral P. putida delta\_PFLU4242      |  1.0252652 | 0.1178276 |  43 |   8.7013986 | 0.0000000 | \*   |
-| ancestral P. fluorescens delta\_gacS - V100A P. putida delta\_PFLU4242          |  0.8028076 | 0.1394155 |  43 |   5.7583799 | 0.0000137 | \*   |
+| ancestral P. fluorescens delta\_gacS - V100A P. putida delta\_PFLU4242          |  0.8028076 | 0.1394155 |  43 |   5.7583799 | 0.0000128 | \*   |
 | V100A P. fluorescens delta\_gacS - ancestral P. putida delta\_gacS              |  2.4188275 | 0.1053882 |  43 |  22.9515871 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - V100A P. putida delta\_gacS                  |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - ancestral P. fluorescens delta\_PFLU4242     | -0.9486470 | 0.1178276 |  43 |  -8.0511417 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - V100A P. fluorescens delta\_PFLU4242         | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - ancestral P. putida delta\_PFLU4242          |  1.2477228 | 0.1394155 |  43 |   8.9496682 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_gacS - V100A P. putida delta\_PFLU4242              |  1.0252652 | 0.1178276 |  43 |   8.7013986 | 0.0000000 | \*   |
-| ancestral P. putida delta\_gacS - V100A P. putida delta\_gacS                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550936 |      |
+| ancestral P. putida delta\_gacS - V100A P. putida delta\_gacS                   | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551561 |      |
 | ancestral P. putida delta\_gacS - ancestral P. fluorescens delta\_PFLU4242      | -3.3674745 | 0.1178276 |  43 | -28.5796653 | 0.0000000 | \*   |
 | ancestral P. putida delta\_gacS - V100A P. fluorescens delta\_PFLU4242          | -3.5899321 | 0.1394155 |  43 | -25.7498699 | 0.0000000 | \*   |
 | ancestral P. putida delta\_gacS - ancestral P. putida delta\_PFLU4242           | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
@@ -706,12 +706,12 @@ contr_c %>% kable()
 | V100A P. putida delta\_gacS - V100A P. fluorescens delta\_PFLU4242              | -3.3674745 | 0.1178276 |  43 | -28.5796653 | 0.0000000 | \*   |
 | V100A P. putida delta\_gacS - ancestral P. putida delta\_PFLU4242               | -0.9486470 | 0.1178276 |  43 |  -8.0511417 | 0.0000000 | \*   |
 | V100A P. putida delta\_gacS - V100A P. putida delta\_PFLU4242                   | -1.1711046 | 0.0912689 |  43 | -12.8313660 | 0.0000000 | \*   |
-| ancestral P. fluorescens delta\_PFLU4242 - V100A P. fluorescens delta\_PFLU4242 | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0552107 |      |
+| ancestral P. fluorescens delta\_PFLU4242 - V100A P. fluorescens delta\_PFLU4242 | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0551205 |      |
 | ancestral P. fluorescens delta\_PFLU4242 - ancestral P. putida delta\_PFLU4242  |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
 | ancestral P. fluorescens delta\_PFLU4242 - V100A P. putida delta\_PFLU4242      |  1.9739123 | 0.1053882 |  43 |  18.7299095 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_PFLU4242 - ancestral P. putida delta\_PFLU4242      |  2.4188275 | 0.1053882 |  43 |  22.9515871 | 0.0000000 | \*   |
 | V100A P. fluorescens delta\_PFLU4242 - V100A P. putida delta\_PFLU4242          |  2.1963699 | 0.0745207 |  43 |  29.4732689 | 0.0000000 | \*   |
-| ancestral P. putida delta\_PFLU4242 - V100A P. putida delta\_PFLU4242           | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0550937 |      |
+| ancestral P. putida delta\_PFLU4242 - V100A P. putida delta\_PFLU4242           | -0.2224576 | 0.0745207 |  43 |  -2.9851769 | 0.0552123 |      |
 
 Are these conclusions qualitatively different when we just consider the
 *P. fluorescens* data?

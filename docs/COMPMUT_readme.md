@@ -5,6 +5,10 @@ April 2021, updated July 2021, updated September 2021
 
 Full analysis scripts associated with this raw data can be found at [github.com/jpjh/COMPMUT](github.com/jpjh/COMPMUT).
 
+[Now published in PLoS Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness costs are caused by specific genetic conflicts enabling resolution by compensatory mutation. *PLoS Biology*, *19*(10), e3001225. https://doi.org/10.1371/journal.pbio.3001225
+
 ### Experimental measurements of relative fitness, plasmid cost, etc
 
 - [`COMPMUT_exp_data_1.csv`](COMPMUT_exp_data_1.csv). Competition data from knockout strains. Columns indicate experimental replicate (`experiment`), transconjugant replicate (`replicate`), host genotype (`host`), plasmid variant (`plasmid`), whether measurement was from the start or the end of the competition (`timepoint`), dilution factor (`dilution`), volume spread in µl (`spread`) and the counts of white and blue colonies on that plate (`count_white`, `count_blue`).
