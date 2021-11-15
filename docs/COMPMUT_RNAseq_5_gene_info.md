@@ -3,6 +3,19 @@ COMPMUT RNAseq Analysis 5: Making Gene Info tables
 jpjh
 compiled Feb 2021
 
+[Now published in PLoS
+Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie
+Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness
+costs are caused by specific genetic conflicts enabling resolution by
+compensatory mutation. *PLoS Biology*, *19*(10), e3001225.
+<https://doi.org/10.1371/journal.pbio.3001225>
+
+**[Back to index.](COMPMUT_index.md)**
+
+------------------------------------------------------------------------
+
 ## Getting gene\_info for chromosomal genes
 
 Require a table with locus\_tag and details for each gene.
@@ -15,7 +28,7 @@ extracted from the genbank using Python (described in
 
 Load up functions for parsing GFF files, and use these to extract
 relevant information from the chromosomal .gff file. From
-[here](https://stat.ethz.ch/pipermail/bioconductor/2008-October/024669.html)
+[here](https://stat.ethz.ch/pipermail/bioconductor/2008-October/024669.html).
 
 ``` r
 getAttributeField <- function (x, field, attrsep = ";") {

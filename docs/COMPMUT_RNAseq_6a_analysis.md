@@ -4,6 +4,19 @@ analysis
 jpjh
 compiled Feb 2021, edited Jul 2021
 
+[Now published in PLoS
+Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie
+Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness
+costs are caused by specific genetic conflicts enabling resolution by
+compensatory mutation. *PLoS Biology*, *19*(10), e3001225.
+<https://doi.org/10.1371/journal.pbio.3001225>
+
+**[Back to index.](COMPMUT_index.md)**
+
+------------------------------------------------------------------------
+
 ## Analysis of edgeR tables outline
 
 This data was collected in
@@ -164,7 +177,7 @@ chr_pq_de_summ <- chr %>% group_by(plasmid, amelioration) %>%
 chr_pq_de_summ %>% filter(amelioration=="wt")
 ```
 
-    ## # A tibble: 2 x 7
+    ## # A tibble: 2 × 7
     ## # Groups:   plasmid [2]
     ##   plasmid amelioration de_all up_all down_all up_2x down_2x
     ##   <fct>   <fct>         <int>  <int>    <int> <int>   <int>
@@ -497,6 +510,9 @@ cols <- c("chartreuse2","gold1","orange2","orangered1","darkred","cornflowerblue
     theme(legend.position="right"))
 ```
 
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 The prophage loci (at least prophage 1) are tailocins, and are most
@@ -509,6 +525,12 @@ Output this image in colour.
 ``` r
 svglite::svglite(height=3.5, width=5.4, file = "../plots/Fig12.svg")
 plot_fig12 + theme_pub() + theme(legend.position="right")
+```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+``` r
 dev.off()
 ```
 
@@ -535,6 +557,9 @@ Similar figures can be plotted as MA plots.
     facet_grid(.~plasmid) +
     theme_pub() + theme(legend.position="right"))
 ```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
 
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
@@ -1232,6 +1257,9 @@ Plot annotated volcano plots for these ameliorations.
    theme(legend.position="right"))
 ```
 
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
 
 And the corresponding MA plots:
@@ -1252,6 +1280,9 @@ And the corresponding MA plots:
    facet_grid(.~plasmid) +
    theme(legend.position="right"))
 ```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
 
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
 
@@ -1290,6 +1321,12 @@ chr_plot$sig_PQ5759 <- ifelse(chr_plot$gene %in% chr_pq57_am_sig, "sig", "")
    theme(legend.position="right"))
 ```
 
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
 
 Plot as an MA plot:
@@ -1310,6 +1347,9 @@ Plot as an MA plot:
    facet_grid(.~plasmid) +
    theme_pub() + theme(legend.position="right"))
 ```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
 
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
 
@@ -1341,6 +1381,12 @@ ggplot(data=subset(chr_plot,
    labs(x=expression(paste("log"[2]," fold-change")), y=expression(paste("-log"[10]," FDR"))) +
    theme(legend.position="right")
 ```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
 
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
@@ -1568,6 +1614,12 @@ chr_2xde_p <- chr_2xde_plot %>%
           panel.spacing.x=unit(5, units="pt")))
 ```
 
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-66-1.png)<!-- -->
 
 Output figure for editing and cleaning up in Inkscape.
@@ -1581,6 +1633,15 @@ plot_fig13 + theme_pub() +
         axis.text.x = element_blank(),
         # axis.text.x=element_text(angle=45, hjust=1, vjust=0.5, size=4),
         panel.spacing.x=unit(5, units="pt"))
+```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+``` r
 dev.off()
 ```
 
@@ -1615,6 +1676,15 @@ svglite::svglite(height=4, width=7.2, file = "../plots/Fig13b.svg")
           axis.ticks.x=element_blank(), 
           axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=4),
           panel.spacing.x=unit(5, units="pt")))
+```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+``` r
 dev.off()
 ```
 
@@ -1681,6 +1751,15 @@ svglite::svglite(height=4, width=14.4, file = "../plots/Fig13c.svg")
           axis.ticks.x=element_blank(), 
           axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=4),
           panel.spacing.x=unit(5, units="pt")))
+```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+``` r
 dev.off()
 ```
 
@@ -1904,6 +1983,9 @@ summary(tab_chr_pq57_x_dgacS_de$sig)
    facet_grid(.~plasmid) +
    theme(legend.position="right"))
 ```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
 
 ![](COMPMUT_RNAseq_6a_analysis_files/figure-gfm/unnamed-chunk-83-1.png)<!-- -->
 

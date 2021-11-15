@@ -4,6 +4,19 @@ candidate cost genes
 jpjh
 compiled Feb 2021, edited Jul 2021
 
+[Now published in PLoS
+Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie
+Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness
+costs are caused by specific genetic conflicts enabling resolution by
+compensatory mutation. *PLoS Biology*, *19*(10), e3001225.
+<https://doi.org/10.1371/journal.pbio.3001225>
+
+**[Back to index.](COMPMUT_index.md)**
+
+------------------------------------------------------------------------
+
 ## Growth rate experiments with strains overexpressing candidate cost genes
 
 #### Experimental design
@@ -45,7 +58,7 @@ gr1_summ <- gr1 %>% mutate(IPTG = factor(IPTG, levels=c("0","100"), labels=c("un
   group_by(cycle, t_rep, pME6032, IPTG) %>%
   summarise(mean = mean(OD600_corr), 
             n = n(), 
-            se = sd(OD600_corr)/n, 
+            se = sd(OD600_corr)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(OD600_corr=mean)
 ```
@@ -305,15 +318,15 @@ kable(contr)
 | contrast                 |   estimate |        SE |  df |    t.ratio |   p.value | sign |
 |:-------------------------|-----------:|----------:|----:|-----------:|----------:|:-----|
 | PFLU0054 - empty vector  |  0.0161221 | 0.0436426 |  26 |  0.3694117 | 0.9999923 |      |
-| PFLU1169 - empty vector  | -0.2337423 | 0.0436426 |  26 | -5.3558312 | 0.0001468 | \*   |
-| PFLU1170 - empty vector  | -0.1391306 | 0.0436426 |  26 | -3.1879555 | 0.0324241 | \*   |
+| PFLU1169 - empty vector  | -0.2337423 | 0.0436426 |  26 | -5.3558312 | 0.0001568 | \*   |
+| PFLU1170 - empty vector  | -0.1391306 | 0.0436426 |  26 | -3.1879555 | 0.0326088 | \*   |
 | PFLU1171 - empty vector  |  0.0081161 | 0.0436426 |  26 |  0.1859678 | 1.0000000 |      |
 | PFLU1173 - empty vector  |  0.0134568 | 0.0436426 |  26 |  0.3083406 | 0.9999989 |      |
 | PFLU1174 - empty vector  |  0.0118874 | 0.0436426 |  26 |  0.2723801 | 0.9999997 |      |
-| PFLU1886 - empty vector  | -0.0302590 | 0.0436426 |  26 | -0.6933369 | 0.9965026 |      |
+| PFLU1886 - empty vector  | -0.0302590 | 0.0436426 |  26 | -0.6933369 | 0.9965008 |      |
 | PFLU1887 - empty vector  |  0.0016810 | 0.0436426 |  26 |  0.0385170 | 1.0000000 |      |
 | PFLU2839 - empty vector  | -0.0162898 | 0.0436426 |  26 | -0.3732538 | 0.9999914 |      |
-| PFLU2841 - empty vector  |  0.0230435 | 0.0436426 |  26 |  0.5280054 | 0.9997011 |      |
+| PFLU2841 - empty vector  |  0.0230435 | 0.0436426 |  26 |  0.5280054 | 0.9997013 |      |
 | PFLU4128A - empty vector | -0.0131310 | 0.0436426 |  26 | -0.3008767 | 0.9999992 |      |
 | PFLU5278 - empty vector  |  0.0001989 | 0.0436426 |  26 |  0.0045585 | 1.0000000 |      |
 

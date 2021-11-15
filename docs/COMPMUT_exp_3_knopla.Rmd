@@ -21,6 +21,14 @@ theme_github <- function(x){
 theme_set(theme_github())
 ```
 
+[Now published in PLoS Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness costs are caused by specific genetic conflicts enabling resolution by compensatory mutation. *PLoS Biology*, *19*(10), e3001225. https://doi.org/10.1371/journal.pbio.3001225
+
+**[Back to index.](COMPMUT_index.md)**
+
+---
+
 ## Competition experiments with knockout strains carrying different pQBR57 variants
 
 #### Experimental design:
@@ -83,7 +91,7 @@ df3_summ <- df3 %>%
   group_by(host, plasmid) %>%
   summarise(mean = mean(W_gm), 
             n = n(), 
-            se = sd(W_gm)/n, 
+            se = sd(W_gm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(W_gm=mean)
 
@@ -266,7 +274,7 @@ dc7_summ <- dc7 %>%
   mutate(log10_gamma = log10(gamma)) %>%
   summarise(mean = mean(log10_gamma), 
             n = n(), 
-            se = sd(log10_gamma)/n, 
+            se = sd(log10_gamma)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(log10_gamma=mean)
 

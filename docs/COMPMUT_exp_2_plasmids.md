@@ -4,6 +4,19 @@ fitness
 jpjh
 compiled Feb 2021
 
+[Now published in PLoS
+Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie
+Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness
+costs are caused by specific genetic conflicts enabling resolution by
+compensatory mutation. *PLoS Biology*, *19*(10), e3001225.
+<https://doi.org/10.1371/journal.pbio.3001225>
+
+**[Back to index.](COMPMUT_index.md)**
+
+------------------------------------------------------------------------
+
 ## Competition experiments with strains carrying different PQBR57\_0059 variants
 
 #### Experimental design:
@@ -146,7 +159,7 @@ df2_summ <- df2 %>%
   group_by(plasmid) %>%
   summarise(mean = mean(W_corr), 
             n = n(), 
-            se = sd(W_corr)/n, 
+            se = sd(W_corr)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(W_corr=mean)
 
@@ -362,7 +375,7 @@ kable(contr)
 | contrast                   |   estimate |        SE |  df |   t.ratio |   p.value | sign |
 |:---------------------------|-----------:|----------:|----:|----------:|----------:|:-----|
 | (plasmid-free) - ancestral |  0.1877998 | 0.0210410 |  27 |  8.925401 | 0.0000000 | \*   |
-| (plasmid-free) - V100A     |  0.0550393 | 0.0210410 |  27 |  2.615805 | 0.0366213 | \*   |
+| (plasmid-free) - V100A     |  0.0550393 | 0.0210410 |  27 |  2.615805 | 0.0366598 | \*   |
 | ancestral - V100A          | -0.1327605 | 0.0171799 |  27 | -7.727645 | 0.0000000 | \*   |
 
 Significant effect of ancestral plasmid acquisition, compared with V100A

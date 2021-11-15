@@ -3,6 +3,19 @@ COMPMUT RNAseq Analysis 6c: pQBR103 genes — plots, figures, and analysis
 jpjh
 compiled Feb 2021, edited Jul 2021
 
+[Now published in PLoS
+Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie
+Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness
+costs are caused by specific genetic conflicts enabling resolution by
+compensatory mutation. *PLoS Biology*, *19*(10), e3001225.
+<https://doi.org/10.1371/journal.pbio.3001225>
+
+**[Back to index.](COMPMUT_index.md)**
+
+------------------------------------------------------------------------
+
 ## Analysis of edgeR tables outline
 
 Recall:
@@ -340,6 +353,9 @@ pq103_de_am_plot_gene_names$region <- factor(pq103_de_am_plot_gene_names$region,
         panel.spacing.x=unit(5, units="pt")))
 ```
 
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
 ![](COMPMUT_RNAseq_6c_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 Load up the pQBR57 image and output both together.
@@ -361,6 +377,12 @@ plot_fig15 <- plot_fig15 + theme_pub() +
 
 svglite::svglite(height=4, width=3.6, file = "../plots/Fig14_15.svg")
 plot_fig14b / plot_fig15 + plot_layout(heights=c(1.4,1))
+```
+
+    ## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+    ## use `guide = "none"` instead.
+
+``` r
 dev.off()
 ```
 

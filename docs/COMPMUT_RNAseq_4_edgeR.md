@@ -3,6 +3,19 @@ COMPMUT RNAseq Analysis 4: Analysing differential expression using edgeR
 jpjh
 compiled Feb 2021, edited Jul 2021
 
+[Now published in PLoS
+Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie
+Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness
+costs are caused by specific genetic conflicts enabling resolution by
+compensatory mutation. *PLoS Biology*, *19*(10), e3001225.
+<https://doi.org/10.1371/journal.pbio.3001225>
+
+**[Back to index.](COMPMUT_index.md)**
+
+------------------------------------------------------------------------
+
 ## edgeR analysis
 
 The analysis will look at the SBW25 chromosome, pQBR103, and pQBR57
@@ -1022,7 +1035,7 @@ summ_pQ57_chr_tpm_long <- pQ57_chr_tpm_long %>%
   group_by(pc, amelioration, plasmid, trt, locus_tag, group) %>%
   summarise(mean = mean(tpm), 
             n = n(), 
-            se = sd(tpm)/n, 
+            se = sd(tpm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(tpm = mean)
 ```
@@ -1347,7 +1360,7 @@ summ_pQ103_chr_tpm_long <- pQ103_chr_tpm_long %>%
   group_by(pc, amelioration, plasmid, trt, locus_tag, group) %>%
   summarise(mean = mean(tpm), 
             n = n(), 
-            se = sd(tpm)/n, 
+            se = sd(tpm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(tpm = mean)
 ```
@@ -1398,7 +1411,7 @@ both_tpm_long_summ <- both_tpm_long %>%
   group_by(amelioration, plasmid, group, pc) %>%
     summarise(mean = mean(log2tpm), 
             n = n(), 
-            se = sd(log2tpm)/n, 
+            se = sd(log2tpm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(log2tpm=mean)
 ```
@@ -1490,7 +1503,7 @@ genelengths_analysis %>% group_by(replicon) %>%
             median = median(length_na))
 ```
 
-    ## # A tibble: 3 x 5
+    ## # A tibble: 3 × 5
     ##   replicon  mean   max   min median
     ##   <chr>    <dbl> <dbl> <dbl>  <dbl>
     ## 1 chr       997. 14073    72    864
@@ -1689,20 +1702,20 @@ both_tpm_long <- both_tpm_long[with(both_tpm_long, order(tpm)), ]
 head(both_tpm_long[both_tpm_long$pc=="pla" & both_tpm_long$amelioration=="wt",], n=10)
 ```
 
-    ## # A tibble: 10 x 11
+    ## # A tibble: 10 × 11
     ## # Groups:   pc, amelioration, plasmid, trt, locus_tag [10]
     ##    pc    amelioration plasmid trt   locus_tag   group     tpm     n     se    ci
     ##    <chr> <fct>        <fct>   <fct> <chr>       <fct>   <dbl> <int>  <dbl> <dbl>
-    ##  1 pla   wt           pQBR103 R05   pQBR0219    pQBR10… 0.938     3 0.180  0.773
-    ##  2 pla   wt           pQBR57  R03   PQBR57_0253 pQBR57… 1.84      3 0.155  0.669
-    ##  3 pla   wt           pQBR57  R03   PQBR57_0002 pQBR57… 2.09      3 0.0719 0.309
-    ##  4 pla   wt           pQBR57  R03   PQBR57_0402 pQBR57… 2.45      3 0.276  1.19 
-    ##  5 pla   wt           pQBR57  R03   PQBR57_0340 pQBR57… 2.53      3 0.249  1.07 
-    ##  6 pla   wt           pQBR103 R05   pQBR0255    pQBR10… 2.68      3 0.0436 0.188
-    ##  7 pla   wt           pQBR103 R05   pQBR0346    pQBR10… 2.73      3 0.237  1.02 
-    ##  8 pla   wt           pQBR57  R03   PQBR57_0207 pQBR57… 2.93      3 0.483  2.08 
-    ##  9 pla   wt           pQBR103 R05   pQBR0188    pQBR10… 2.98      3 0.181  0.778
-    ## 10 pla   wt           pQBR103 R05   pQBR0281    pQBR10… 3.12      3 0.0963 0.414
+    ##  1 pla   wt           pQBR103 R05   pQBR0219    pQBR10… 0.938     3 0.311  1.34 
+    ##  2 pla   wt           pQBR57  R03   PQBR57_0253 pQBR57… 1.84      3 0.269  1.16 
+    ##  3 pla   wt           pQBR57  R03   PQBR57_0002 pQBR57… 2.09      3 0.125  0.536
+    ##  4 pla   wt           pQBR57  R03   PQBR57_0402 pQBR57… 2.45      3 0.478  2.06 
+    ##  5 pla   wt           pQBR57  R03   PQBR57_0340 pQBR57… 2.53      3 0.431  1.85 
+    ##  6 pla   wt           pQBR103 R05   pQBR0255    pQBR10… 2.68      3 0.0755 0.325
+    ##  7 pla   wt           pQBR103 R05   pQBR0346    pQBR10… 2.73      3 0.411  1.77 
+    ##  8 pla   wt           pQBR57  R03   PQBR57_0207 pQBR57… 2.93      3 0.837  3.60 
+    ##  9 pla   wt           pQBR103 R05   pQBR0188    pQBR10… 2.98      3 0.313  1.35 
+    ## 10 pla   wt           pQBR103 R05   pQBR0281    pQBR10… 3.12      3 0.167  0.718
     ## # … with 1 more variable: log2tpm <dbl>
 
 And maximum expression:
@@ -1711,20 +1724,20 @@ And maximum expression:
 tail(both_tpm_long[both_tpm_long$pc=="pla" & both_tpm_long$amelioration=="wt",], n=10)
 ```
 
-    ## # A tibble: 10 x 11
+    ## # A tibble: 10 × 11
     ## # Groups:   pc, amelioration, plasmid, trt, locus_tag [10]
     ##    pc    amelioration plasmid trt   locus_tag   group      tpm     n    se    ci
     ##    <chr> <fct>        <fct>   <fct> <chr>       <fct>    <dbl> <int> <dbl> <dbl>
-    ##  1 pla   wt           pQBR103 R05   pQBR0258    pQBR103… 1335.     3  91.2  393.
-    ##  2 pla   wt           pQBR57  R03   PQBR57_0005 pQBR57.… 1417.     3 137.   588.
-    ##  3 pla   wt           pQBR57  R03   PQBR57_0009 pQBR57.… 1517.     3  64.6  278.
-    ##  4 pla   wt           pQBR57  R03   PQBR57_0056 pQBR57.… 1547.     3  57.2  246.
-    ##  5 pla   wt           pQBR57  R03   PQBR57_0008 pQBR57.… 1959.     3 131.   564.
-    ##  6 pla   wt           pQBR57  R03   PQBR57_0310 pQBR57.… 2067.     3  85.2  366.
-    ##  7 pla   wt           pQBR57  R03   PQBR57_0149 pQBR57.… 2141.     3  94.1  405.
-    ##  8 pla   wt           pQBR103 R05   pQBR0079    pQBR103… 2319.     3 322.  1384.
-    ##  9 pla   wt           pQBR103 R05   pQBR0078    pQBR103… 2323.     3 265.  1141.
-    ## 10 pla   wt           pQBR57  R03   PQBR57_0309 pQBR57.… 2533.     3  69.7  300.
+    ##  1 pla   wt           pQBR103 R05   pQBR0258    pQBR103… 1335.     3 158.   680.
+    ##  2 pla   wt           pQBR57  R03   PQBR57_0005 pQBR57.… 1417.     3 237.  1018.
+    ##  3 pla   wt           pQBR57  R03   PQBR57_0009 pQBR57.… 1517.     3 112.   481.
+    ##  4 pla   wt           pQBR57  R03   PQBR57_0056 pQBR57.… 1547.     3  99.0  426.
+    ##  5 pla   wt           pQBR57  R03   PQBR57_0008 pQBR57.… 1959.     3 227.   977.
+    ##  6 pla   wt           pQBR57  R03   PQBR57_0310 pQBR57.… 2067.     3 148.   635.
+    ##  7 pla   wt           pQBR57  R03   PQBR57_0149 pQBR57.… 2141.     3 163.   702.
+    ##  8 pla   wt           pQBR103 R05   pQBR0079    pQBR103… 2319.     3 557.  2397.
+    ##  9 pla   wt           pQBR103 R05   pQBR0078    pQBR103… 2323.     3 459.  1976.
+    ## 10 pla   wt           pQBR57  R03   PQBR57_0309 pQBR57.… 2533.     3 121.   520.
     ## # … with 1 more variable: log2tpm <dbl>
 
 Get the range for each plasmid in the wild-type condition.

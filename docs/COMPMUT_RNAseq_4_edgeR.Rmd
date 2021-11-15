@@ -22,6 +22,14 @@ theme_github <- function(x){
 theme_set(theme_github())
 ```
 
+[Now published in PLoS Biology](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001225):
+
+Hall, J. P. J., Wright, R. C. T., Harrison, E., Muddiman, K. J., Jamie Wood, A., Paterson, S., & Brockhurst, M. A. (2021). Plasmid fitness costs are caused by specific genetic conflicts enabling resolution by compensatory mutation. *PLoS Biology*, *19*(10), e3001225. https://doi.org/10.1371/journal.pbio.3001225
+
+**[Back to index.](COMPMUT_index.md)**
+
+---
+
 ## edgeR analysis
 
 The analysis will look at the SBW25 chromosome, pQBR103, and pQBR57 separately. 
@@ -584,7 +592,7 @@ summ_pQ57_chr_tpm_long <- pQ57_chr_tpm_long %>%
   group_by(pc, amelioration, plasmid, trt, locus_tag, group) %>%
   summarise(mean = mean(tpm), 
             n = n(), 
-            se = sd(tpm)/n, 
+            se = sd(tpm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(tpm = mean)
 
@@ -804,7 +812,7 @@ summ_pQ103_chr_tpm_long <- pQ103_chr_tpm_long %>%
   group_by(pc, amelioration, plasmid, trt, locus_tag, group) %>%
   summarise(mean = mean(tpm), 
             n = n(), 
-            se = sd(tpm)/n, 
+            se = sd(tpm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(tpm = mean)
 
@@ -847,7 +855,7 @@ both_tpm_long_summ <- both_tpm_long %>%
   group_by(amelioration, plasmid, group, pc) %>%
     summarise(mean = mean(log2tpm), 
             n = n(), 
-            se = sd(log2tpm)/n, 
+            se = sd(log2tpm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(log2tpm=mean)
 
