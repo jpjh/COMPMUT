@@ -402,7 +402,7 @@ df55_summ <- df55 %>%
   group_by(plasmid_pucp, plasmid_pq) %>%
   summarise(mean = mean(W_gm), 
             n = n(), 
-            se = sd(W_gm)/n, 
+            se = sd(W_gm)/sqrt(n), 
             ci = (qt(0.95/2 + 0.5, n-1)) * se) %>%
   rename(W_gm=mean)
 
