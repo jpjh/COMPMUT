@@ -10,11 +10,11 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    inkscape:export-ydpi="313.84"
    inkscape:export-xdpi="313.84"
-   inkscape:export-filename="/Users/jpjh/Dropbox/WORK/projects/2_COMPMUT/COMPMUT/plots/Fig14_15_mod.png"
+   inkscape:export-filename="/Users/jpjh/Dropbox/WORK/projects/2_COMPMUT/COMPMUT/figs/FigS7.png"
    height="209.80141"
    width="284.42538"
-   inkscape:version="1.0beta2 (2b71d25, 2019-12-03)"
-   sodipodi:docname="Fig14_15_mod.svg"
+   inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
+   sodipodi:docname="FigS7.svg"
    id="svg3496"
    version="1.1"
    viewBox="0 0 284.42537 209.8014">
@@ -26,7 +26,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -38,8 +38,8 @@
      fit-margin-top="0"
      inkscape:current-layer="svg3496"
      inkscape:window-maximized="0"
-     inkscape:window-y="83"
-     inkscape:window-x="1838"
+     inkscape:window-y="57"
+     inkscape:window-x="171"
      inkscape:cy="112.70708"
      inkscape:cx="167.12563"
      inkscape:zoom="2.6929012"

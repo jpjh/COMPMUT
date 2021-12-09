@@ -13,7 +13,7 @@
    id="svg6757"
    sodipodi:docname="Fig3.svg"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)"
-   inkscape:export-filename="/Users/jpjh/Dropbox/WORK/projects/2_COMPMUT/COMPMUT/plots/Fig13b_mod.png"
+   inkscape:export-filename="/Users/jpjh/Dropbox/WORK/projects/2_COMPMUT/COMPMUT/figs/Fig3.png"
    inkscape:export-xdpi="313.84"
    inkscape:export-ydpi="313.84"
    width="1036.8"
@@ -26,7 +26,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -44,8 +44,8 @@
      id="namedview6759"
      showgrid="false"
      inkscape:zoom="0.72"
-     inkscape:cx="243.31936"
-     inkscape:cy="171.01594"
+     inkscape:cx="264.15269"
+     inkscape:cy="193.23816"
      inkscape:window-x="0"
      inkscape:window-y="23"
      inkscape:window-maximized="0"
